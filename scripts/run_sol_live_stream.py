@@ -52,13 +52,22 @@ from Frontier_OS.core import (
     DistributedSwarmCluster,
     DistributedSwarmReport
 )
-from sol.kernel.synthesis import (
-    RiemannianCircuitSynthesizer,
-    CANONICAL_SPECS,
-    TruthTableSpec,
-    SymbolicReflector,
-    MetaplasticityEngine
-)
+try:
+    from sol.kernel.synthesis import (
+        RiemannianCircuitSynthesizer,
+        CANONICAL_SPECS,
+        TruthTableSpec,
+        SymbolicReflector,
+        MetaplasticityEngine
+    )
+except ImportError:
+    from sol.kernel.synthesis.circuit_synthesizer import (
+        RiemannianCircuitSynthesizer,
+        CANONICAL_SPECS,
+        TruthTableSpec
+    )
+    from sol.kernel.synthesis.symbolic_reflector import SymbolicReflector
+    from sol.kernel.synthesis.metaplasticity import MetaplasticityEngine
 from Frontier_OS.core.metacognition import (
     create_ripple_carry_adder_plan,
     create_hierarchical_arbiter_plan,
