@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sol-decide"
+version = "1.0.0"
+description = "Sheaf-Theoretic Governed Agentic Decision Management OS for Auditable Trade Studies and Acquisition Decisions"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Techman Studios LLC" }]
+dependencies = [
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "pydantic>=2.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0"
+]
+
+[project.scripts]
+sol-decide = "sol_decide.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sol_decide"]

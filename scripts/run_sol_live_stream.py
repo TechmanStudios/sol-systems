@@ -1645,6 +1645,27 @@ def create_handler(server_instance: ManifoldSimulationServer):
                 self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()
                 self.wfile.write(json.dumps(payload).encode("utf-8"))
+            elif path == "/api/decide/status":
+                import sol_decide
+                c = sol_decide.build_ngcv_trade_study()
+                rep = c.evaluate_decision_package()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "study_name": c.name,
+                    "is_feasible": rep.is_feasible,
+                    "beta_0": rep.beta_0,
+                    "beta_1": rep.beta_1,
+                    "dirichlet_energy": rep.dirichlet_energy,
+                    "coboundary_norm": rep.coboundary_norm,
+                    "selected_option_id": rep.selected_option_id,
+                    "option_scores": rep.option_scores,
+                    "obstructed_edges": rep.obstructed_edges,
+                    "summary": rep.summary
+                }).encode("utf-8"))
             else:
                 self.send_response(404)
                 self.end_headers()
@@ -2236,6 +2257,48 @@ def create_handler(server_instance: ManifoldSimulationServer):
                 self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()
                 self.wfile.write(json.dumps({"ok": True, "gauge_invariance": inv_rep}).encode("utf-8"))
+            elif path == "/api/decide/demo1":
+                import sol_decide
+                c, pkg, sens, bias = sol_decide.run_demonstration_1()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "package_id": pkg.package_id,
+                    "selected_option_name": pkg.selected_option_name,
+                    "selected_option_id": pkg.selected_option_id,
+                    "is_certifiable": pkg.is_certifiable,
+                    "beta_0": pkg.betti_0,
+                    "beta_1": pkg.betti_1,
+                    "dirichlet_energy": pkg.dirichlet_energy,
+                    "false_commit_rate": pkg.false_commit_rate,
+                    "cryptographic_proof_hash": pkg.cryptographic_proof_hash,
+                    "is_signed": pkg.authorization_gate.is_signed,
+                    "signer": pkg.authorization_gate.signer_name,
+                    "executive_summary": pkg.executive_summary
+                }).encode("utf-8"))
+            elif path == "/api/decide/demo2":
+                import sol_decide
+                delta, ref_eval, c = sol_decide.run_demonstration_2()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "delta_id": delta.delta_id,
+                    "baseline_option_id": delta.baseline_option_id,
+                    "refreshed_option_id": delta.refreshed_option_id,
+                    "did_decision_flip": delta.did_decision_flip,
+                    "activated_coboundary_edges": delta.activated_coboundary_edges,
+                    "pre_energy": delta.pre_energy,
+                    "post_energy": delta.post_energy,
+                    "pre_betti_1": delta.pre_betti_1,
+                    "post_betti_1": delta.post_betti_1,
+                    "audit_summary": delta.audit_summary
+                }).encode("utf-8"))
             else:
                 self.send_response(404)
                 self.end_headers()

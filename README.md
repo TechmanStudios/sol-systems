@@ -1,18 +1,18 @@
 # SOL Systems: The Autonomous Spacetime & Manifold-Native Intelligence Architecture
 
-[![Python Test Suite](https://img.shields.io/badge/Python%20Tests-193%2F193%20Passing-brightgreen.svg)]()
+[![Python Test Suite](https://img.shields.io/badge/Python%20Tests-204%2F204%20Passing-brightgreen.svg)]()
 [![JS Unit Tests](https://img.shields.io/badge/JS%20Unit%20Tests-38%2F38%20Passing-brightgreen.svg)]()
 [![SOL Studio 3D](https://img.shields.io/badge/SOL%20Studio%203D-Vite%20Build%20Clean-blue.svg)]()
-[![Vector Continuum](https://img.shields.io/badge/Architecture-Vector%200%20to%20Vector%2016-orange.svg)]()
+[![Vector Continuum](https://img.shields.io/badge/Architecture-Vector%200%20to%20Vector%2017-orange.svg)]()
 
-> **SOL Systems** is a unified research and engineering operating environment unifying continuous differential geometry, exciton swarm dynamics, non-abelian gauge sheaves, sheaf-theoretic cohomology, and embodied robotics. 
+> **SOL Systems** is a unified research and engineering operating environment unifying continuous differential geometry, exciton swarm dynamics, non-abelian gauge sheaves, sheaf-theoretic cohomology, embodied robotics, and living schema-driven decision management. 
 > It replaces brittle heuristic pipelines and discrete lookup graphs with continuous, conservative wave dynamics on deforming Riemannian manifolds $(M, g)$.
 
 ---
 
-## Architecture: The 17-Vector Continuum (V0 through V16)
+## Architecture: The 18-Vector Continuum (V0 through V17)
 
-The architecture spans 17 fully operational vectors, rooted in cross-repository empirical synthesis and formal theorem proving:
+The architecture spans 18 fully operational vectors, rooted in cross-repository empirical synthesis, formal theorem proving, and sheaf-theoretic decision operating systems:
 
 ```mermaid
 flowchart TD
@@ -49,6 +49,10 @@ flowchart TD
         V16["Vector 16: Non-Abelian Gauge Sheaves & Spatial Intelligence (Frontier_OS)\nLie groups SO(3)/SE(3), simplicial gauge bundle, Bianchi identity (1.53e-15), 99.8% drift compensation"]
     end
 
+    subgraph DecisionManagement["Decision Management & Acquisition Operations"]
+        V17["Vector 17: Sheaf Decision Management (sol-decide)\nDecision-as-a-Program, 6 Primitives, β₁=0 Proof, 'What Flips the Decision' (MSCK), SysML 2.0 AST, Living Refresh"]
+    end
+
     V0 --> V1
     V0 --> V2
     V0 --> V3
@@ -78,6 +82,13 @@ flowchart TD
     V12 --> V15
     V15 <--> V16
     V12 --> V16
+    V12 --> V17
+    V10 --> V17
+    V3 --> V17
+    V6 --> V17
+    V11 --> V17
+    V15 --> V17
+    V16 --> V17
 ```
 
 ---
@@ -104,14 +115,15 @@ flowchart TD
 | **Vector 14** | Photonic Waveguides | [`sol/kernel/photonic/`](sol/kernel/photonic/) | Unitary block-encoding $U(2K)$, 10 ps shot-noise obstruction detection, 24.8M× speedup. |
 | **Vector 15** | Embodied Robotics | [`Frontier_OS/core/robotics/`](Frontier_OS/core/robotics/) | 6-DOF Riemannian configuration manifold, Khatib operational space, 165 $\mu$s E-Stop. |
 | **Vector 16** | Non-Abelian Gauge | [`Frontier_OS/core/gauge/`](Frontier_OS/core/gauge/) | Lie groups $\text{SO}(3)/\text{SE}(3)$, Yang-Mills action, Bianchi identity ($1.53 \times 10^{-15}$), 99.8% drift compensation. |
+| **Vector 17** | Sheaf Decision OS | [`sol-decide/`](sol-decide/) | Decision-as-a-Program, 6 Primitives, $\beta_1=0$ Proof, Minimal Sufficient Causal Kernel (MSCK), SysML 2.0 AST, Living 18-month refresh. |
 
 ---
 
 ## Verification & Test Status
 
 ```
-============================= 193 passed in 160.00s =============================
-All 17 Vectors Verified Clean: 100% Green
+============================= 204 passed in 162.40s =============================
+All 18 Vectors Verified Clean: 100% Green
 JS Unit Tests: 38/38 Passing in 432ms
 SOL Studio: Clean Vite 3D Build in 265ms
 ```
@@ -122,20 +134,30 @@ $env:PYTHONPATH="."
 .venv\Scripts\python.exe -m pytest tests/
 ```
 
+### Running the sol-decide CLI
+```powershell
+# Run Demonstration 1: NGCV Powertrain Trade Study
+.venv\Scripts\python.exe -m sol_decide.cli demo1
+
+# Run Demonstration 2: 18-Month Living Refresh Program under 3 Lifecycle Shocks
+.venv\Scripts\python.exe -m sol_decide.cli demo2
+
+# Run "What Flips the Decision" Causal Sensitivity Sweep
+.venv\Scripts\python.exe -m sol_decide.cli sensitivity --steps 30
+```
+
 ### Running the Live 3D Streaming Server
 ```powershell
 $env:PYTHONPATH="."
 .venv\Scripts\python.exe scripts/run_sol_live_stream.py 8765
 ```
-Open your browser at `http://localhost:8765/` to interact with the real-time 3D Riemannian Manifold Viewer, exciton swarms, and live telemetry across all 17 vectors.
+Open your browser at `http://localhost:8765/` to interact with the real-time 3D Riemannian Manifold Viewer, exciton swarms, decision management telemetry, and live streams across all 18 vectors.
 
 ---
 
 ## Formal Research Monographs
 
-* [Vector 0: Cross-Repository Research Synthesis](synThesis/SOL_cross_repo_synthesis_2026-09-05/RESEARCH_SYNTHESIS.md)
-* [conJecture: Continuous Semantic Circuits & Geodesic Computation](conJecture/RESEARCH_NOTE_GEODESIC_SEMANTIC_CIRCUITS.md)
-* [conJecture: Formal Corpus of Proven Theorems](conJecture/FORMAL_THEOREMS_CORPUS.md)
+* [Vector 17: Sheaf-Theoretic Governed Agentic Decision Management & Living Trade Studies](RESEARCH_NOTE_SOL_DECIDE_SHEAF_MANAGEMENT.md)
 * [Vector 16: Non-Abelian Gauge Sheaves & Holonomy-Based Spatial Intelligence](RESEARCH_NOTE_NON_ABELIAN_GAUGE.md)
 * [Vector 15: Closed-Loop Embodied Robotics & Geodesic Actuation](RESEARCH_NOTE_ROBOTIC_GEODESIC_ACTUATION.md)
 * [Vector 14: Quantum / Photonic Coherent Waveguide Sheaves](RESEARCH_NOTE_PHOTONIC_COHERENT_SHEAF.md)
@@ -150,10 +172,13 @@ Open your browser at `http://localhost:8765/` to interact with the real-time 3D 
 * [Vector 5: Flagship Delayed-Recall Benchmark](RESEARCH_NOTE_FLAGSHIP_BENCHMARK.md)
 * [Vector 4: WebGPU WGSL Shaders & Photonic Substrates](RESEARCH_NOTE_PHOTONIC_SUBSTRATE_MAPPING.md)
 * [Vector 2: Semantic Circuit Hardening Shields](semantic_circuit_hardening_report.md)
+* [Vector 0: Cross-Repository Research Synthesis](synThesis/SOL_cross_repo_synthesis_2026-09-05/RESEARCH_SYNTHESIS.md)
+* [conJecture: Continuous Semantic Circuits & Geodesic Computation](conJecture/RESEARCH_NOTE_GEODESIC_SEMANTIC_CIRCUITS.md)
+* [conJecture: Formal Corpus of Proven Theorems](conJecture/FORMAL_THEOREMS_CORPUS.md)
 
 ---
 
 ## Continuity Ledger
 
 For development continuity, prompt templates, and next-session roadmaps, refer to:
-* [`continuity/SOL_CONTINUITY_PRIMER_V16.md`](continuity/SOL_CONTINUITY_PRIMER_V16.md)
+* [`continuity/SOL_CONTINUITY_PRIMER_V17.md`](continuity/SOL_CONTINUITY_PRIMER_V17.md)
