@@ -318,23 +318,65 @@ instancedSwarm.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 instancedSwarm.visible = false;
 scene.add(instancedSwarm);
 
+// -------------------------------------------------------------
+// Vector 4 & SOL-Decide: 5 Quantized Decision Shells (Exciton Orbits)
+// Perpetually stable concentric deliberative shells (No gravitational collapse)
+// -------------------------------------------------------------
+const DECISION_SHELLS = [
+  { tier: 1, name: "β₁ Invariants & Hard Constraints", radius: 3.8, colorHex: "#f43f5e", speedMult: 1.0, sigma: 0.22 },
+  { tier: 2, name: "MoA Objective Weights & 7 Giants", radius: 6.4, colorHex: "#38bdf8", speedMult: 1.0, sigma: 0.30 },
+  { tier: 3, name: "AoA Alternatives (Trade Space)", radius: 9.4, colorHex: "#fbbf24", speedMult: 1.0, sigma: 0.38 },
+  { tier: 4, name: "Operational Risk Thresholds", radius: 12.8, colorHex: "#34d399", speedMult: 1.0, sigma: 0.46 },
+  { tier: 5, name: "Dynamic Living Refresh Shocks", radius: 16.5, colorHex: "#a855f7", speedMult: 1.0, sigma: 0.55 },
+];
+
+// Delicate Visual Guide Lines for the 5 Decision Shells
+const decisionShellGroup = new THREE.Group();
+decisionShellGroup.visible = false;
+scene.add(decisionShellGroup);
+
+DECISION_SHELLS.forEach((shell) => {
+  const segments = 96;
+  const points = [];
+  for (let s = 0; s <= segments; s++) {
+    const theta = (s / segments) * Math.PI * 2;
+    points.push(new THREE.Vector3(Math.cos(theta) * shell.radius, -0.04, Math.sin(theta) * shell.radius));
+  }
+  const geom = new THREE.BufferGeometry().setFromPoints(points);
+  const mat = new THREE.LineBasicMaterial({
+    color: new THREE.Color(shell.colorHex),
+    transparent: true,
+    opacity: 0.18,
+    depthWrite: false,
+  });
+  const line = new THREE.Line(geom, mat);
+  decisionShellGroup.add(line);
+});
+
 // Pre-allocate particle buffer data
 const swarmPositions = new Float32Array(MAX_EXCITONS * 3);
 const swarmVelocities = new Float32Array(MAX_EXCITONS * 3);
 const dummyMatrix = new THREE.Matrix4();
 
 for (let i = 0; i < MAX_EXCITONS; i++) {
+  // Distribute excitons across the 5 Decision Maker Shells
+  const shellIdx = i % DECISION_SHELLS.length;
+  const shell = DECISION_SHELLS[shellIdx];
+
+  // Radial jitter around quantized shell radius
+  const jitter = (Math.random() + Math.random() + Math.random() - 1.5) * shell.sigma * 1.5;
+  const radius = Math.max(1.8, shell.radius + jitter);
   const angle = Math.random() * Math.PI * 2;
-  const radius = 2.5 + Math.random() * 16.5;
+
   swarmPositions[i * 3 + 0] = Math.cos(angle) * radius;
   swarmPositions[i * 3 + 1] = 0;
   swarmPositions[i * 3 + 2] = Math.sin(angle) * radius;
 
-  // Tangential orbital velocity + radial breathing
-  const speed = 0.6 + Math.random() * 1.4;
-  swarmVelocities[i * 3 + 0] = -Math.sin(angle) * speed;
+  // Exact Keplerian circular speed: v_circ = sqrt(12 * r / (r^2 + 2))
+  const vCirc = Math.sqrt((12.0 * radius) / (radius * radius + 2.0)) * shell.speedMult;
+  swarmVelocities[i * 3 + 0] = -Math.sin(angle) * vCirc;
   swarmVelocities[i * 3 + 1] = 0;
-  swarmVelocities[i * 3 + 2] = Math.cos(angle) * speed;
+  swarmVelocities[i * 3 + 2] = Math.cos(angle) * vCirc;
 
   dummyMatrix.makeScale(0.08, 0.08, 0.08);
   dummyMatrix.setPosition(swarmPositions[i * 3 + 0], 0, swarmPositions[i * 3 + 2]);
@@ -681,6 +723,7 @@ function updateSolitonsAndSwarm() {
   if (state.swarmScale === 7) {
     excitonGroup.visible = true;
     instancedSwarm.visible = false;
+    decisionShellGroup.visible = false;
 
     EXCITONS.forEach((exc, idx) => {
       // Gravitational pull toward nearest nodes
@@ -744,51 +787,89 @@ function updateSolitonsAndSwarm() {
     // Vector 4: Massively Parallel Instanced Swarm (1,000 to 100,000+ excitons)
     excitonGroup.visible = false;
     instancedSwarm.visible = true;
+    decisionShellGroup.visible = true;
 
     const activeCount = Math.min(state.swarmScale, MAX_EXCITONS);
     instancedSwarm.count = activeCount;
 
     const dt = 0.016;
+    const NUM_SHELLS = DECISION_SHELLS.length;
+
     for (let i = 0; i < activeCount; i++) {
       let px = swarmPositions[i * 3 + 0];
       let pz = swarmPositions[i * 3 + 2];
       let vx = swarmVelocities[i * 3 + 0];
       let vz = swarmVelocities[i * 3 + 2];
 
-      // Symplectic magnetic curl (Role 3: Graph Navigator, zero mechanical work): Ω · v
-      if (i % 7 === 3) {
-        const curlAx = -0.75 * vz;
-        const curlAz =  0.75 * vx;
-        vx += curlAx * dt;
-        vz += curlAz * dt;
+      const r = Math.sqrt(px * px + pz * pz) + 1e-5;
+      const invR = 1.0 / r;
+      const rx = px * invR;
+      const rz = pz * invR;
+      const tx = -rz; // Tangential unit vector (counter-clockwise)
+      const tz = rx;
+
+      // Project Cartesian velocity into radial (v_r) and tangential (v_theta) components
+      let vr = vx * rx + vz * rz;
+      let vt = vx * tx + vz * tz;
+
+      // Identify nearest quantized Decision Shell
+      let nearestShell = DECISION_SHELLS[0];
+      let minDist = Math.abs(r - nearestShell.radius);
+      for (let sIdx = 1; sIdx < NUM_SHELLS; sIdx++) {
+        const d = Math.abs(r - DECISION_SHELLS[sIdx].radius);
+        if (d < minDist) {
+          minDist = d;
+          nearestShell = DECISION_SHELLS[sIdx];
+        }
       }
 
-      // Orbital acceleration around origin
-      const r = Math.sqrt(px * px + pz * pz) + 0.1;
-      const grav = -12.0 / (r * r + 2.0);
-      vx += (px / r) * grav * dt;
-      vz += (pz / r) * grav * dt;
+      // 1. Quantized Shell Restoring Force (harmonic confinement to decision band)
+      const fShell = -(r - nearestShell.radius) * 2.2;
 
-      // Damp & integrate
-      vx *= 0.998;
-      vz *= 0.998;
+      // 2. Central Gravity & Centrifugal Equilibrium
+      const grav = -12.0 / (r * r + 2.0);
+      const centrifugal = (vt * vt) * invR;
+
+      // Circular equilibrium speed at this shell radius
+      const targetVt = Math.sqrt((12.0 * nearestShell.radius) / (nearestShell.radius * nearestShell.radius + 2.0)) * nearestShell.speedMult;
+
+      // 3. Radial Damping (Collimation): eliminates radial eccentricity into crisp bands
+      // Notice: Damping is ONLY applied radially (vr). Angular momentum is preserved!
+      vr *= 0.95;
+      vr += (grav + centrifugal + fShell) * dt;
+
+      // 4. Tangential Angular Momentum Governor: relaxes vt toward Keplerian orbital velocity
+      // Strictly prevents gravitational decay and orbital collapse over time
+      vt += (targetVt - vt) * 0.04;
+
+      // 5. Symplectic magnetic curl (Role 3: Graph Navigator)
+      if (i % 7 === 3) {
+        vt += 0.015 * Math.sin(r * 2.0 + i);
+      }
+
+      // Reconstruct Cartesian velocity
+      vx = vr * rx + vt * tx;
+      vz = vr * rz + vt * tz;
+
+      // Integrate position
       px += vx * dt;
       pz += vz * dt;
 
-      // Conformal boundary
+      // Conformal outer boundary guard
       if (r > 22.0) {
-        px *= 0.98;
-        pz *= 0.98;
-        vx = -vx * 0.8;
-        vz = -vz * 0.8;
+        px = rx * 21.8;
+        pz = rz * 21.8;
+        vr = -Math.abs(vr) * 0.5;
+        vx = vr * rx + vt * tx;
+        vz = vr * rz + vt * tz;
       }
 
-      // Sample surface height
+      // Sample surface height from semantic nodes
       let py = 0;
-      for (let nIdx = 0; nIdx < 4; nIdx++) {
-        const n = NODES[(i + nIdx) % 16];
+      for (let nIdx = 0; nIdx < 3; nIdx++) {
+        const n = NODES[(i + nIdx * 5) % 16];
         const dSq = (px - n.x) ** 2 + (pz - n.z) ** 2;
-        py -= n.mass * Math.exp(-dSq / 14.0) * (0.8 + n.ricci * 0.5);
+        py -= n.mass * Math.exp(-dSq / 16.0) * (0.6 + n.ricci * 0.4);
       }
 
       swarmPositions[i * 3 + 0] = px;
@@ -1070,9 +1151,9 @@ function setSwarmScale(scale) {
 
   const ticker = document.getElementById("active-excitons");
   if (ticker) {
-    ticker.textContent = scale === 7 ? "7 Active" : `${scale.toLocaleString()} Active (⚡)`;
+    ticker.textContent = scale === 7 ? "7 Active" : `${scale.toLocaleString()} Active (5 Shells)`;
   }
-  showToast(scale === 7 ? "Scale: 7 Giants MoA Swarm" : `Scale: ${scale.toLocaleString()} Excitons on WebGPU Shaders`);
+  showToast(scale === 7 ? "Scale: 7 Giants MoA Swarm" : `Scale: ${scale.toLocaleString()} Excitons orbiting 5 Decision Shells`);
 }
 
 document.getElementById("btn-scale-7")?.addEventListener("click", () => setSwarmScale(7));
