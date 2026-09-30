@@ -2321,7 +2321,7 @@ class ReusableHTTPServer(HTTPServer):
 
 def main():
     import os
-    port = int(os.environ.get("SOL_STREAM_PORT", sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].isdigit() else 8765))
+    port = int(os.environ.get("PORT", os.environ.get("SOL_STREAM_PORT", sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].isdigit() else 8765)))
     server_sim = ManifoldSimulationServer(port=port)
     server_sim.start()
 
