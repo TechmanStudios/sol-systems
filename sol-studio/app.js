@@ -353,6 +353,155 @@ DECISION_SHELLS.forEach((shell) => {
   decisionShellGroup.add(line);
 });
 
+// -------------------------------------------------------------
+// Vector 4 / Exciton-MoA: Radial Wormhole Bridges (Einstein-Rosen Conduits)
+// Enables non-local Sheaf restriction cross-talk across concentric shells
+// -------------------------------------------------------------
+const WORMHOLE_CONDUIT_COUNT = 6;
+const WORMHOLE_ANGLES = [];
+for (let w = 0; w < WORMHOLE_CONDUIT_COUNT; w++) {
+  WORMHOLE_ANGLES.push((w / WORMHOLE_CONDUIT_COUNT) * Math.PI * 2);
+}
+
+const wormholeGroup = new THREE.Group();
+wormholeGroup.visible = false;
+scene.add(wormholeGroup);
+
+// Radial Geodesic Bridges across the shells
+WORMHOLE_ANGLES.forEach((angle) => {
+  const points = [];
+  const minR = 3.6;
+  const maxR = 17.0;
+  const steps = 32;
+  for (let s = 0; s <= steps; s++) {
+    const r = minR + (s / steps) * (maxR - minR);
+    points.push(new THREE.Vector3(Math.cos(angle) * r, -0.03, Math.sin(angle) * r));
+  }
+  const geom = new THREE.BufferGeometry().setFromPoints(points);
+  const mat = new THREE.LineDashedMaterial({
+    color: 0xc084fc, // Bright violet-purple
+    dashSize: 0.35,
+    gapSize: 0.25,
+    transparent: true,
+    opacity: 0.35,
+    depthWrite: false,
+  });
+  const line = new THREE.Line(geom, mat);
+  line.computeLineDistances();
+  wormholeGroup.add(line);
+
+  // Aperture nodes at intersections with each shell
+  DECISION_SHELLS.forEach((shell) => {
+    const dotGeom = new THREE.RingGeometry(0.12, 0.22, 16);
+    dotGeom.rotateX(-Math.PI / 2);
+    const dotMat = new THREE.MeshBasicMaterial({
+      color: 0xc084fc,
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const dotMesh = new THREE.Mesh(dotGeom, dotMat);
+    dotMesh.position.set(Math.cos(angle) * shell.radius, -0.02, Math.sin(angle) * shell.radius);
+    wormholeGroup.add(dotMesh);
+  });
+});
+
+// Active Radial Wormhole Tunneling Quanta (Soliton Bridges)
+const WORMHOLE_PULSES = [];
+const wormholePulseGeom = new THREE.SphereGeometry(0.24, 12, 12);
+
+// Function to launch a tunneling quanta across shells
+function spawnWormholeTunnelingPulse(fromShellIdx, toShellIdx, conduitAngleIdx = null, customColor = null) {
+  const fromShell = DECISION_SHELLS[fromShellIdx];
+  const toShell = DECISION_SHELLS[toShellIdx];
+  if (!fromShell || !toShell) return;
+
+  const angle = conduitAngleIdx !== null 
+    ? WORMHOLE_ANGLES[conduitAngleIdx % WORMHOLE_ANGLES.length]
+    : WORMHOLE_ANGLES[Math.floor(Math.random() * WORMHOLE_ANGLES.length)];
+
+  const apertureJitter = (Math.random() - 0.5) * 0.08;
+  const pulseAngle = angle + apertureJitter;
+
+  const p1 = new THREE.Vector3(Math.cos(pulseAngle) * fromShell.radius, 0.25, Math.sin(pulseAngle) * fromShell.radius);
+  const p2 = new THREE.Vector3(Math.cos(pulseAngle) * toShell.radius, 0.25, Math.sin(pulseAngle) * toShell.radius);
+
+  // Arch high above manifold like an Einstein-Rosen geodesic bridge
+  const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+  mid.y += 1.4 + Math.abs(fromShell.radius - toShell.radius) * 0.15;
+
+  const colorHex = customColor || (fromShellIdx > toShellIdx ? 0xf43f5e : 0x38bdf8);
+  const pulseMat = new THREE.MeshBasicMaterial({ color: colorHex });
+  const pulseMesh = new THREE.Mesh(wormholePulseGeom, pulseMat);
+  wormholeGroup.add(pulseMesh);
+
+  WORMHOLE_PULSES.push({
+    fromShellIdx,
+    toShellIdx,
+    p1,
+    mid,
+    p2,
+    t: 0,
+    speed: 0.025 + Math.random() * 0.015,
+    mesh: pulseMesh,
+    colorHex,
+  });
+
+  // Physical exciton state transfer along the conduit
+  if (instancedSwarm.visible && state.swarmScale > 7) {
+    const activeCount = Math.min(state.swarmScale, MAX_EXCITONS);
+    const searchStart = Math.floor(Math.random() * Math.max(1, activeCount - 25));
+    for (let i = searchStart; i < searchStart + 25; i++) {
+      const idx = i % activeCount;
+      const px = swarmPositions[idx * 3 + 0];
+      const pz = swarmPositions[idx * 3 + 2];
+      const pAngle = Math.atan2(pz, px);
+      if (Math.abs(pAngle - (angle % (Math.PI * 2))) < 0.45) {
+        const toRadius = toShell.radius + (Math.random() - 0.5) * toShell.sigma;
+        const norm = Math.sqrt(px * px + pz * pz) + 1e-4;
+        swarmPositions[idx * 3 + 0] = (px / norm) * toRadius;
+        swarmPositions[idx * 3 + 2] = (pz / norm) * toRadius;
+        const vCirc = Math.sqrt((12.0 * toRadius) / (toRadius * toRadius + 2.0)) * toShell.speedMult;
+        const speed = Math.sqrt(swarmVelocities[idx * 3 + 0] ** 2 + swarmVelocities[idx * 3 + 2] ** 2) + 1e-4;
+        swarmVelocities[idx * 3 + 0] = (swarmVelocities[idx * 3 + 0] / speed) * vCirc;
+        swarmVelocities[idx * 3 + 2] = (swarmVelocities[idx * 3 + 2] / speed) * vCirc;
+        break;
+      }
+    }
+  }
+
+  // Update telemetry
+  state.wormholeTunnelCount = (state.wormholeTunnelCount || 0) + 1;
+  const countEl = document.getElementById("wormhole-tunnel-count");
+  if (countEl) countEl.innerText = state.wormholeTunnelCount.toLocaleString();
+
+  const lastTransEl = document.getElementById("wormhole-last-transition");
+  if (lastTransEl) {
+    const arrow = fromShellIdx > toShellIdx ? "➔ (Inward ρ)" : "➔ (Outward δ⁰)";
+    lastTransEl.innerText = `Tier ${fromShell.tier} ${arrow} Tier ${toShell.tier}`;
+  }
+}
+
+// Autonomous Cross-Shell Wormhole Tunneling Flux
+setInterval(() => {
+  if (state.isPaused || state.swarmScale === 7) return;
+  const srcIdx = Math.floor(Math.random() * DECISION_SHELLS.length);
+  let dstIdx;
+  const rand = Math.random();
+  if (rand < 0.35) {
+    dstIdx = srcIdx === 4 ? 0 : 4; // Tier 5 (Living Refresh) <-> Tier 1 (Hard Constraint)
+  } else if (rand < 0.70) {
+    const step = Math.random() > 0.5 ? 1 : -1;
+    dstIdx = Math.max(0, Math.min(DECISION_SHELLS.length - 1, srcIdx + step));
+  } else {
+    dstIdx = srcIdx === 1 ? 2 : 1; // Tier 2 (Weights) <-> Tier 3 (AoA Space)
+  }
+  if (srcIdx !== dstIdx) {
+    spawnWormholeTunnelingPulse(srcIdx, dstIdx);
+  }
+}, 750);
+
 // Pre-allocate particle buffer data
 const swarmPositions = new Float32Array(MAX_EXCITONS * 3);
 const swarmVelocities = new Float32Array(MAX_EXCITONS * 3);
@@ -719,11 +868,35 @@ function updateSolitonsAndSwarm() {
     sol.mesh.position.copy(pos);
   }
 
+  // Update Radial Wormhole Tunneling Pulses (Cross-Shell Sheaf Information Transfer)
+  for (let pIdx = WORMHOLE_PULSES.length - 1; pIdx >= 0; pIdx--) {
+    const pulse = WORMHOLE_PULSES[pIdx];
+    pulse.t += pulse.speed;
+
+    if (pulse.t >= 1.0) {
+      // Impact event at destination shell: emit localized metric ripple
+      triggerManifoldRipple(pulse.p2.x, pulse.p2.z, 0.45);
+      state.carnotTotalEnergy += 0.05;
+
+      wormholeGroup.remove(pulse.mesh);
+      pulse.mesh.geometry.dispose();
+      pulse.mesh.material.dispose();
+      WORMHOLE_PULSES.splice(pIdx, 1);
+      continue;
+    }
+
+    // Parabolic Einstein-Rosen geodesic bridge interpolation
+    const curve = new THREE.QuadraticBezierCurve3(pulse.p1, pulse.mid, pulse.p2);
+    const pos = curve.getPoint(pulse.t);
+    pulse.mesh.position.copy(pos);
+  }
+
   // Update Exciton Swarm: 7 Giants MoA or Massive Instanced WebGPU Swarm
   if (state.swarmScale === 7) {
     excitonGroup.visible = true;
     instancedSwarm.visible = false;
     decisionShellGroup.visible = false;
+    wormholeGroup.visible = false;
 
     EXCITONS.forEach((exc, idx) => {
       // Gravitational pull toward nearest nodes
@@ -788,6 +961,7 @@ function updateSolitonsAndSwarm() {
     excitonGroup.visible = false;
     instancedSwarm.visible = true;
     decisionShellGroup.visible = true;
+    wormholeGroup.visible = true;
 
     const activeCount = Math.min(state.swarmScale, MAX_EXCITONS);
     instancedSwarm.count = activeCount;
@@ -1049,6 +1223,30 @@ document.getElementById("btn-wave-ripple").onclick = () => {
   showToast("Spacetime Shockwave Emitted");
 };
 
+function triggerWormholeCascade() {
+  if (state.swarmScale === 7) {
+    setSwarmScale(100000);
+  }
+  wormholeGroup.visible = true;
+  decisionShellGroup.visible = true;
+  showToast("Wormhole Cascade: 6 ER Bridges Active across 5 Decision Shells (β₁=0)");
+
+  // Cascade across all 6 conduits with staggered radial pulses
+  for (let w = 0; w < WORMHOLE_CONDUIT_COUNT; w++) {
+    setTimeout(() => {
+      // Inward shock pulse: Tier 5 (Living Refresh) -> Tier 1 (Hard Constraint)
+      spawnWormholeTunnelingPulse(4, 0, w, 0xf43f5e);
+      // Outward return feedback: Tier 1 (Invariant Proof) -> Tier 3 (AoA Alternatives)
+      setTimeout(() => spawnWormholeTunnelingPulse(0, 2, w, 0x38bdf8), 160);
+      // Outward broadcast: Tier 2 (MoA Weights) -> Tier 5 (Sensors)
+      setTimeout(() => spawnWormholeTunnelingPulse(1, 4, w, 0xa855f7), 320);
+    }, w * 140);
+  }
+}
+
+document.getElementById("btn-wormhole-bridge")?.addEventListener("click", triggerWormholeCascade);
+document.getElementById("btn-fire-wormhole")?.addEventListener("click", triggerWormholeCascade);
+
 const btnPause = document.getElementById("btn-pause-sim");
 btnPause.onclick = () => {
   state.isPaused = !state.isPaused;
@@ -1137,6 +1335,14 @@ function setSwarmScale(scale) {
   const idMap = { 7: "btn-scale-7", 1000: "btn-scale-1k", 10000: "btn-scale-10k", 100000: "btn-scale-100k" };
   const targetBtn = document.getElementById(idMap[scale]);
   if (targetBtn) targetBtn.classList.add("active");
+
+  if (scale === 7) {
+    if (typeof decisionShellGroup !== "undefined") decisionShellGroup.visible = false;
+    if (typeof wormholeGroup !== "undefined") wormholeGroup.visible = false;
+  } else {
+    if (typeof decisionShellGroup !== "undefined") decisionShellGroup.visible = true;
+    if (typeof wormholeGroup !== "undefined") wormholeGroup.visible = true;
+  }
 
   if (scale === 1000) {
     state.particleScale = 0.08;

@@ -135,6 +135,7 @@
     <div class="island-group">
       <button class="deck-btn emerald-btn" id="btn-dispatch-swarm" type="button" title="Dispatch 7 Giants Flocking Swarm">● Swarm</button>
       <button class="deck-btn amber-btn" id="btn-wave-ripple" type="button" title="Emit gravitational wave ripple across manifold">Wave Ripple ≋</button>
+      <button class="deck-btn purple-btn" id="btn-wormhole-bridge" type="button" title="Trigger radial wormhole tunneling cascade across decision shells">Wormhole 🌀</button>
       <button class="deck-btn" id="btn-pause-sim" type="button" title="Pause / Resume Dynamics (Spacebar)">Pause</button>
     </div>
 
@@ -233,9 +234,9 @@
         </div>
       </div>
 
-      <!-- Vector 4 & SOL-Decide: 5 Quantized Decision Shells Card -->
-      <div class="drawer-card" id="decision-shells-card" style="border-color: rgba(56, 189, 248, 0.35);">
-        <div class="card-caption" style="color: var(--cyan);">SOL-Decide: 5 Quantized Decision Shells (Exciton Orbits)</div>
+      <!-- Vector 4 & SOL-Decide: 5 Decision Shells & Radial Wormholes Card -->
+      <div class="drawer-card" id="decision-shells-card" style="border-color: rgba(192, 132, 252, 0.4);">
+        <div class="card-caption" style="color: #c084fc;">SOL-Decide: 5 Decision Shells & Radial Wormholes</div>
         <div class="decision-shells-list" style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
           <div class="drawer-stat-row">
             <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f43f5e; display: inline-block;"></span><strong>Tier 1 (r=3.8):</strong></span>
@@ -258,7 +259,27 @@
             <span style="color: #d8b4fe;">Dynamic Living Refresh & Shocks</span>
           </div>
         </div>
-        <div class="card-footnote">Perpetual Keplerian resonance & angular momentum governor. Prevents gravitational collapse.</div>
+
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+          <div class="drawer-stat-row">
+            <span>Radial Wormholes:</span>
+            <strong style="color: #c084fc;">6 ER Geodesic Conduits (60°)</strong>
+          </div>
+          <div class="drawer-stat-row">
+            <span>Wormhole Aperture (α):</span>
+            <strong class="green">0.850 (Open / Conductive)</strong>
+          </div>
+          <div class="drawer-stat-row">
+            <span>Tunneling Event Count:</span>
+            <strong id="wormhole-tunnel-count" class="solar">0</strong>
+          </div>
+          <div class="drawer-stat-row">
+            <span>Last Sheaf Transition:</span>
+            <strong id="wormhole-last-transition" style="color: #c084fc; font-size: 10px;">Idle</strong>
+          </div>
+          <button id="btn-fire-wormhole" class="glass-btn" style="width: 100%; margin-top: 6px; color: #c084fc; border-color: rgba(192, 132, 252, 0.4); font-weight: 600;" type="button">⚡ Fire Radial Wormhole Cascade</button>
+        </div>
+        <div class="card-footnote">Radial Einstein-Rosen bridges for non-local sheaf coboundary cross-talk across decision tiers.</div>
       </div>
 
       <!-- Vector 10: Dialectical Reasoning Arena Card -->

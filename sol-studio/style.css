@@ -413,6 +413,15 @@ canvas#viewport {
   color: var(--solar);
 }
 
+.deck-btn.purple-btn {
+  color: #c084fc;
+}
+
+.deck-btn.purple-btn:hover {
+  border-color: rgba(192, 132, 252, 0.5);
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.25);
+}
+
 /* Toast Message */
 #toast-message {
   position: absolute;
