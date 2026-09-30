@@ -1,0 +1,89 @@
+{
+  "suite_id": "FLAGSHIP-BENCHMARK-S2002",
+  "total_trials": 10,
+  "audit_counterexample": {
+    "cosine_similarity": 0.0,
+    "legacy_collapsed": true,
+    "identity_preserved": true,
+    "euclidean_separation": 1.7613585179455495
+  },
+  "models": {
+    "Explicit_FSM_DAG": {
+      "model_name": "Explicit_FSM_DAG",
+      "recall_accuracy": 1.0,
+      "conflict_rejection_rate": 1.0,
+      "false_commit_rate": 0.0,
+      "mean_read_disturb_margin": 1.0,
+      "mean_recovery_time_steps": 0.0,
+      "mean_energy_dissipated": 0.31,
+      "mean_latency_ms": 0.002,
+      "total_memory_kb": 1.54
+    },
+    "Linear_Graph_Diffusion": {
+      "model_name": "Linear_Graph_Diffusion",
+      "recall_accuracy": 0.6667,
+      "conflict_rejection_rate": 0.0,
+      "false_commit_rate": 1.0,
+      "mean_read_disturb_margin": 0.9,
+      "mean_recovery_time_steps": 24.8,
+      "mean_energy_dissipated": 0.6463,
+      "mean_latency_ms": 0.309,
+      "total_memory_kb": 2.75
+    },
+    "Echo_State_Reservoir": {
+      "model_name": "Echo_State_Reservoir",
+      "recall_accuracy": 0.3333,
+      "conflict_rejection_rate": 0.5,
+      "false_commit_rate": 0.5,
+      "mean_read_disturb_margin": 0.8803,
+      "mean_recovery_time_steps": 18.6,
+      "mean_energy_dissipated": 0.294,
+      "mean_latency_ms": 23.57,
+      "total_memory_kb": 32.0
+    },
+    "SOL_ADAPTIVE_SWARM": {
+      "model_name": "SOL_ADAPTIVE_SWARM",
+      "recall_accuracy": 0.8333,
+      "conflict_rejection_rate": 1.0,
+      "false_commit_rate": 0.0,
+      "mean_read_disturb_margin": 0.98,
+      "mean_recovery_time_steps": 5.8,
+      "mean_energy_dissipated": 1.981,
+      "mean_latency_ms": 172.881,
+      "total_memory_kb": 5.11
+    },
+    "SOL_FROZEN_CONTROLLER": {
+      "model_name": "SOL_FROZEN_CONTROLLER",
+      "recall_accuracy": 1.0,
+      "conflict_rejection_rate": 1.0,
+      "false_commit_rate": 0.0,
+      "mean_read_disturb_margin": 0.92,
+      "mean_recovery_time_steps": 2.6,
+      "mean_energy_dissipated": 0.4362,
+      "mean_latency_ms": 10.774,
+      "total_memory_kb": 5.11
+    },
+    "SOL_CONTROLLER_ONLY": {
+      "model_name": "SOL_CONTROLLER_ONLY",
+      "recall_accuracy": 1.0,
+      "conflict_rejection_rate": 1.0,
+      "false_commit_rate": 0.0,
+      "mean_read_disturb_margin": 0.7,
+      "mean_recovery_time_steps": 1.8,
+      "mean_energy_dissipated": 0.31,
+      "mean_latency_ms": 26.619,
+      "total_memory_kb": 5.11
+    },
+    "SOL_SUBSTRATE_ABLATED": {
+      "model_name": "SOL_SUBSTRATE_ABLATED",
+      "recall_accuracy": 0.6667,
+      "conflict_rejection_rate": 1.0,
+      "false_commit_rate": 0.0,
+      "mean_read_disturb_margin": 0.7,
+      "mean_recovery_time_steps": 5.4,
+      "mean_energy_dissipated": 0.155,
+      "mean_latency_ms": 10.979,
+      "total_memory_kb": 5.11
+    }
+  }
+}

@@ -1,0 +1,12 @@
+[submodule "Frontier_OS"]
+	path = Frontier_OS
+	url = https://github.com/TechmanStudios/Frontier_OS.git
+[submodule "sol"]
+	path = sol
+	url = https://github.com/TechmanStudios/sol.git
+[submodule "sol-lens"]
+	path = sol-lens
+	url = https://github.com/TechmanStudios/sol-lens.git
+[submodule "sol-edge"]
+	path = sol-edge
+	url = https://github.com/TechmanStudios/sol-edge.git

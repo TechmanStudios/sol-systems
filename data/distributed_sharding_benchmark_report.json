@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-09-29T18:06:38.394090+00:00",
+  "vector": "Vector 7: Multi-Cluster Distributed Swarm Sharding & Real-Time IPC Fabric",
+  "scaling_benchmark": [
+    {
+      "num_shards": 1,
+      "population": 240,
+      "total_steps": 15,
+      "total_time_ms": 5171.26,
+      "ms_per_step": 344.75,
+      "speedup": 1.0,
+      "throughput_agents_per_sec": 696.2,
+      "final_order_parameter": 0.0785
+    },
+    {
+      "num_shards": 2,
+      "population": 240,
+      "total_steps": 15,
+      "total_time_ms": 3883.33,
+      "ms_per_step": 258.89,
+      "speedup": 1.33,
+      "throughput_agents_per_sec": 927.0,
+      "final_order_parameter": 0.0764
+    },
+    {
+      "num_shards": 4,
+      "population": 240,
+      "total_steps": 15,
+      "total_time_ms": 3469.6,
+      "ms_per_step": 231.31,
+      "speedup": 1.49,
+      "throughput_agents_per_sec": 1037.6,
+      "final_order_parameter": 0.0729
+    },
+    {
+      "num_shards": 8,
+      "population": 240,
+      "total_steps": 15,
+      "total_time_ms": 3086.06,
+      "ms_per_step": 205.74,
+      "speedup": 1.68,
+      "throughput_agents_per_sec": 1166.5,
+      "final_order_parameter": 0.0483
+    }
+  ],
+  "transit_conservation": {
+    "initial_population": 50,
+    "final_population": 50,
+    "conservation_rate_pct": 100.0,
+    "total_boundary_crossings": 121,
+    "initial_allocation": {
+      "shard-0": 50,
+      "shard-1": 0
+    },
+    "final_allocation": {
+      "shard-0": 23,
+      "shard-1": 27
+    },
+    "verified": true
+  },
+  "halo_symmetry": {
+    "dv_left": -0.054481,
+    "dv_right": 0.054481,
+    "symmetry_relative_error": 0.0,
+    "force_continuity_verified": true
+  },
+  "ipc_latency": {
+    "shm_capacity_excitons": 100000,
+    "shm_buffer_size_mb": 6.1,
+    "shm_write_time_100k_ms": 0.89,
+    "shm_bandwidth_gb_s": 6.72,
+    "ipc_roundtrip_per_packet_us": 5.48,
+    "verified": true
+  },
+  "dynamic_rebalancing": {
+    "initial_imbalance": 2.0,
+    "initial_boundary_x": 0.0,
+    "final_boundary_x": -9.0,
+    "total_boundary_shift": 9.0,
+    "rebalancing_active": true
+  }
+}

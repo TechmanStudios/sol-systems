@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-09-29 16:30:40",
+  "total_runtime_seconds": 0.0124,
+  "seven_giants_audit": {
+    "topology": "7_GIANTS_MOA",
+    "vertex_count": 7,
+    "edge_count": 12,
+    "total_vertex_dim": 21,
+    "total_edge_dim": 36,
+    "beta_0": 3,
+    "beta_1": 18,
+    "algebraic_connectivity": 2.0,
+    "dirichlet_energy": 0.0,
+    "semantic_consistency_score": 1.0,
+    "is_globally_consistent": true
+  },
+  "dialectical_arena_audit": {
+    "topology": "DIALECTICAL_BIPARTITE",
+    "vertex_count": 6,
+    "edge_count": 6,
+    "total_vertex_dim": 24,
+    "total_edge_dim": 24,
+    "beta_0": 4,
+    "beta_1": 4,
+    "algebraic_connectivity": 1.0,
+    "dirichlet_energy": 0.0,
+    "semantic_consistency_score": 1.0,
+    "is_globally_consistent": true
+  },
+  "mobius_contradiction_repair": {
+    "topology": "MOBIUS_CONTRADICTION",
+    "initial_dirichlet_energy": 2.0,
+    "final_dirichlet_energy": 2.0,
+    "initial_semantic_consistency": 0.5134,
+    "final_semantic_consistency": 1.0,
+    "energy_dissipated": 2.0,
+    "actions_executed": [
+      "Adapted restriction maps over 50 gradient iterations (orthogonal=True)"
+    ],
+    "obstruction_healed": true
+  },
+  "sheaf_diffusion_dynamics": {
+    "total_steps": 40,
+    "simulated_time": 1.6,
+    "initial_energy": 306.1319,
+    "final_energy": 5.4948,
+    "energy_reduction_ratio": 0.9821,
+    "final_semantic_consistency": 0.8481
+  },
+  "benchmarks_passed": true
+}
