@@ -641,24 +641,73 @@ HTML_3D_VIEWER = """<!DOCTYPE html>
       }
     }
 
-    // Update Dynamic Exciton Particles (Active Geodesic Trajectories)
+    // Update Dynamic Exciton Particles (Active Geodesic Trajectories) - Luminous Beacons
     if (packet.excitons && Array.isArray(packet.excitons)) {
       while (excitonGroup.children.length < packet.excitons.length) {
-        const pGeom = new THREE.SphereGeometry(0.45, 16, 16);
-        const pMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-        const pMesh = new THREE.Mesh(pGeom, pMat);
-        excitonGroup.add(pMesh);
+        const container = new THREE.Group();
+
+        // 1. Intense pure white core star
+        const coreGeom = new THREE.SphereGeometry(0.24, 16, 16);
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+        container.add(coreMesh);
+
+        // 2. High-saturation vivid neon crystal body
+        const bodyGeom = new THREE.OctahedronGeometry(0.58, 0);
+        const bodyMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+        const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
+        container.add(bodyMesh);
+
+        // 3. Ethereal pulsing quantum wireframe aura
+        const haloGeom = new THREE.SphereGeometry(0.95, 12, 12);
+        const haloMat = new THREE.MeshBasicMaterial({
+          color: 0x00f0ff,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.55,
+          blending: THREE.AdditiveBlending
+        });
+        const haloMesh = new THREE.Mesh(haloGeom, haloMat);
+        container.add(haloMesh);
+
+        // 4. Glowing horizontal orbital energy ring
+        const ringGeom = new THREE.RingGeometry(0.8, 1.25, 32);
+        ringGeom.rotateX(-Math.PI / 2);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: 0x00f0ff,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.65,
+          blending: THREE.AdditiveBlending
+        });
+        const ringMesh = new THREE.Mesh(ringGeom, ringMat);
+        container.add(ringMesh);
+
+        // 5. Radiant local PointLight illuminating the manifold surface below
+        const pLight = new THREE.PointLight(0x00f0ff, 2.5, 12);
+        container.add(pLight);
+
+        excitonGroup.add(container);
       }
       while (excitonGroup.children.length > packet.excitons.length) {
         const last = excitonGroup.children[excitonGroup.children.length - 1];
-        if (last.geometry) last.geometry.dispose();
-        if (last.material) last.material.dispose();
         excitonGroup.remove(last);
       }
       packet.excitons.forEach((exc, idx) => {
-        const pMesh = excitonGroup.children[idx];
-        if (pMesh && exc.coords) {
-          pMesh.position.set(exc.coords[0], (exc.coords[2] || 0) + 0.45, exc.coords[1]);
+        const container = excitonGroup.children[idx];
+        if (container && exc.coords) {
+          container.position.set(exc.coords[0], (exc.coords[2] || 0) + 0.88, exc.coords[1]);
+          container.rotation.y += 0.03;
+          container.rotation.x += 0.02;
+          if (container.children[3]) container.children[3].rotation.z += 0.04;
+          if (container.children[2]) container.children[2].rotation.y -= 0.02;
+          if (exc.color) {
+            const c = new THREE.Color(exc.color);
+            if (container.children[1]) container.children[1].material.color.copy(c);
+            if (container.children[2]) container.children[2].material.color.copy(c);
+            if (container.children[3]) container.children[3].material.color.copy(c);
+            if (container.children[4]) container.children[4].color.copy(c);
+          }
         }
       });
     }

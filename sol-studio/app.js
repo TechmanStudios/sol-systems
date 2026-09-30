@@ -63,13 +63,13 @@ for (let i = 0; i < 16; i++) {
 
 // Active Exciton Swarm: The Seven Giants of Massive Data Analysis MoA
 const SEVEN_GIANTS_DEF = [
-  { id: "G1_Statistician", role: "The Statistician", color: 0x06b6d4, colorHex: "#06b6d4", opName: "Pressure p(ρ)" },
-  { id: "G2_Optimizer", role: "The Optimizer", color: 0xf59e0b, colorHex: "#f59e0b", opName: "Potential ∇φ" },
-  { id: "G3_NBodySolver", role: "The N-Body Solver", color: 0xa855f7, colorHex: "#a855f7", opName: "Jeans Mass M_J" },
-  { id: "G4_GraphNavigator", role: "The Graph Navigator", color: 0x10b981, colorHex: "#10b981", opName: "Symplectic Curl Ω·v" },
-  { id: "G5_LinearAlgebraist", role: "The Linear Algebraist", color: 0x6366f1, colorHex: "#6366f1", opName: "Metric PCA Compression" },
-  { id: "G6_Aligner", role: "The Aligner", color: 0x3b82f6, colorHex: "#3b82f6", opName: "Kuramoto Order r" },
-  { id: "G7_Integrator", role: "The Integrator", color: 0xec4899, colorHex: "#ec4899", opName: "Jacobian Volume √det(g)" },
+  { id: "G1_Statistician", role: "The Statistician", color: 0x00f0ff, colorHex: "#00f0ff", opName: "Pressure p(ρ)" },
+  { id: "G2_Optimizer", role: "The Optimizer", color: 0xffb703, colorHex: "#ffb703", opName: "Potential ∇φ" },
+  { id: "G3_NBodySolver", role: "The N-Body Solver", color: 0xe056fd, colorHex: "#e056fd", opName: "Jeans Mass M_J" },
+  { id: "G4_GraphNavigator", role: "The Graph Navigator", color: 0x00ff88, colorHex: "#00ff88", opName: "Symplectic Curl Ω·v" },
+  { id: "G5_LinearAlgebraist", role: "The Linear Algebraist", color: 0x818cf8, colorHex: "#818cf8", opName: "Metric PCA Compression" },
+  { id: "G6_Aligner", role: "The Aligner", color: 0x38bdf8, colorHex: "#38bdf8", opName: "Kuramoto Order r" },
+  { id: "G7_Integrator", role: "The Integrator", color: 0xff3366, colorHex: "#ff3366", opName: "Jacobian Volume √det(g)" },
 ];
 
 const EXCITONS = [];
@@ -284,22 +284,61 @@ setInterval(() => {
 }, 450);
 
 // -------------------------------------------------------------
-// 4. Exciton Swarm Particles (7 Giants MoA)
+// 4. Exciton Swarm Particles (7 Giants MoA) - Luminous Quantum Beacons
 // -------------------------------------------------------------
 const excitonGroup = new THREE.Group();
 scene.add(excitonGroup);
 
-const excitonGeom = new THREE.OctahedronGeometry(0.38, 0);
+const excitonBodyGeom = new THREE.OctahedronGeometry(0.58, 0);
+const excitonCoreGeom = new THREE.SphereGeometry(0.24, 16, 16);
+const excitonHaloGeom = new THREE.SphereGeometry(0.95, 12, 12);
+const excitonRingGeom = new THREE.RingGeometry(0.8, 1.25, 32);
+excitonRingGeom.rotateX(-Math.PI / 2);
+
 EXCITONS.forEach((exc) => {
-  const mat = new THREE.MeshStandardMaterial({
+  const container = new THREE.Group();
+
+  // 1. Intense pure white core star
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const coreMesh = new THREE.Mesh(excitonCoreGeom, coreMat);
+  container.add(coreMesh);
+
+  // 2. High-saturation vivid neon crystal body
+  const bodyMat = new THREE.MeshBasicMaterial({ color: exc.color });
+  const bodyMesh = new THREE.Mesh(excitonBodyGeom, bodyMat);
+  container.add(bodyMesh);
+
+  // 3. Ethereal pulsing quantum wireframe aura
+  const haloMat = new THREE.MeshBasicMaterial({
     color: exc.color,
-    emissive: exc.color,
-    emissiveIntensity: 0.9,
-    roughness: 0.1,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.55,
+    blending: THREE.AdditiveBlending,
   });
-  const mesh = new THREE.Mesh(excitonGeom, mat);
-  exc.mesh = mesh;
-  excitonGroup.add(mesh);
+  const haloMesh = new THREE.Mesh(excitonHaloGeom, haloMat);
+  container.add(haloMesh);
+
+  // 4. Glowing horizontal orbital energy ring
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: exc.color,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.65,
+    blending: THREE.AdditiveBlending,
+  });
+  const ringMesh = new THREE.Mesh(excitonRingGeom, ringMat);
+  container.add(ringMesh);
+
+  // 5. Radiant local PointLight illuminating the manifold surface below
+  const pointLight = new THREE.PointLight(exc.color, 2.5, 12);
+  container.add(pointLight);
+
+  exc.mesh = container;
+  exc.bodyMesh = bodyMesh;
+  exc.haloMesh = haloMesh;
+  exc.ringMesh = ringMesh;
+  excitonGroup.add(container);
 });
 
 // -------------------------------------------------------------
@@ -308,12 +347,12 @@ EXCITONS.forEach((exc) => {
 const MAX_EXCITONS = 100000;
 state.swarmScale = 7; // 7, 1000, 10000, 100000
 
-const particleGeom = new THREE.TetrahedronGeometry(0.12, 0);
+const particleGeom = new THREE.SphereGeometry(0.24, 8, 8);
 const particleMat = new THREE.MeshBasicMaterial({
   color: 0xffffff,
   vertexColors: true,
   transparent: true,
-  opacity: 0.85
+  opacity: 0.95
 });
 const instancedSwarm = new THREE.InstancedMesh(particleGeom, particleMat, MAX_EXCITONS);
 instancedSwarm.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -325,7 +364,7 @@ const swarmPositions = new Float32Array(MAX_EXCITONS * 3);
 const swarmVelocities = new Float32Array(MAX_EXCITONS * 3);
 const dummyMatrix = new THREE.Matrix4();
 const tempColor = new THREE.Color();
-const GIANT_COLORS = [0x06b6d4, 0xf59e0b, 0xa855f7, 0x10b981, 0x6366f1, 0x3b82f6, 0xec4899];
+const GIANT_COLORS = [0x00f0ff, 0xffb703, 0xe056fd, 0x00ff88, 0x818cf8, 0x38bdf8, 0xff3366];
 
 for (let i = 0; i < MAX_EXCITONS; i++) {
   const angle = Math.random() * Math.PI * 2;
@@ -742,9 +781,11 @@ function updateSolitonsAndSwarm() {
       });
 
       if (exc.mesh) {
-        exc.mesh.position.set(exc.x, h + 0.45, exc.z);
+        exc.mesh.position.set(exc.x, h + 0.88, exc.z);
         exc.mesh.rotation.y += 0.03;
         exc.mesh.rotation.x += 0.02;
+        if (exc.ringMesh) exc.ringMesh.rotation.z += 0.04;
+        if (exc.haloMesh) exc.haloMesh.rotation.y -= 0.02;
       }
     });
   } else {
