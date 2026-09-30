@@ -1131,16 +1131,19 @@ document.getElementById("btn-gate-and").onclick = () => triggerLogicGate("AND");
 document.getElementById("btn-gate-half-adder").onclick = () => triggerLogicGate("HALF_ADDER");
 
 const ALU_OPERATIONS = [
-  { op: "ADD", a: 5, b: 3, label: "ALU: 5+3 (ADD)" },
-  { op: "SUB", a: 12, b: 5, label: "ALU: 12-5 (SUB)" },
-  { op: "XOR", a: 10, b: 6, label: "ALU: 10^6 (XOR)" },
-  { op: "AND", a: 14, b: 11, label: "ALU: 14&11 (AND)" },
+  { op: "ADD", a: 5, b: 3, sym: "+", label: "ALU: 5 + 3 (ADD)", desc: "Arithmetic ADD" },
+  { op: "SUB", a: 12, b: 5, sym: "−", label: "ALU: 12 − 5 (SUB)", desc: "Two's Complement SUB" },
+  { op: "XOR", a: 10, b: 6, sym: "⊕", label: "ALU: 10 ⊕ 6 (XOR)", desc: "Bitwise Logic XOR" },
+  { op: "AND", a: 14, b: 11, sym: "∧", label: "ALU: 14 ∧ 11 (AND)", desc: "Bitwise Logic AND" },
 ];
 let aluOpIndex = 0;
 
 async function triggerRiemannianALU() {
   const current = ALU_OPERATIONS[aluOpIndex];
-  showToast(`Evaluating 4-Bit Riemannian ALU: ${current.op}(${current.a}, ${current.b})...`);
+  const aBin = current.a.toString(2).padStart(4, "0");
+  const bBin = current.b.toString(2).padStart(4, "0");
+
+  showToast(`Evaluating 4-Bit ALU: ${current.desc} [${current.a} ${current.sym} ${current.b}]...`);
 
   // Cascading solitons through 4 stages: N00->N04, N01->N05, N02->N06, N03->N07
   const solitonColor = current.op === "SUB" ? 0xef4444 : current.op === "XOR" ? 0x06b6d4 : current.op === "AND" ? 0x10b981 : 0xa855f7;
@@ -1168,8 +1171,8 @@ async function triggerRiemannianALU() {
         setTimeout(() => {
           triggerManifoldRipple(0, 0, 1.6);
           const signStr = data.is_negative ? "-" : "";
-          const opSym = data.op === "SUB" ? "-" : data.op === "ADD" ? "+" : data.op === "XOR" ? "^" : "&";
-          showToast(`Riemannian ALU ${data.op}: ${data.a_int} ${opSym} ${data.b_int} = ${signStr}${data.result_int} (dE = ${data.total_absorbed_energy} J, λ_min = ${data.min_eigenvalue.toFixed(3)})`);
+          const resBin = Math.abs(data.result_int).toString(2).padStart(4, "0");
+          showToast(`Riemannian ALU ${current.op}: ${data.a_int} ${current.sym} ${data.b_int} = ${signStr}${data.result_int} [0b${aBin} ${current.sym} 0b${bBin} = ${signStr}0b${resBin}] (${current.desc})`);
           state.carnotTotalEnergy += data.total_absorbed_energy;
         }, 900);
         return;
@@ -1181,12 +1184,14 @@ async function triggerRiemannianALU() {
   setTimeout(() => {
     triggerManifoldRipple(0, 0, 1.6);
     let total = 0;
-    let sym = "+";
-    if (current.op === "ADD") { total = current.a + current.b; sym = "+"; }
-    else if (current.op === "SUB") { total = current.a - current.b; sym = "-"; }
-    else if (current.op === "XOR") { total = current.a ^ current.b; sym = "^"; }
-    else if (current.op === "AND") { total = current.a & current.b; sym = "&"; }
-    showToast(`Riemannian ALU ${current.op}: ${current.a} ${sym} ${current.b} = ${total} (Verified, g_ij ≻ 0)`);
+    if (current.op === "ADD") total = current.a + current.b;
+    else if (current.op === "SUB") total = current.a - current.b;
+    else if (current.op === "XOR") total = current.a ^ current.b;
+    else if (current.op === "AND") total = current.a & current.b;
+
+    const resBin = Math.abs(total).toString(2).padStart(4, "0");
+    const signStr = total < 0 ? "-" : "";
+    showToast(`Riemannian ALU ${current.op}: ${current.a} ${current.sym} ${current.b} = ${signStr}${Math.abs(total)} [0b${aBin} ${current.sym} 0b${bBin} = ${signStr}0b${resBin}] (${current.desc})`);
     state.carnotTotalEnergy += 0.88;
   }, 900);
 }
