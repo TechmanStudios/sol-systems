@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>SOL Studio — SOL ENGINE: 3D RIEMANNIAN MANIFOLD</title>
+  <link rel="stylesheet" href="./style.css">
+  <!-- Three.js + OrbitControls from CDN (works instantly standalone) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <!-- 3D WebGL Canvas Viewport -->
+  <div id="canvas-container">
+    <canvas id="viewport"></canvas>
+  </div>
+
+  <!-- Floating Glass Top Navigation Bar -->
+  <header id="topbar">
+    <div class="brand-cluster">
+      <div class="brand-sun"></div>
+      <div class="brand-text">
+        <span class="brand-title">SOL Studio</span>
+        <span class="brand-subtitle">Vector 1: Dynamic Riemannian Manifold</span>
+      </div>
+      <span class="live-pill" id="live-indicator">
+        <span class="live-pulse"></span>
+        <span id="live-status-text">CONNECTING</span>
+      </span>
+    </div>
+
+    <!-- Live Riemannian Invariant Ticker -->
+    <div id="ticker-bar">
+      <div class="ticker-stat">
+        <span class="ticker-label">det(g)</span>
+        <span id="metric-det" class="ticker-val">1.000</span>
+      </div>
+      <div class="ticker-stat">
+        <span class="ticker-label">Ricci R</span>
+        <span id="ricci-scalar" class="ticker-val">+0.000</span>
+      </div>
+      <div class="ticker-stat">
+        <span class="ticker-label">κ(g) Cond</span>
+        <span id="cond-number" class="ticker-val">1.00</span>
+      </div>
+      <div class="ticker-stat">
+        <span class="ticker-label">dE Carnot</span>
+        <span id="carnot-energy" class="ticker-val">0.00 J</span>
+      </div>
+      <div class="ticker-stat">
+        <span class="ticker-label">7 Giants</span>
+        <span id="active-excitons" class="ticker-val" style="color: var(--cyan);">7 Active</span>
+      </div>
+      <div class="ticker-stat">
+        <span class="ticker-label">Flock Order (r)</span>
+        <span id="flock-order-val" class="ticker-val" style="color: var(--solar);">0.82</span>
+      </div>
+      <div class="ticker-stat">
+        <span class="ticker-label">Preservation</span>
+        <span id="continuity-val" class="ticker-val green">99.8%</span>
+      </div>
+      <div class="ticker-stat">
+        <span class="ticker-label">Substrate</span>
+        <span id="backend-val" class="ticker-val" style="color: var(--cyan);">WebGPU / 60fps</span>
+      </div>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="top-actions">
+      <button id="btn-toggle-invariants" class="glass-btn" type="button" title="View Riemannian Invariants">Invariants ℹ</button>
+      <button id="btn-toggle-inspector" class="glass-btn" type="button" title="Toggle Telemetry Drawer (Hotkey: I or Tab)">Telemetry ☰</button>
+      <button id="btn-zen" class="glass-btn" type="button" title="Toggle Zen Fullscreen Mode (Hotkey: Z)">Zen ⛶</button>
+    </div>
+  </header>
+
+  <!-- Pinned 3D Interactive Node Card (Follows selected/hovered node) -->
+  <div id="node-inspector-card" class="node-hud-card hidden">
+    <div class="node-hud-header">
+      <div class="node-hud-title-row">
+        <span class="node-hud-id" id="node-card-id">N01</span>
+        <span class="node-hud-label" id="node-card-label">Semantic Locus N01</span>
+      </div>
+      <button id="btn-close-node-card" class="node-hud-close" type="button">✕</button>
+    </div>
+
+    <div class="node-hud-metrics">
+      <div class="node-hud-row">
+        <span>Mass-Energy Density (ρ):</span>
+        <strong id="node-card-mass" class="cyan">1.45</strong>
+      </div>
+      <div class="node-hud-row">
+        <span>Ricci Curvature (R):</span>
+        <strong id="node-card-ricci" class="solar">+0.284</strong>
+      </div>
+      <div class="node-hud-row">
+        <span>Metric Diagonal [g_11, g_22]:</span>
+        <code id="node-card-gdiag">[2.14, 1.98]</code>
+      </div>
+      <div class="node-hud-row">
+        <span>Kinetic Energy (E_k):</span>
+        <strong id="node-card-kinetic">0.12 J</strong>
+      </div>
+    </div>
+
+    <div class="node-hud-actions">
+      <button id="btn-node-excite" class="node-act-btn" type="button" title="Inject energy pulse and create gravitational wave">⚡ Inject Energy</button>
+      <button id="btn-node-soliton" class="node-act-btn" type="button" title="Launch quantum soliton along geodesic">🚀 Fire Soliton</button>
+      <button id="btn-node-shear" class="node-act-btn warn" type="button" title="Induce metric shear contradiction">💥 Contradiction</button>
+    </div>
+  </div>
+
+  <!-- Floating Bottom Island: Interaction Deck -->
+  <div id="control-island">
+    <!-- Camera Section -->
+    <div class="island-group">
+      <button class="deck-btn active" id="btn-cam-orbit" type="button" title="Perspective Orbit View (Key 1)">Orbit 3D</button>
+      <button class="deck-btn" id="btn-cam-top" type="button" title="Top-down X-Z Projection (Key 2)">Top-Down</button>
+      <button class="deck-btn" id="btn-cam-horizon" type="button" title="Horizon Profile View (Key 3)">Horizon</button>
+    </div>
+
+    <div class="island-divider"></div>
+
+    <!-- Vector 2: Logic Gate Collisions -->
+    <div class="island-group">
+      <span class="island-tag">Vector 2 Logic:</span>
+      <button class="deck-btn gate-btn" id="btn-gate-xor" type="button" title="Destructive interference collision (XOR)">XOR</button>
+      <button class="deck-btn gate-btn" id="btn-gate-and" type="button" title="Constructive lensing (AND)">AND</button>
+      <button class="deck-btn gate-btn" id="btn-gate-half-adder" type="button" title="Dual sum/carry routing (Half-Adder)">Half-Adder</button>
+      <button class="deck-btn gate-btn" id="btn-gate-alu" type="button" title="Riemannian 4-Bit ALU: Click to evaluate and cycle operations (ADD, SUB, XOR, AND)">ALU: 5+3 (ADD)</button>
+    </div>
+
+    <div class="island-divider"></div>
+
+    <!-- Vector 3: Swarm Controls & Spacetime Ripple -->
+    <div class="island-group">
+      <button class="deck-btn emerald-btn" id="btn-dispatch-swarm" type="button" title="Dispatch 7 Giants Flocking Swarm">● Swarm</button>
+      <button class="deck-btn amber-btn" id="btn-wave-ripple" type="button" title="Emit gravitational wave ripple across manifold">Wave Ripple ≋</button>
+      <button class="deck-btn" id="btn-pause-sim" type="button" title="Pause / Resume Dynamics (Spacebar)">Pause</button>
+    </div>
+
+    <div class="island-divider"></div>
+
+    <!-- Vector 4: Exciton Swarm Scaling & WebGPU -->
+    <div class="island-group">
+      <span class="island-tag">Vector 4 Scale:</span>
+      <button class="deck-btn active" id="btn-scale-7" type="button" title="7 Giants MoA Swarm">7 Giants</button>
+      <button class="deck-btn" id="btn-scale-1k" type="button" title="1,000 Exciton Swarm">1K</button>
+      <button class="deck-btn" id="btn-scale-10k" type="button" title="10,000 Exciton Swarm">10K</button>
+      <button class="deck-btn cyan-btn" id="btn-scale-100k" type="button" title="100,000+ Excitons on WebGPU Compute Shaders">100K ⚡</button>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast-message">Simulation Active</div>
+
+  <!-- Slide-Out Telemetry & Tensor Inspector Drawer -->
+  <aside id="inspector-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <span class="drawer-title">Riemannian Telemetry & Tensors</span>
+        <span class="drawer-sub">Levi-Civita Symplectic Engine</span>
+      </div>
+      <button id="btn-close-drawer" class="glass-btn" type="button">Close ✕</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Vector 4: Photonic & Substrate Mapping Card -->
+      <div class="drawer-card" style="border-color: rgba(56, 189, 248, 0.35);">
+        <div class="card-caption" style="color: var(--cyan);">Vector 4: Photonic & Hardware Substrates</div>
+        <div class="drawer-stat-row">
+          <span>Active Substrate:</span>
+          <strong id="substrate-active-name" class="cyan">WebGPU / WGSL Compute</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Photonic MZI Latency:</span>
+          <strong class="solar">1.68 ps (Transit Time)</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Optical Energy / Transition:</span>
+          <strong class="green">1.20 fJ (Femtojoules)</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Memristor Conductance (G₀):</span>
+          <strong class="cyan">50.0 μS (20 kΩ)</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>WebGPU Exciton Capacity:</span>
+          <strong id="webgpu-cap-display" class="solar">100,000+ @ 60 FPS</strong>
+        </div>
+        <div class="card-footnote">Substrate mapping: Mach-Zehnder Interferometers & Memristor Lattices.</div>
+      </div>
+
+      <!-- Metric Tensor g_ij Grid Card -->
+      <div class="drawer-card">
+        <div class="card-caption">Local Metric Tensor $g_{ij}$ (Positive Definite Retraction)</div>
+        <div class="tensor-grid" id="tensor-grid-cells">
+          <div class="tensor-cell"><span class="cell-idx">g₁₁</span><span class="cell-val" id="g-11">2.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₁₂</span><span class="cell-val" id="g-12">0.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₁₃</span><span class="cell-val" id="g-13">0.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₂₁</span><span class="cell-val" id="g-21">0.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₂₂</span><span class="cell-val" id="g-22">2.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₂₃</span><span class="cell-val" id="g-23">0.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₃₁</span><span class="cell-val" id="g-31">0.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₃₂</span><span class="cell-val" id="g-32">0.00</span></div>
+          <div class="tensor-cell"><span class="cell-idx">g₃₃</span><span class="cell-val" id="g-33">2.00</span></div>
+        </div>
+        <div class="card-footnote">Retraction: $g = \exp(S) \succ 0$, $\det(g) > 0$. Caustics strictly prevented.</div>
+      </div>
+
+      <!-- Carnot Memory Sink Card -->
+      <div class="drawer-card">
+        <div class="card-caption">Hippocampal Carnot Memory Sink</div>
+        <div class="drawer-stat-row">
+          <span>Kinetic Dissipation Rate (2γE_k):</span>
+          <strong id="sink-dissipation" class="cyan">0.24 J/s</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Total Energy Consolidated:</span>
+          <strong id="sink-total" class="solar">1.82 J</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Consolidation Flush Cycles:</span>
+          <strong id="sink-flushes">14</strong>
+        </div>
+        <div class="card-footnote">Autonomous non-interfering flush to long-term memory.</div>
+      </div>
+
+      <!-- 7 Giants MoA Ensemble Card -->
+      <div class="drawer-card">
+        <div class="card-caption">7 Giants MoA Ensemble (Differential Operators)</div>
+        <div class="giants-scroll-list" id="giants-list-container" style="display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto;">
+          <!-- Populated dynamically: Statistician, Optimizer, N-Body, Graph Navigator, Linear Algebraist, Aligner, Integrator -->
+        </div>
+      </div>
+
+      <!-- Vector 10: Dialectical Reasoning Arena Card -->
+      <div class="drawer-card" id="dialectics-card">
+        <div class="card-caption" style="color: #fbbf24;">Vector 10: Dialectical Reasoning Arena</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <select id="dialectics-prop-select" class="glass-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: rgba(15, 23, 42, 0.9);">
+            <option value="MAJORITY_3">Thesis: MAJORITY_3 (Monotonic)</option>
+            <option value="EQUALS_2BIT">Thesis: EQUALS_2BIT (Identity)</option>
+            <option value="XOR">Thesis: XOR (Soliton Destructive)</option>
+            <option value="FLAWED_XOR">Flawed: XOR (Linear Superposition)</option>
+            <option value="FLAWED_MAJ">Flawed: MAJORITY_3 (Inverted)</option>
+          </select>
+          <button id="btn-convene-debate" class="glass-btn" type="button" style="color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); font-weight: 600;" title="Convene Dialectical Debate">Convene ⚖</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Verdict:</span>
+          <strong id="debate-verdict" class="cyan">READY</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Hegelian Consensus (r):</span>
+          <strong id="debate-consensus" class="solar">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Causal Emergence Gain:</span>
+          <strong id="debate-causal-gain" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Occam Kernel Compression:</span>
+          <strong id="debate-compression">--</strong>
+        </div>
+        <div id="debate-witness-box" style="display: none; margin-top: 6px; padding: 6px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 4px; font-size: 10px; color: #fca5a5;">
+          <strong>Refuted Witness Vector:</strong>
+          <div id="debate-witness-details" style="font-family: var(--mono); margin-top: 2px;"></div>
+        </div>
+        <div class="card-footnote">Adversarial Riemannian challenge, causal ablation & Hegelian synthesis.</div>
+      </div>
+
+      <!-- Vector 11: Automated Theorem Prover & Discovery Card -->
+      <div class="drawer-card" id="discovery-card">
+        <div class="card-caption" style="color: #38bdf8;">Vector 11: Automated Theorem Prover & Discovery</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <select id="discovery-conj-select" class="glass-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: rgba(15, 23, 42, 0.9);">
+            <option value="conj_demorgan_nand">De Morgan's NAND Duality</option>
+            <option value="conj_majority_self_duality">Majority Self-Duality Invariant</option>
+            <option value="conj_xor_associativity">XOR Group Associativity</option>
+            <option value="conj_adder_carry_majority">Carry-Majority Isomorphism</option>
+            <option value="conj_causal_emergence_arbiter">Causal Emergence Arbiter Bound</option>
+            <option value="conj_flawed_xor_linear">Hypothetical Linear XOR (Flawed)</option>
+            <option value="conj_flawed_even_majority">Hypothetical Even Majority (Flawed)</option>
+          </select>
+          <button id="btn-prove-conjecture" class="glass-btn" type="button" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); font-weight: 600;" title="Prove or Refute Conjecture">Prove 📜</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Certificate Verdict:</span>
+          <strong id="discovery-verdict" class="cyan">READY</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Axiom Grounding:</span>
+          <strong id="discovery-axiom" class="cyan">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Hegelian Consensus (r):</span>
+          <strong id="discovery-consensus" class="solar">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Dialectical Causal Gain:</span>
+          <strong id="discovery-causal-gain" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Occam MSCK Kernel:</span>
+          <strong id="discovery-msck">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Corpus Theorem Count:</span>
+          <strong id="discovery-corpus-count" class="solar">5 Proven</strong>
+        </div>
+        <div id="discovery-witness-box" style="display: none; margin-top: 6px; padding: 6px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 4px; font-size: 10px; color: #fca5a5;">
+          <strong>Refuted Witness Vector:</strong>
+          <div id="discovery-witness-details" style="font-family: var(--mono); margin-top: 2px;"></div>
+        </div>
+        <div class="card-footnote">Conjecture generation, dialectical proof certificate & lemma DAG.</div>
+      </div>
+
+      <!-- Vector 12: Sheaf Knowledge Cohomology & Consistency Card -->
+      <div class="drawer-card" id="cohomology-card">
+        <div class="card-caption" style="color: #a855f7;">Vector 12: Sheaf Knowledge Cohomology & Consistency</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <select id="cohomology-topo-select" class="glass-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: rgba(15, 23, 42, 0.9);">
+            <option value="7_GIANTS_MOA">7 Giants MoA Metric Sheaf</option>
+            <option value="DIALECTICAL_BIPARTITE">Dialectical Cross-Cluster Sheaf</option>
+            <option value="MOBIUS_CONTRADICTION">Mobius Contradiction Loop</option>
+          </select>
+          <button id="btn-audit-cohomology" class="glass-btn" type="button" style="color: #a855f7; border-color: rgba(168, 85, 247, 0.4); font-weight: 600;" title="Audit Sheaf Cohomology">Audit 🌐</button>
+          <button id="btn-repair-cohomology" class="glass-btn" type="button" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); font-weight: 600;" title="Autonomous Topological Repair">Heal 🩹</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Semantic Consistency:</span>
+          <strong id="cohomology-consistency" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Betti Numbers:</span>
+          <strong id="cohomology-betti" class="cyan">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Algebraic Connectivity (λ₂):</span>
+          <strong id="cohomology-lambda2" class="solar">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Dirichlet Energy (E_F):</span>
+          <strong id="cohomology-energy">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Topological Status:</span>
+          <strong id="cohomology-status" class="cyan">READY</strong>
+        </div>
+        <div id="cohomology-repair-box" style="display: none; margin-top: 6px; padding: 6px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 4px; font-size: 10px; color: #bae6fd;">
+          <strong>Topological Repair Actions:</strong>
+          <div id="cohomology-repair-details" style="font-family: var(--mono); margin-top: 2px;"></div>
+        </div>
+        <div class="card-footnote">Cellular sheaf cohomology, Betti numbers (β₀, β₁) & topological self-repair.</div>
+      </div>
+
+      <!-- Vector 13: Hardware-Accelerated WGSL Proof & Micro-Architecture Card -->
+      <div class="drawer-card" id="wgsl-card">
+        <div class="card-caption" style="color: #ec4899;">Vector 13: Hardware-Accelerated WGSL Proof & Sheaf Engine</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <select id="wgsl-conj-select" class="glass-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: rgba(15, 23, 42, 0.9);">
+            <option value="conj_demorgan_nand">De Morgan's Duality (NAND)</option>
+            <option value="conj_majority_self_duality">Majority Self-Duality</option>
+            <option value="conj_xor_associativity">XOR Parity Associativity</option>
+            <option value="conj_adder_carry_majority">Full-Adder Carry Majority</option>
+            <option value="conj_causal_emergence_arbiter">Causal Emergence Arbiter</option>
+            <option value="conj_flawed_xor_linear">Flawed Parity Contradiction</option>
+            <option value="conj_flawed_even_majority">Flawed Even Majority Refutation</option>
+          </select>
+          <button id="btn-wgsl-prove" class="glass-btn" type="button" style="color: #ec4899; border-color: rgba(236, 72, 153, 0.4); font-weight: 600;" title="Execute WGSL Hardware-Accelerated Proof">Prove ⚡</button>
+          <button id="btn-wgsl-diffuse" class="glass-btn" type="button" style="color: #06b6d4; border-color: rgba(6, 182, 212, 0.4); font-weight: 600;" title="Execute GPU Sheaf Heat Diffusion">Diffuse 🌊</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Hardware Verdict:</span>
+          <strong id="wgsl-verdict" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>GPU Dispatch Latency:</span>
+          <strong id="wgsl-latency" class="cyan">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Micro-Arch Speedup:</span>
+          <strong id="wgsl-speedup" class="solar">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Hegelian Consensus (r):</span>
+          <strong id="wgsl-consensus">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>State Coverage / Witness:</span>
+          <strong id="wgsl-coverage" class="cyan">READY</strong>
+        </div>
+        <div id="wgsl-witness-box" style="display: none; margin-top: 6px; padding: 6px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 4px; font-size: 10px; color: #fbcfe8;">
+          <strong>Counter-Example Discovered:</strong>
+          <div id="wgsl-witness-details" style="font-family: var(--mono); margin-top: 2px;"></div>
+        </div>
+        <div class="card-footnote">WebGPU WGSL SIMD state exhaustion, Lie metric strain & parallel sheaf diffusion.</div>
+      </div>
+
+      <!-- Vector 14: Quantum / Photonic Coherent Waveguide Sheaf Processor Card -->
+      <div class="drawer-card" id="photonic-sheaf-card">
+        <div class="card-caption" style="color: #38bdf8;">Vector 14: Quantum / Photonic Coherent Waveguide Sheaf</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <select id="photonic-sheaf-topo-select" class="glass-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: rgba(15, 23, 42, 0.9);">
+            <option value="7_GIANTS_MOA">7 Giants MoA Sheaf (36 Layers)</option>
+            <option value="DIALECTICAL_BIPARTITE">Dialectical Bipartite Sheaf</option>
+            <option value="MOBIUS_CONTRADICTION">Mobius Contradiction Ring</option>
+          </select>
+          <button id="btn-photonic-transit" class="glass-btn" type="button" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); font-weight: 600;" title="Propagate Coherent Light through Sheaf MZI Mesh">Transit ⚡</button>
+          <button id="btn-photonic-cavity" class="glass-btn" type="button" style="color: #10b981; border-color: rgba(16, 185, 129, 0.4); font-weight: 600;" title="Optical Cavity Continuous Sheaf Diffusion">Cavity 🔁</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Transit Latency:</span>
+          <strong id="photonic-sheaf-latency" class="cyan">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Detected Optical Power (P_e):</span>
+          <strong id="photonic-sheaf-power" class="solar">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Dirichlet Energy (E_F):</span>
+          <strong id="photonic-sheaf-energy">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Quantum Shot-Noise Invariant:</span>
+          <strong id="photonic-sheaf-quantum" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Photonic Mesh Architecture:</span>
+          <strong id="photonic-sheaf-mesh" class="cyan">READY</strong>
+        </div>
+        <div class="card-footnote">Unitary dilation U(2K), 1.68 ps MZI transit & speed-of-light optical feedback diffusion.</div>
+      </div>
+
+      <!-- Vector 15: Closed-Loop Embodied Autonomous Robotics & Geodesic Actuation Card -->
+      <div class="drawer-card" id="robotic-actuation-card">
+        <div class="card-caption" style="color: #f59e0b;">Vector 15: Closed-Loop Embodied Robotics & Geodesic Actuation</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <select id="robotic-waypoint-select" class="glass-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: rgba(15, 23, 42, 0.9);">
+            <option value="WAYPOINT_ALPHA">Waypoint Alpha [0.45, 0.25, 0.45]</option>
+            <option value="WAYPOINT_BETA">Waypoint Beta [0.25, -0.35, 0.40]</option>
+            <option value="OBSTACLE_BYPASS">Obstacle Bypass [0.38, 0.18, 0.42]</option>
+          </select>
+          <button id="btn-robotic-actuate" class="glass-btn" type="button" style="color: #f59e0b; border-color: rgba(245, 158, 11, 0.4); font-weight: 600;" title="Execute Closed-Loop Riemannian Geodesic Trajectory">Actuate 🦾</button>
+          <button id="btn-robotic-audit" class="glass-btn" type="button" style="color: #10b981; border-color: rgba(16, 185, 129, 0.4); font-weight: 600;" title="Audit Physical Safety, Collision Margin & Sheaf Cohomology">Audit 🛡️</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>End-Effector Pos:</span>
+          <strong id="robot-ee-pos" class="cyan">[0.25, 0.00, 0.60]</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Obstacle Clearance (d_min):</span>
+          <strong id="robot-obstacle-clearance" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Yoshikawa Manipulability:</span>
+          <strong id="robot-manipulability" class="solar">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Peak Torque / Carnot dE:</span>
+          <strong id="robot-torque-carnot">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Safety Arbiter Verdict:</span>
+          <strong id="robot-safety-verdict" class="green">READY</strong>
+        </div>
+        <div class="card-footnote">Riemannian 6-DOF configuration manifold, Christoffel obstacle deflection & sheaf coordination audit.</div>
+      </div>
+
+      <!-- Vector 16: Non-Abelian Gauge Sheaves & Holonomy-Based Spatial Intelligence Card -->
+      <div class="drawer-card" id="gauge-sheaf-card">
+        <div class="card-caption" style="color: #a855f7;">Vector 16: Non-Abelian Gauge Sheaves & Holonomy</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <select id="gauge-cycle-select" class="glass-btn" style="flex: 1; padding: 4px 8px; font-size: 11px; background: rgba(15, 23, 42, 0.9);">
+            <option value="CYCLE_ALPHA">Triangulation Alpha [Dock, Alpha, Beta]</option>
+            <option value="CYCLE_BETA">Triangulation Beta [Dock, Beta, Gamma]</option>
+            <option value="FULL_PERIMETER">Full Perimeter [Dock, Alpha, Beta, Gamma]</option>
+          </select>
+          <button id="btn-gauge-audit" class="glass-btn" type="button" style="color: #a855f7; border-color: rgba(168, 85, 247, 0.4); font-weight: 600;" title="Audit Wilson Loop Holonomies & Dislocation Angles">Audit 🌀</button>
+          <button id="btn-gauge-relax" class="glass-btn" type="button" style="color: #06b6d4; border-color: rgba(6, 182, 212, 0.4); font-weight: 600;" title="Relax Orientation Frames via Lie Gradient Descent">Relax 🌊</button>
+        </div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <button id="btn-gauge-compensate" class="glass-btn" type="button" style="flex: 1; color: #10b981; border-color: rgba(16, 185, 129, 0.4); font-weight: 600;" title="Synthesize Lie-Algebraic Counter-Twist for Zero Cyclic Drift">Compensate 🔄</button>
+          <button id="btn-gauge-transform" class="glass-btn" type="button" style="flex: 1; color: #f59e0b; border-color: rgba(245, 158, 11, 0.4); font-weight: 600;" title="Verify Exact Gauge Invariance Under Random Local SO(3) Gauge Rotation">Gauge Invariance 🛡️</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Yang-Mills Action (S_YM):</span>
+          <strong id="gauge-yang-mills" class="cyan">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Dirichlet Energy (E_G):</span>
+          <strong id="gauge-dirichlet-energy" class="solar">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Mean Defect Angle:</span>
+          <strong id="gauge-mean-defect" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Cyclic Drift Residual:</span>
+          <strong id="gauge-drift-residual" class="green">--</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Gauge Arbiter Verdict:</span>
+          <strong id="gauge-arbiter-verdict" class="green">READY</strong>
+        </div>
+        <div class="card-footnote">Discrete SO(3)/SE(3) gauge connections, Wilson loops, Yang-Mills action & robotic drift compensation.</div>
+      </div>
+
+      <!-- Active Logons Coordinate Table -->
+      <div class="drawer-card">
+        <div class="card-caption">Active Logons (Coordinate & Curvature State)</div>
+        <div class="logon-scroll-list" id="logon-list-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Collapsible Invariants Overlay Drawer -->
+  <div id="invariants-modal" class="invariants-overlay hidden">
+    <div class="invariants-box">
+      <div class="invariants-header">
+        <h3>Mathematical Invariants of the SOL Riemannian Engine</h3>
+        <button id="btn-close-invariants" class="node-hud-close" type="button">✕</button>
+      </div>
+      <div class="invariants-grid">
+        <div class="inv-card">
+          <div class="inv-title">Metric Positive-Definiteness</div>
+          <div class="inv-math">$g_{ij} = \exp(S) \succ 0$</div>
+          <div class="inv-desc">Log-Euclidean Lie algebra projection guarantees strictly positive eigenvalues $\lambda_i > 0$, preventing manifold caustics or coordinate singularities.</div>
+        </div>
+        <div class="inv-card">
+          <div class="inv-title">Symplectic Levi-Civita Integration</div>
+          <div class="inv-math">$\ddot{x}^k + \Gamma^k_{ij} \dot{x}^i \dot{x}^j = 0$</div>
+          <div class="inv-desc">Semi-implicit symplectic geodesic updates conserve Hamiltonian phase space and energy under discrete time steps.</div>
+        </div>
+        <div class="inv-card">
+          <div class="inv-title">Geodesic Distance Preservation</div>
+          <div class="inv-math">$\text{Corr}(d_g, d_0) \ge 0.95$</div>
+          <div class="inv-desc">High-fidelity preservation of semantic distances under continuous Ricci deformation ensures trace stability.</div>
+        </div>
+        <div class="inv-card">
+          <div class="inv-title">Carnot Memory Cycle</div>
+          <div class="inv-math">$dE = 2\gamma E_k \Delta t$</div>
+          <div class="inv-desc">Dissipated kinetic energy is autonomously routed to Hippocampal memory sink, enabling persistent consolidation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

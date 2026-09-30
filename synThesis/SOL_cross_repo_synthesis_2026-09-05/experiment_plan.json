@@ -1,0 +1,135 @@
+{
+  "status": "proposed_not_executed",
+  "experiments": [
+    {
+      "id": "E01",
+      "title": "Identify controller-induced saturation",
+      "priority": 1,
+      "design": "Matched inputs and independent recorded RNG streams; compare frozen controls, existing base control, controller-only surrogate, and bounded shadow interventions. Never change physical execution authority.",
+      "primary_outcomes": [
+        "task correctness",
+        "time at control bounds",
+        "actual intervention exposure",
+        "coherence and flux trajectories",
+        "wall-clock cost"
+      ],
+      "success_interpretation": "Establish which dynamics are substrate-driven versus controller-induced.",
+      "falsifier": "The apparent operating regime disappears or task performance is unchanged when the substrate is ablated.",
+      "guards": [
+        "Do not equate zero optional nudges with zero base control.",
+        "Do not loosen safety gates merely to create exposure."
+      ]
+    },
+    {
+      "id": "E02",
+      "title": "Semantic input separation",
+      "priority": 1,
+      "design": "Retain moment controls but add an identity-bearing channel. Test permutation collisions, semantic-neighbor preservation, and independently labeled delayed recall.",
+      "primary_outcomes": [
+        "collision rate",
+        "neighborhood retention",
+        "held-out task accuracy"
+      ],
+      "success_interpretation": "The chosen channel preserves distinctions needed by the task, not every possible input distinction.",
+      "falsifier": "Different required outputs remain indistinguishable after encoding.",
+      "guards": [
+        "Use the same encoder for all computational baselines.",
+        "Keep synthetic exact counterexamples distinct from natural-embedding benchmarks."
+      ]
+    },
+    {
+      "id": "E03",
+      "title": "Graph-aware independent court",
+      "priority": 1,
+      "design": "Add per-obligation checking, source deduplication, dependency reachability, and critical-constraint vetoes. Test edge rewiring, evidence disconnection, redundant-node padding, and contradiction persistence.",
+      "primary_outcomes": [
+        "false promotion rate",
+        "critical-constraint violation rate",
+        "valid-case acceptance",
+        "verification cost"
+      ],
+      "success_interpretation": "Acceptance depends on causal evidence relationships and mandatory constraints, not just aggregate scores.",
+      "falsifier": "An unresolved mandatory contradiction can still be diluted by unrelated supported nodes.",
+      "guards": [
+        "Keep manifold replay independent from correctness labels.",
+        "Do not treat demo scoring metrics as calibrated probabilities."
+      ]
+    },
+    {
+      "id": "E04",
+      "title": "Time-normalized primitive verification",
+      "priority": 2,
+      "design": "Run equal simulated-time and equal readout-time horizons across dt=0.12,0.08,0.04,0.02; preserve versioned equations. Verify postconditions in addition to residual/flux thresholds.",
+      "primary_outcomes": [
+        "completion time",
+        "postcondition correctness",
+        "retained state",
+        "integrated and sampled output",
+        "resource loss"
+      ],
+      "success_interpretation": "A robust completion event and a resource-bounded state transition emerge across timestep refinement.",
+      "falsifier": "The event tracks step count, disappears under refinement, or merely reflects loss of signal.",
+      "guards": [
+        "Predicted dt=0.04 halt steps are not observations.",
+        "Report right-censored runs explicitly."
+      ]
+    },
+    {
+      "id": "E05",
+      "title": "Historical damping-boundary audit",
+      "priority": 2,
+      "design": "Versioned comparison of the retained discrete update with exponential/positivity-preserving damping at equal physical time, spanning multiple timesteps and topology changes.",
+      "primary_outcomes": [
+        "extinction threshold",
+        "signal-to-noise floor",
+        "state trajectories",
+        "task performance"
+      ],
+      "success_interpretation": "Separate genuine model regimes from the zero/clamp of a numerical update.",
+      "falsifier": "The proposed universal critical value moves as 1/(0.1*dt).",
+      "guards": [
+        "Do not silently replace the intended discrete model.",
+        "Do not declare topology invariance alone to be evidence of a physical constant."
+      ]
+    },
+    {
+      "id": "E06",
+      "title": "Cross-repository delayed-recall/conflict-routing benchmark",
+      "priority": 3,
+      "design": "Independent task generator; identity-preserving input; SOL storage/routing/readout; frozen versus adaptive Frontier; live Lens packets and obligation checks; SOL-Edge eligibility only. Compare finite-state/DAG, graph diffusion, conventional reservoir, and controller/substrate ablations.",
+      "primary_outcomes": [
+        "recall/routing accuracy",
+        "false commit rate",
+        "retention/read-disturb margin",
+        "recovery time",
+        "end-to-end latency",
+        "memory and compute cost"
+      ],
+      "success_interpretation": "A named practical advantage at matched correctness and budget, including controller and verifier overhead.",
+      "falsifier": "Simple baselines match performance at lower cost or benefit disappears on held-out seeds/tasks.",
+      "guards": [
+        "Separate topology/input/perturbation random streams.",
+        "Do not substitute simulation time for speed or simulated mass for electrical energy.",
+        "No claim of physical execution authorization from eligibility."
+      ]
+    },
+    {
+      "id": "E07",
+      "title": "Controlled macrostate closure",
+      "priority": 3,
+      "design": "Create distinct microstates sharing a candidate macrostate. Apply identical permitted inputs/interventions and compare next-macrostate distributions at a specified time horizon, including perturbations and held-out states.",
+      "primary_outcomes": [
+        "macro-transition prediction error",
+        "within-class response variance",
+        "composition failure rate",
+        "resource-margin dependence"
+      ],
+      "success_interpretation": "The abstraction is sufficiently predictive under legal interventions to serve as a reusable computational operator.",
+      "falsifier": "Hidden microstate variables change outputs materially despite identical macrostate and action.",
+      "guards": [
+        "Include required phase, elapsed time, and resource reserve in the abstraction.",
+        "Predictive agreement is not automatically a proof of causal emergence under every formalism."
+      ]
+    }
+  ]
+}

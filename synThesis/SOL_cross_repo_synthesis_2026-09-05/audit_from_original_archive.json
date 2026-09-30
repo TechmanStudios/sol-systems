@@ -1,0 +1,241 @@
+{
+  "analysis_date": "2026-09-05",
+  "analysis_kind": "existing_data_reanalysis_and_formula_counterexamples",
+  "original_actions_run_id": 33950164824,
+  "original_artifact_id": 9965185711,
+  "provenance": {
+    "archive_sha256": "132c8a211dc021e536715b6c24856b1313cbb99f9c911e144461ec6c347c3aab",
+    "mode": "original_archive"
+  },
+  "frontier": {
+    "variants": 48,
+    "pair_observations": 576,
+    "gate_passes_raw": 0,
+    "nudges_applied_raw": 0,
+    "nudge_rejections": {
+      "gate_blocked": 576
+    },
+    "gate_reasons": {
+      "low_confidence": 200,
+      "low_reliability": 67,
+      "no_hint": 48,
+      "not_armed": 261
+    },
+    "base_controller_nonzero_change_steps": 317,
+    "variants_entering_stabilizer": 9,
+    "first_stabilizer_shared_clock_counts": {
+      "154": 7,
+      "168": 2
+    },
+    "by_seed": {
+      "29": {
+        "variants": 12,
+        "variants_entering_stabilizer": 9,
+        "mean_recorded_coherence": 0.645471404614376
+      },
+      "83": {
+        "variants": 12,
+        "variants_entering_stabilizer": 0,
+        "mean_recorded_coherence": 0.873452513057552
+      },
+      "149": {
+        "variants": 12,
+        "variants_entering_stabilizer": 0,
+        "mean_recorded_coherence": 0.8664272913261118
+      },
+      "167": {
+        "variants": 12,
+        "variants_entering_stabilizer": 0,
+        "mean_recorded_coherence": 0.6607101453819048
+      }
+    },
+    "seed_29_factor_cells": [
+      {
+        "embedding_a_loc": 0.49,
+        "embedding_b_loc": 0.57,
+        "embedding_drift": 0.06,
+        "first_stabilizer_tick": 154,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.49,
+        "embedding_b_loc": 0.57,
+        "embedding_drift": 0.08,
+        "first_stabilizer_tick": null,
+        "final_mode": "active"
+      },
+      {
+        "embedding_a_loc": 0.49,
+        "embedding_b_loc": 0.58,
+        "embedding_drift": 0.06,
+        "first_stabilizer_tick": 154,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.49,
+        "embedding_b_loc": 0.58,
+        "embedding_drift": 0.08,
+        "first_stabilizer_tick": 154,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.5,
+        "embedding_b_loc": 0.57,
+        "embedding_drift": 0.06,
+        "first_stabilizer_tick": 154,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.5,
+        "embedding_b_loc": 0.57,
+        "embedding_drift": 0.08,
+        "first_stabilizer_tick": null,
+        "final_mode": "active"
+      },
+      {
+        "embedding_a_loc": 0.5,
+        "embedding_b_loc": 0.58,
+        "embedding_drift": 0.06,
+        "first_stabilizer_tick": 168,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.5,
+        "embedding_b_loc": 0.58,
+        "embedding_drift": 0.08,
+        "first_stabilizer_tick": 154,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.51,
+        "embedding_b_loc": 0.57,
+        "embedding_drift": 0.06,
+        "first_stabilizer_tick": 154,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.51,
+        "embedding_b_loc": 0.57,
+        "embedding_drift": 0.08,
+        "first_stabilizer_tick": null,
+        "final_mode": "active"
+      },
+      {
+        "embedding_a_loc": 0.51,
+        "embedding_b_loc": 0.58,
+        "embedding_drift": 0.06,
+        "first_stabilizer_tick": 168,
+        "final_mode": "Stabilizer"
+      },
+      {
+        "embedding_a_loc": 0.51,
+        "embedding_b_loc": 0.58,
+        "embedding_drift": 0.08,
+        "first_stabilizer_tick": 154,
+        "final_mode": "Stabilizer"
+      }
+    ],
+    "final_aperture_values": [
+      0.05
+    ],
+    "final_damping_values": [
+      0.99
+    ],
+    "observations_at_both_control_bounds": 353,
+    "recorded_entangler_strength_range": [
+      0.25719739018254933,
+      0.4657928477939465
+    ],
+    "main_damping_reduction_branch_eligible_observations": 0,
+    "bilateral_burst_count_distribution": {
+      "0": 568,
+      "1": 8
+    },
+    "msf_status_counts_raw": {
+      "insufficient_history": 144,
+      "stable": 337,
+      "unstable": 95
+    },
+    "nonfinite_msf_lambda_mean_summary_rows": 48,
+    "summary_rows_missing_profile_used_field": 48,
+    "raw_pair_rows_missing_profile_used_field": 576
+  },
+  "prism": {
+    "dimension": 1536,
+    "cosine_similarity": 0.0,
+    "fingerprint_x": [
+      0.0,
+      0.006510416666666669,
+      0.0
+    ],
+    "fingerprint_y": [
+      0.0,
+      0.006510416666666669,
+      0.0
+    ],
+    "fingerprints_identical": true,
+    "scope": "Synthetic exact information-loss counterexample for this input channel; not a semantic task benchmark."
+  },
+  "lens": {
+    "before": {
+      "evidence": 0.9,
+      "coherence": 0.9275,
+      "contradiction": 0.14285714285714285,
+      "verdict": "HOLD"
+    },
+    "after_three_redundant_supported_nodes": {
+      "evidence": 0.9,
+      "coherence": 0.9275,
+      "contradiction": 0.1,
+      "verdict": "PROMOTE"
+    },
+    "same_unresolved_contradiction": true,
+    "graph_edges_not_an_argument_to_scorer": true,
+    "scope": "Static scoreLogons/courtVerdict formulas only; not a complete application or packet-validator test."
+  },
+  "sol_physical_time": [
+    {
+      "c_press": 2,
+      "halt_time_dt_008": 30.64,
+      "halt_time_dt_012": 30.599999999999998,
+      "relative_difference_percent": 0.13063357282822569,
+      "dt_004_observation_horizon": 20.0,
+      "predicted_dt_004_halt_step_range_not_observed": [
+        764.9999999999999,
+        766.0
+      ]
+    },
+    {
+      "c_press": 3,
+      "halt_time_dt_008": 24.560000000000002,
+      "halt_time_dt_012": 24.599999999999998,
+      "relative_difference_percent": 0.16273393002439218,
+      "dt_004_observation_horizon": 20.0,
+      "predicted_dt_004_halt_step_range_not_observed": [
+        614.0,
+        614.9999999999999
+      ]
+    }
+  ],
+  "historical_damping_zero": [
+    {
+      "dt": 0.06,
+      "zero_damping_parameter": 166.66666666666666
+    },
+    {
+      "dt": 0.12,
+      "zero_damping_parameter": 83.33333333333333
+    },
+    {
+      "dt": 0.24,
+      "zero_damping_parameter": 41.666666666666664
+    }
+  ],
+  "limitations": [
+    "No fresh SOL or Frontier simulation and no repository-wide test-suite rerun.",
+    "Formula counterexamples are deliberately scoped and do not test all integration/validation layers.",
+    "One complete retained Frontier sweep was reanalyzed; daily history comparisons use the committed state summary.",
+    "Parameter variants sharing seeds are not statistically independent robustness trials.",
+    "An absent summary field is not evidence that its runtime value was none."
+  ]
+}

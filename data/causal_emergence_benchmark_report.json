@@ -1,0 +1,104 @@
+{
+  "timestamp": "2026-09-29T13:29:30.597981",
+  "canonical_hoel_benchmarks": {
+    "fig4_degenerate_cycle": {
+      "n_micro": 64,
+      "n_macro": 8,
+      "micro_ei": 2.433834373377399,
+      "macro_ei": 3.0,
+      "delta_ei": 0.5661656266226012,
+      "determinism_gain": 0.0,
+      "degeneracy_reduction": 3.566165626622601,
+      "has_causal_emergence": true
+    },
+    "fig2_noisy_and": {
+      "n_micro": 16,
+      "n_macro": 4,
+      "micro_ei": 1.5876478154405618,
+      "macro_ei": 1.8570826324255423,
+      "delta_ei": 0.2694348169849805,
+      "determinism_gain": 0.18082080713473647,
+      "degeneracy_reduction": 2.088614009850244,
+      "has_causal_emergence": true
+    }
+  },
+  "riemannian_circuit_benchmarks": {
+    "coupled_and_shielded": {
+      "n_micro": 16,
+      "n_macro": 4,
+      "micro_ei": 1.6225562489182659,
+      "macro_ei": 2.0,
+      "delta_ei": 0.3774437510817341,
+      "degeneracy_reduction": 2.377443751081734,
+      "has_causal_emergence": true
+    },
+    "coupled_and_unshielded": {
+      "n_micro": 16,
+      "n_macro": 4,
+      "micro_ei": 1.6225562489182659,
+      "macro_ei": 2.0,
+      "delta_ei": 0.3774437510817341,
+      "has_causal_emergence": true
+    }
+  },
+  "swarm_moa_benchmarks": {
+    "noise_sweep": {
+      "noise_levels": [
+        0.0,
+        0.02,
+        0.05,
+        0.08,
+        0.1
+      ],
+      "kuramoto_order_r": [
+        1.0,
+        0.95,
+        0.875,
+        0.8,
+        0.75
+      ],
+      "micro_ei": [
+        2.433834373377399,
+        2.3241716648839246,
+        2.1339897168096615,
+        1.927542480643531,
+        1.7854262029189374
+      ],
+      "macro_ei": [
+        3.0,
+        2.6283529389367537,
+        2.251091765869418,
+        1.9410068653501518,
+        1.756104512603759
+      ],
+      "delta_ei": [
+        0.5661656266226012,
+        0.30418127405282913,
+        0.1171020490597563,
+        0.013464384706620702,
+        -0.029321690315178284
+      ],
+      "has_causal_emergence": [
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "determinism_gains": [
+        0.0,
+        0.480322400718446,
+        0.9890334763513592,
+        1.4011429540832152,
+        1.640576667865974
+      ],
+      "degeneracy_reductions": [
+        3.566165626622601,
+        2.823858873334383,
+        2.128068572708397,
+        1.6123214306234055,
+        1.3301016418188478
+      ]
+    }
+  }
+}

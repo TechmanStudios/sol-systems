@@ -1,0 +1,21 @@
+{
+  "analysis_date": "2026-09-05",
+  "source_run_id": 33950164824,
+  "source_artifact_id": 9965185711,
+  "original_zip_sha256": "132c8a211dc021e536715b6c24856b1313cbb99f9c911e144461ec6c347c3aab",
+  "source_sol_head": "2c747ed9aa59ff047b040e4cbb77f73536d22535",
+  "source_frontier_head": "966639ec8878534166c6c6f1a363b8121d1b9e39",
+  "source_frontier_workflow_head": "cc79b1398d4e984f9376b2c5c21f71dfaf56ab8e",
+  "validation": "Both original-archive and retained-data routes executed; all scientific results equal. No full-engine simulation run.",
+  "files_sha256": {
+    "README.md": "3d68e86b5cb48f1fac1a5c3ef2f6b09a4c07841a16a2cfdf64f6cec804ee150d",
+    "RESEARCH_SYNTHESIS.md": "4231f7ae9072f1ba861b8e93a398f01a4510dd5e6056dba29daf77dbaa06c6ef",
+    "audit_from_original_archive.json": "6eebfc804b1181b0b24db8a9f330072d84536477d70b002fd8896cb566dd1131",
+    "audit_results.json": "79a72f26b780812bbb1aac3889df1e297c988a3508cf02646c13e1e75f94f47f",
+    "data/frontier_pair_metrics.jsonl": "eb480a8eaf03c9bb8a0c49b1db37a866e4a9ee4261050c9bdf585d010e58f1b4",
+    "data/frontier_sweep_summary.jsonl": "7ca6fb5844d6bd0b3306b0204d04344e820dd76903e344c9054dec67477b4657",
+    "data/source_latest_report.md": "0f401b34c73fe9f70039987a13553296ee7a1569a210a7f09b89603542a2b356",
+    "experiment_plan.json": "faea0100cc5d8843832db06fdbbe16b906c641a38dbea48691e6d4e6d687d651",
+    "reanalyze.py": "ba1d64f11600b4d267e086dc76dcd0f48d98d12a57e5df67d789b5488e07ef9c"
+  }
+}

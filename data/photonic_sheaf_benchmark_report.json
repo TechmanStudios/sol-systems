@@ -1,0 +1,152 @@
+{
+  "timestamp": 1790716305.42984,
+  "vector": "Vector 14: Quantum / Photonic Coherent Waveguide Sheaf Processing",
+  "physical_constants": {
+    "wavelength_nm": 1550.0,
+    "frequency_thz": 193.41,
+    "photon_energy_joules": 1.282e-19,
+    "silicon_group_index": 4.2,
+    "mzi_arm_length_um": 120.0,
+    "transit_time_per_mzi_ps": 1.681,
+    "waveguide_loss_db_per_cm": 0.5,
+    "energy_per_mzi_op_fj": 1.2
+  },
+  "mesh_topologies": {
+    "7_GIANTS_MOA": {
+      "num_vertices": 7,
+      "num_edges": 12,
+      "total_vertex_dim": 21,
+      "total_edge_dim": 36,
+      "dilation_dim_2k": 72,
+      "mesh_depth_layers": 36,
+      "mzi_count": 1296,
+      "optical_transit_latency_ps": 60.52,
+      "optical_energy_dissipation_fj": 1555.2,
+      "unitarity_defect": 1.68e-14
+    },
+    "DIALECTICAL_BIPARTITE": {
+      "num_vertices": 6,
+      "num_edges": 6,
+      "total_vertex_dim": 24,
+      "total_edge_dim": 24,
+      "dilation_dim_2k": 48,
+      "mesh_depth_layers": 24,
+      "mzi_count": 576,
+      "optical_transit_latency_ps": 40.35,
+      "optical_energy_dissipation_fj": 691.2,
+      "unitarity_defect": 1.29e-14
+    },
+    "MOBIUS_CONTRADICTION": {
+      "num_vertices": 3,
+      "num_edges": 3,
+      "total_vertex_dim": 6,
+      "total_edge_dim": 6,
+      "dilation_dim_2k": 12,
+      "mesh_depth_layers": 6,
+      "mzi_count": 36,
+      "optical_transit_latency_ps": 10.09,
+      "optical_energy_dissipation_fj": 43.2,
+      "unitarity_defect": 3.69e-15
+    }
+  },
+  "harmonic_extinction_readout": {
+    "topology_name": "7_GIANTS_MOA",
+    "total_vertex_dim": 21,
+    "total_edge_dim": 36,
+    "mesh_depth_layers": 36,
+    "total_mzi_count": 1296,
+    "input_optical_power_mw": 1.0,
+    "output_edge_powers_mw": {
+      "edge_STATISTICIAN_to_integrator": 0.0,
+      "edge_OPTIMIZER_to_integrator": 0.0,
+      "edge_N_BODY_to_integrator": 0.0,
+      "edge_GRAPH_NAVIGATOR_to_integrator": 0.0,
+      "edge_LINEAR_ALGEBRAIST_to_integrator": 0.0,
+      "edge_ALIGNER_to_integrator": 0.0,
+      "edge_ring_STATISTICIAN_OPTIMIZER": 0.0,
+      "edge_ring_OPTIMIZER_N_BODY": 0.0,
+      "edge_ring_N_BODY_GRAPH_NAVIGATOR": 0.0,
+      "edge_ring_GRAPH_NAVIGATOR_LINEAR_ALGEBRAIST": 0.0,
+      "edge_ring_LINEAR_ALGEBRAIST_ALIGNER": 0.0,
+      "edge_ring_ALIGNER_STATISTICIAN": 0.0
+    },
+    "total_detected_optical_power_mw": 0.0,
+    "detected_dirichlet_energy": 0.0,
+    "quantum_shot_noise_floor_mw": 1.06e-06,
+    "has_topological_obstruction": false,
+    "obstruction_significance_db": -60.0,
+    "optical_transit_latency_ps": 60.52,
+    "optical_energy_dissipation_fj": 1555.2,
+    "semantic_consistency_score": 1.0
+  },
+  "topological_obstruction_readout": {
+    "topology_name": "MOBIUS_CONTRADICTION",
+    "total_vertex_dim": 6,
+    "total_edge_dim": 6,
+    "mesh_depth_layers": 6,
+    "total_mzi_count": 36,
+    "input_optical_power_mw": 1.0,
+    "output_edge_powers_mw": {
+      "edge_ab": 0.0,
+      "edge_bc": 0.0,
+      "edge_ca_twist": 3.96698
+    },
+    "total_detected_optical_power_mw": 3.96698,
+    "detected_dirichlet_energy": 1.9835,
+    "quantum_shot_noise_floor_mw": 6.35e-06,
+    "has_topological_obstruction": true,
+    "obstruction_significance_db": 57.96,
+    "optical_transit_latency_ps": 10.09,
+    "optical_energy_dissipation_fj": 43.2,
+    "semantic_consistency_score": 0.5163
+  },
+  "coherent_cavity_trajectories": {
+    "MOBIUS_CONTRADICTION": {
+      "total_roundtrips": 15,
+      "initial_energy": 2.0,
+      "final_energy": 0.0004,
+      "energy_reduction_ratio": 0.9998,
+      "total_transit_ps": 105.07,
+      "roundtrips_count": 15
+    },
+    "7_GIANTS_MOA": {
+      "total_roundtrips": 25,
+      "initial_energy": 54.3865,
+      "final_energy": 0.0,
+      "energy_reduction_ratio": 1.0,
+      "total_transit_ps": 175.12,
+      "roundtrips_count": 25
+    }
+  },
+  "substrate_speedup_benchmarks": {
+    "CPU_x86_Serial": {
+      "latency_per_sheaf_audit": "1.50 ms",
+      "latency_ps": 1500000000.0,
+      "energy_joules": 0.00012,
+      "speedup_vs_cpu": 1.0
+    },
+    "WebGPU_WGSL_Compute": {
+      "latency_per_sheaf_audit": "36.04 \u03bcs",
+      "latency_ps": 36040000.0,
+      "energy_joules": 4.5e-07,
+      "speedup_vs_cpu": 50.6
+    },
+    "Photonic_PIC_Waveguide": {
+      "latency_per_sheaf_audit": "60.52 ps",
+      "latency_ps": 60.52,
+      "energy_joules": 1.55e-12,
+      "speedup_vs_cpu": 24785195.0,
+      "speedup_vs_gpu": 595505.6
+    }
+  },
+  "invariants_summary": {
+    "unitary_dilation_defect": 1.68e-14,
+    "harmonic_extinction_verified": true,
+    "quantum_shot_noise_obstruction_detected": true,
+    "mobius_obstruction_significance_db": 57.96,
+    "optical_transit_latency_7giants_ps": 60.52,
+    "speedup_vs_cpu_ratio": 24785195.0,
+    "speedup_vs_gpu_ratio": 595505.6,
+    "coherent_cavity_energy_reduction_mobius": 0.9998
+  }
+}
