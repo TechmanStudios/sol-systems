@@ -13,8 +13,11 @@
     "dirichlet_energy": 286.25,
     "coboundary_norm": 23.926972228010797,
     "adversarial_false_commit_rate": 0.0,
-    "is_signed": true,
-    "signer": "Col. Bryan Tucker, PEO GCS Chief Engineer",
+    "is_demo": true,
+    "is_signed": false,
+    "is_simulated_signature": true,
+    "authorization_notice": "SYNTHETIC DEMONSTRATION ONLY — No Army authorization or actual official signature.",
+    "signer": "SYNTHETIC DEMO REVIEWER (role-only placeholder)",
     "proof_hash": "222a5a5a46b130fb286719e0659e1e00f3e9e319677a7fde1a44a0323b4339fa"
   },
   "dialectical_bias_verification": {

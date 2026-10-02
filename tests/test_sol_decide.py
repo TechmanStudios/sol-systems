@@ -288,14 +288,14 @@ def test_demonstration_1_ngcv_powertrain():
     assert pkg.selected_option_id == "opt_hed"
     assert pkg.betti_1 == 0
     assert pkg.false_commit_rate == 0.00
-    assert pkg.authorization_gate.is_signed is True
+    assert pkg.authorization_gate.is_signed is False
     assert len(pkg.cryptographic_proof_hash) == 64
 
     # Markdown export check
     md_text = pkg.to_markdown()
     assert "ACQUISITION DECISION PACKAGE" in md_text
     assert "Series Hybrid-Electric Drive (HED)" in md_text
-    assert "CERTIFIED - READY FOR SIGNATURE" in md_text
+    assert "SYNTHETIC DEMO - MATHEMATICALLY CERTIFIABLE" in md_text
 
 
 def test_demonstration_2_living_refresh_delta():
@@ -307,6 +307,88 @@ def test_demonstration_2_living_refresh_delta():
     assert len(delta.activated_coboundary_edges) > 0
     assert delta.post_energy > delta.pre_energy
     assert "FLIPPED" in delta.audit_summary
+
+
+def test_demo_package_has_only_synthetic_sign_off():
+    """Generated packages and serialized exports cannot claim Army authorization."""
+    from dataclasses import asdict
+    from sol_decide.delivery.decision_package import DEMO_NOTICE, DEMO_SIGNER_ROLE
+
+    _, pkg, _, _ = run_demonstration_1()
+    gate = pkg.authorization_gate
+    assert pkg.is_demo is True
+    assert gate.is_signed is False
+    assert gate.is_simulated_signature is True
+    assert gate.signer_name == gate.authorized_role == DEMO_SIGNER_ROLE
+    assert gate.signature_timestamp is None
+    assert gate.comments == DEMO_NOTICE
+    serialized = json.loads(json.dumps(asdict(pkg)))
+    assert serialized["is_demo"] is True
+    assert serialized["authorization_gate"]["is_signed"] is False
+    assert serialized["authorization_gate"]["is_simulated_signature"] is True
+    markdown = pkg.to_markdown()
+    assert DEMO_NOTICE in markdown
+    assert "SIMULATED SIGN-OFF ONLY" in markdown
+    assert "SIGNED by" not in markdown
+    assert "READY FOR SIGNATURE" not in markdown
+    for output in (markdown, json.dumps(serialized)):
+        assert "Bryan Tucker" not in output
+        assert "PEO GCS Chief Engineer" not in output
+    with pytest.raises(PermissionError, match="Synthetic demo"):
+        pkg.sign("Example official")
+    assert gate.is_signed is False
+    assert gate.signer_name == DEMO_SIGNER_ROLE
+
+
+def test_demo_benchmark_matches_generated_authorization_metadata():
+    """The reusable benchmark must preserve the generated demo provenance."""
+    _, pkg, _, _ = run_demonstration_1()
+    benchmark = json.loads(
+        (Path(__file__).resolve().parents[1] / "data" / "sol_decide_benchmark_report.json").read_text(encoding="utf-8")
+    )["demonstration_1_point_in_time"]
+    assert benchmark["is_demo"] is pkg.is_demo is True
+    assert benchmark["is_signed"] is pkg.authorization_gate.is_signed is False
+    assert benchmark["is_simulated_signature"] is pkg.authorization_gate.is_simulated_signature is True
+    assert benchmark["signer"] == pkg.authorization_gate.signer_name
+    assert benchmark["authorization_notice"] == pkg.authorization_gate.comments
+    assert benchmark["proof_hash"] == pkg.cryptographic_proof_hash
+
+
+def test_demo_cli_export_is_explicitly_synthetic(tmp_path, monkeypatch):
+    from sol_decide.cli import main
+    from sol_decide.delivery.decision_package import DEMO_NOTICE
+
+    output = tmp_path / "demo.md"
+    monkeypatch.setattr("sys.argv", ["sol-decide", "demo1", "--export-md", str(output)])
+    main()
+    markdown = output.read_text(encoding="utf-8")
+    assert DEMO_NOTICE in markdown
+    assert "SIMULATED SIGN-OFF ONLY" in markdown
+    assert "SIGNED by" not in markdown
+
+
+def test_simulated_sign_off_respects_certification_and_demo_boundary():
+    c = build_ngcv_trade_study()
+    report = c.evaluate_decision_package()
+    compiler = DecisionPackageCompiler()
+    regular = compiler.compile(c, report, authorized_role="Example reviewer")
+    assert regular.is_demo is False
+    with pytest.raises(PermissionError, match="restricted"):
+        regular.simulate_sign_off()
+    assert regular.sign("Example signer") is True
+    assert regular.authorization_gate.is_signed is True
+    assert regular.authorization_gate.is_simulated_signature is False
+
+    demo = compiler.compile(c, report, is_demo=True)
+    assert "DEMO ONLY - UNSIGNED" in demo.to_markdown()
+    with pytest.raises(PermissionError, match="Synthetic demo"):
+        demo.sign("Example signer")
+    demo.betti_1 = 1
+    with pytest.raises(PermissionError, match="obstructed"):
+        demo.simulate_sign_off()
+    assert demo.authorization_gate.signer_name is None
+    assert demo.authorization_gate.is_simulated_signature is False
+    assert demo.authorization_gate.is_signed is False
 
 
 def test_signer_ready_package_cryptographic_hash():
