@@ -79,6 +79,13 @@ $$V = V_{\text{objectives}} \cup V_{\text{options}} \cup V_{\text{constraints}} 
 
 ## Package Structure
 
+Demonstration packages use synthetic review metadata only: `is_demo=true`,
+`is_simulated_signature=true`, and `is_signed=false`, with a role-only
+`SYNTHETIC DEMO REVIEWER` placeholder. Markdown and API exports explicitly state
+that no Army authorization or actual official signature is represented.
+`sign()` rejects demo packages; `simulate_sign_off()` exercises the review gate.
+Mathematical certification and proof hashes do not establish official authorization.
+
 ```
 sol-decide/
 ├── sol_decide/

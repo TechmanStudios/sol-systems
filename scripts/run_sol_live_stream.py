@@ -2285,6 +2285,9 @@ def create_handler(server_instance: ManifoldSimulationServer):
                     "false_commit_rate": pkg.false_commit_rate,
                     "cryptographic_proof_hash": pkg.cryptographic_proof_hash,
                     "is_signed": pkg.authorization_gate.is_signed,
+                    "is_demo": pkg.is_demo,
+                    "is_simulated_signature": pkg.authorization_gate.is_simulated_signature,
+                    "authorization_notice": pkg.authorization_gate.comments,
                     "signer": pkg.authorization_gate.signer_name,
                     "executive_summary": pkg.executive_summary
                 }).encode("utf-8"))
