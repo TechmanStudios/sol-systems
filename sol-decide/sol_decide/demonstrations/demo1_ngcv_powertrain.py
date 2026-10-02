@@ -260,17 +260,17 @@ def run_demonstration_1() -> Tuple[SheafDecisionComplex, SignerReadyDecisionPack
     ablator = SensitivityAblator(sweep_steps=30, max_deviation_ratio=0.40)
     sens_rep = ablator.compute_decision_flips(complex_obj)
 
-    # 4. Compile and Sign Decision Package
+    # 4. Compile an explicitly synthetic Decision Package
     compiler = DecisionPackageCompiler()
     package = compiler.compile(
         complex_obj=complex_obj,
         eval_report=eval_rep,
         sensitivity_report=sens_rep,
         bias_report=bias_rep,
-        authorized_role="PEO Ground Combat Systems"
+        is_demo=True
     )
 
-    # 5. Sign Authorization Gate
-    package.sign(signer_name="Col. Bryan Tucker, PEO GCS Chief Engineer", comments="Certified. beta_1=0; HED selected.")
+    # 5. Exercise a simulated review; no official signature or Army authorization
+    package.simulate_sign_off()
 
     return complex_obj, package, sens_rep, bias_rep

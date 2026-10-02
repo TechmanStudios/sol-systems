@@ -25,6 +25,9 @@ from ..core.sheaf_decision_complex import SheafDecisionComplex, DecisionEvaluati
 from ..agentic.sensitivity_ablation import SensitivityReport
 from ..agentic.dialectical_bias import DialecticalBiasReport
 
+DEMO_SIGNER_ROLE = "SYNTHETIC DEMO REVIEWER (role-only placeholder)"
+DEMO_NOTICE = "SYNTHETIC DEMONSTRATION ONLY — No Army authorization or actual official signature."
+
 
 @dataclass
 class EvidenceEntry:
@@ -44,6 +47,7 @@ class SignerAuthorizationGate:
     signature_timestamp: Optional[float] = None
     is_signed: bool = False
     comments: str = ""
+    is_simulated_signature: bool = False
 
 
 @dataclass
@@ -65,15 +69,31 @@ class SignerReadyDecisionPackage:
     evidence_ledger: List[EvidenceEntry]
     sensitivity_summary: str
     authorization_gate: SignerAuthorizationGate
+    is_demo: bool = False
 
     def sign(self, signer_name: str, comments: str = "Authorized based on verified beta_1=0 proof.") -> bool:
         """Signs the package if mathematical certification invariants are satisfied."""
+        if self.is_demo:
+            raise PermissionError("Synthetic demo packages cannot receive an actual signature; use simulate_sign_off().")
         if not self.is_certifiable or self.betti_1 > 0:
             raise PermissionError("Cannot sign obstructed decision package: beta_1 > 0 or invariants breached")
         self.authorization_gate.signer_name = signer_name
         self.authorization_gate.signature_timestamp = time.time()
         self.authorization_gate.is_signed = True
         self.authorization_gate.comments = comments
+        return True
+
+    def simulate_sign_off(self) -> bool:
+        """Exercises the demo review gate without recording an actual authorization."""
+        if not self.is_demo:
+            raise PermissionError("Simulated sign-off is restricted to synthetic demo packages")
+        if not self.is_certifiable or self.betti_1 > 0:
+            raise PermissionError("Cannot simulate sign-off for an obstructed decision package")
+        self.authorization_gate.signer_name = DEMO_SIGNER_ROLE
+        self.authorization_gate.signature_timestamp = None
+        self.authorization_gate.is_signed = False
+        self.authorization_gate.is_simulated_signature = True
+        self.authorization_gate.comments = DEMO_NOTICE
         return True
 
     def to_markdown(self) -> str:
@@ -83,6 +103,10 @@ class SignerReadyDecisionPackage:
             f"SIGNED by {self.authorization_gate.signer_name} on {time.ctime(self.authorization_gate.signature_timestamp or 0)}"
             if self.authorization_gate.is_signed else "PENDING SIGNATURE"
         )
+
+        if self.is_demo:
+            status_badge = "[SYNTHETIC DEMO - MATHEMATICALLY CERTIFIABLE]" if self.is_certifiable else "[SYNTHETIC DEMO - OBSTRUCTED]"
+            signature_status = "SIMULATED SIGN-OFF ONLY" if self.authorization_gate.is_simulated_signature else "DEMO ONLY - UNSIGNED"
 
         md = [
             f"# ACQUISITION DECISION PACKAGE: {self.title}",
@@ -108,6 +132,8 @@ class SignerReadyDecisionPackage:
             "| Component | Evidence Source | Validation Status | Notes |",
             "| :--- | :--- | :--- | :--- |"
         ]
+        if self.is_demo:
+            md.insert(1, f"> **{DEMO_NOTICE}**")
         for e in self.evidence_ledger:
             md.append(f"| **{e.primitive_name}** | `{e.evidence_source}` | {e.validation_status} | {e.signer_notes} |")
 
@@ -125,7 +151,8 @@ class DecisionPackageCompiler:
         eval_report: DecisionEvaluationReport,
         sensitivity_report: Optional[SensitivityReport] = None,
         bias_report: Optional[DialecticalBiasReport] = None,
-        authorized_role: str = "PEO Ground Combat Systems"
+        authorized_role: str = "PEO Ground Combat Systems",
+        is_demo: bool = False
     ) -> SignerReadyDecisionPackage:
         """
         Compiles all audit artifacts into an immutable package.
@@ -165,6 +192,9 @@ class DecisionPackageCompiler:
             f"Topological obstruction dimension beta_1 = {eval_report.beta_1} proves absence of internal "
             f"contradictions across operational weight, power, and supply chain bounds."
         )
+        if is_demo:
+            exec_summary = f"{DEMO_NOTICE} {exec_summary}"
+            authorized_role = DEMO_SIGNER_ROLE
 
         sens_summary = sensitivity_report.summary if sensitivity_report else "No sensitivity ablation executed."
 
@@ -186,5 +216,6 @@ class DecisionPackageCompiler:
             executive_summary=exec_summary,
             evidence_ledger=evidence,
             sensitivity_summary=sens_summary,
-            authorization_gate=SignerAuthorizationGate(authorized_role=authorized_role)
+            authorization_gate=SignerAuthorizationGate(authorized_role=authorized_role),
+            is_demo=is_demo
         )
