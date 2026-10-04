@@ -12,7 +12,7 @@
 
 ## Architecture: The 18-Vector Continuum (V0 through V17)
 
-The architecture spans 18 fully operational vectors, rooted in cross-repository empirical synthesis, formal theorem proving, and sheaf-theoretic decision operating systems:
+The architecture spans 18 vectors. Status is in the table below. None are hardware-measured.
 
 ```mermaid
 flowchart TD
@@ -95,27 +95,29 @@ flowchart TD
 
 ## Vector Directory Index
 
-| Vector | Focus Domain | Key Paths | Description & Invariants |
-| :--- | :--- | :--- | :--- |
-| **Vector 0** | Cross-Repo Synthesis | [`synThesis/`](synThesis/) | Resolution of statistical moment collapse, Euler discretization artifacts, and creation of the continuous Riemannian foundation. |
-| **conJecture**| Formal Prover & DAG | [`conJecture/`](conJecture/) | Machine-verified theorems (`THM_CONJ_DEMORGAN_NAND`, etc.), Geodesic Computation Conjecture, and Lemma DAG. |
-| **Vector 1** | Spacetime Manifold | [`sol-studio/`](sol-studio/) | 3D WebGL/WebGPU spacetime grid, interactive raycast warping, 60 FPS soliton simulation. |
-| **Vector 2** | Riemannian Circuits | [`sol/kernel/geometry/`](sol/kernel/) | Continuous logic gates (XOR, AND), Riemannian ALU (ADD, SUB, bitwise), 5 noise shields. |
-| **Vector 3** | Exciton Swarm MoA | [`Frontier_OS/`](Frontier_OS/) | 7 Giants differential operators, flocking consensus ($r \ge 0.70$), Hippocampal Carnot memory sink. |
-| **Vector 4** | WebGPU & Photonics | [`sol/kernel/photonic/`](sol/kernel/photonic/) | 100,000+ GPU solitons via WGSL, simulated silicon MZI meshes (1.68 ps, 1.2 fJ/op). |
-| **Vector 5** | Flagship Benchmark | [`sol/benchmarks/`](sol/benchmarks/) | Delayed recall & conflict routing against 3 classical baselines; 0.0% false commit rate. |
-| **Vector 6** | Causal Emergence | [`sol/kernel/causal/`](sol/kernel/causal/) | Hoel's Effective Information (EI), macroscopic causal gain $\Delta \text{EI} = +2.38$ bits. |
-| **Vector 7** | Swarm Sharding | [`Frontier_OS/core/sharding/`](Frontier_OS/core/sharding/) | Spatial domain decomposition, zero-copy shared memory (6.72 GB/s, 5.48 $\mu$s latency). |
-| **Vector 8** | Circuit Synthesis | [`sol/kernel/synthesis/`](sol/kernel/synthesis/) | DNF decomposition, neuro-symbolic reflection, online metaplasticity under noise. |
-| **Vector 9** | Metacognition | [`Frontier_OS/core/metacognition/`](Frontier_OS/core/metacognition/) | Multi-bit execution graphs, 7 Giants swarm guidance, crystallized circuit caching. |
-| **Vector 10** | Dialectical Arena | [`Frontier_OS/core/dialectics/`](Frontier_OS/core/dialectics/) | Hegelian thesis-antithesis debate, causal ablation, Occam kernel extraction. |
-| **Vector 11** | Theorem Proving | [`Frontier_OS/core/theorem_proving/`](Frontier_OS/core/theorem_proving/) | Autonomous conjecture generation, 5-phase proof pipeline, formal machine certificates. |
-| **Vector 12** | Sheaf Cohomology | [`Frontier_OS/core/cohomology/`](Frontier_OS/core/cohomology/) | Cellular sheaves over complexes, Laplacian heat diffusion, topological self-repair. |
-| **Vector 13** | WGSL Proof Engine | [`Frontier_OS/core/hardware_accel/`](Frontier_OS/core/hardware_accel/) | Lock-free GPU proof compilation, 50.6× speedup (32,390 thms/s, 36 $\mu$s dispatch). |
-| **Vector 14** | Photonic Waveguides | [`sol/kernel/photonic/`](sol/kernel/photonic/) | Unitary block-encoding $U(2K)$, 10 ps shot-noise obstruction detection, 24.8M× speedup. |
-| **Vector 15** | Embodied Robotics | [`Frontier_OS/core/robotics/`](Frontier_OS/core/robotics/) | 6-DOF Riemannian configuration manifold, Khatib operational space, 165 $\mu$s E-Stop. |
-| **Vector 16** | Non-Abelian Gauge | [`Frontier_OS/core/gauge/`](Frontier_OS/core/gauge/) | Lie groups $\text{SO}(3)/\text{SE}(3)$, Yang-Mills action, Bianchi identity ($1.53 \times 10^{-15}$), 99.8% drift compensation. |
-| **Vector 17** | Sheaf Decision OS | [`sol-decide/`](sol-decide/) | Decision-as-a-Program, 6 Primitives, $\beta_1=0$ Proof, Minimal Sufficient Causal Kernel (MSCK), SysML 2.0 AST, Living 18-month refresh. |
+Evidence status, not a hardware claim. `hardware-measured` is unused. Limits: [`sol/KNOWN_LIMITATIONS.md`](sol/KNOWN_LIMITATIONS.md) (no production mutation, no real quantum or photonic hardware, local simulation only). The 204-test line below is a prior suite report and was not re-run for this table.
+
+| Vector | Status | Focus Domain | Key Paths | Description & Invariants |
+| :--- | :--- | :--- | :--- | :--- |
+| **Vector 0** | note-only | Cross-Repo Synthesis | [`synThesis/`](synThesis/) | Resolution of statistical moment collapse, Euler discretization artifacts, and creation of the continuous Riemannian foundation. |
+| **conJecture**| sim-verified | Formal Prover & DAG | [`conJecture/`](conJecture/) | In-repo theorem corpus and lemma DAG. Not a hardware proof. |
+| **Vector 1** | sim-verified | Spacetime Manifold | [`sol-studio/`](sol-studio/) | 3D WebGL/WebGPU spacetime grid, interactive raycast warping, soliton simulation. |
+| **Vector 2** | sim-verified | Riemannian Circuits | [`sol/kernel/geometry/`](sol/kernel/) | Continuous logic gates (XOR, AND), Riemannian ALU (ADD, SUB, bitwise), 5 noise shields. |
+| **Vector 3** | sim-verified | Exciton Swarm MoA | [`Frontier_OS/`](Frontier_OS/) | 7 Giants differential operators, flocking consensus, Hippocampal Carnot memory sink. |
+| **Vector 4** | analytical-ratio | WebGPU & Photonics | [`sol/kernel/photonic/`](sol/kernel/photonic/) | Simulated MZI mesh. 1.68 ps and 1.2 fJ/op are constants from arm length and group index, not a measured device. |
+| **Vector 5** | sim-verified | Flagship Benchmark | [`sol/benchmarks/`](sol/benchmarks/) | Delayed recall and conflict routing against classical baselines. |
+| **Vector 6** | sim-verified | Causal Emergence | [`sol/kernel/causal/`](sol/kernel/causal/) | In-process EI benchmark (`data/causal_emergence_benchmark_report.json`). |
+| **Vector 7** | sim-verified | Swarm Sharding | [`Frontier_OS/core/sharding/`](Frontier_OS/core/sharding/) | In-process sharding benchmark. Headline GB/s and µs figures are not hardware-measured. |
+| **Vector 8** | sim-verified | Circuit Synthesis | [`sol/kernel/synthesis/`](sol/kernel/synthesis/) | DNF decomposition and metaplasticity checks in `data/circuit_synthesis_benchmark_report.json`. |
+| **Vector 9** | sim-verified | Metacognition | [`Frontier_OS/core/metacognition/`](Frontier_OS/core/metacognition/) | In-process orchestration benchmark. |
+| **Vector 10** | sim-verified | Dialectical Arena | [`Frontier_OS/core/dialectics/`](Frontier_OS/core/dialectics/) | In-process dialectics benchmark. |
+| **Vector 11** | sim-verified | Theorem Proving | [`Frontier_OS/core/theorem_proving/`](Frontier_OS/core/theorem_proving/) | In-process discovery benchmark. |
+| **Vector 12** | sim-verified | Sheaf Cohomology | [`Frontier_OS/core/cohomology/`](Frontier_OS/core/cohomology/) | In-process cohomology benchmark. |
+| **Vector 13** | analytical-ratio | WGSL Proof Engine | [`Frontier_OS/core/hardware_accel/`](Frontier_OS/core/hardware_accel/) | 50.6× is a fixed 1.5 ms CPU baseline over recorded µs dispatch times. No device or driver field in the JSON. |
+| **Vector 14** | analytical-ratio | Photonic Waveguides | [`sol/kernel/photonic/`](sol/kernel/photonic/) | 24.8M× is 1.50 ms assumed CPU audit / 60.52 ps calculated optical transit. Not a measured PIC. |
+| **Vector 15** | sim-verified | Embodied Robotics | [`Frontier_OS/core/robotics/`](Frontier_OS/core/robotics/) | In-process actuation benchmark. Not a robot run. |
+| **Vector 16** | sim-verified | Non-Abelian Gauge | [`Frontier_OS/core/gauge/`](Frontier_OS/core/gauge/) | Float64 SO(3) checks. Wilson traces match Rodrigues; Bianchi residual 1.53e-15. Same JSON sets `is_hardware_safe: false` and trips the E-stop. 99.8% is 34.745° to 0.078°. |
+| **Vector 17** | sim-verified | Sheaf Decision OS | [`sol-decide/`](sol-decide/) | In-process decision demos and `data/sol_decide_benchmark_report.json`. |
 
 ---
 
