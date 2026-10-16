@@ -20,6 +20,9 @@ Verifies:
    - Dynamic Online Metaplasticity Self-Repair during multi-stage execution.
 """
 
+from types import SimpleNamespace
+from unittest.mock import Mock
+
 import numpy as np
 import pytest
 
@@ -249,15 +252,17 @@ class TestMetacognitiveOrchestratorExecution:
         assert rep2.global_outputs["EQUAL"] == 0
         assert rep2.global_outputs["RESIDUAL_DIFF"] == 1
 
-    def test_online_metaplasticity_healing_during_execution(self, orchestrator):
+    @pytest.mark.parametrize("seed", [0, 30, 53, 58])
+    def test_online_metaplasticity_healing_during_execution(self, orchestrator, seed):
         """Verifies that orchestrator auto-heals perturbed circuits on the fly."""
         plan = create_hierarchical_arbiter_plan()
 
         # Retrieve circuit and inject severe metric and parameter perturbation
         circuit, _ = orchestrator.get_or_synthesize_circuit(plan.stages["stage_majority"])
+        rng = np.random.RandomState(seed)
         for nid, node in circuit.nodes.items():
-            node.metric_bias += np.random.normal(0, 0.45, (2, 2))
-            node.gain += np.random.normal(0, 0.35)
+            node.metric_bias += rng.normal(0, 0.45, (2, 2))
+            node.gain += rng.normal(0, 0.35)
 
         # Execute plan with auto_heal=True
         rep = orchestrator.execute_plan(plan, {
@@ -266,3 +271,29 @@ class TestMetacognitiveOrchestratorExecution:
         assert rep.success is True
         assert rep.global_outputs["FINAL_DECISION"] == 1
         assert rep.stage_results["stage_majority"].healed is True
+
+        recovered = orchestrator.circuit_cache.get_circuit("MAJORITY_3")
+        assert recovered.evaluate_truth_table(CANONICAL_SPECS["MAJORITY_3"].table)[0] == 1.0
+        if seed in (30, 53, 58):
+            assert rep.stage_results["stage_majority"].recovery_method == "resynthesis"
+            assert rep.to_dict()["stage_results"]["stage_majority"]["recovery_method"] == "resynthesis"
+
+    def test_unverified_recovery_stops_before_downstream_execution(self, orchestrator, monkeypatch):
+        plan = create_hierarchical_arbiter_plan()
+        circuit, _ = orchestrator.get_or_synthesize_circuit(plan.stages["stage_majority"])
+        for node in circuit.nodes.values():
+            node.gain = 0.0
+
+        # Even optimistic upstream reports must not certify an incorrect circuit.
+        monkeypatch.setattr(orchestrator.metaplasticity_engine, "repair_circuit",
+                            Mock(return_value=SimpleNamespace(is_healed=True)))
+        synthesize = Mock(return_value=SimpleNamespace(circuit=circuit, verified=True))
+        monkeypatch.setattr(orchestrator.swarm_synthesizer, "synthesize_with_swarm", synthesize)
+
+        with pytest.raises(RuntimeError, match="recovery failed verification for stage stage_majority"):
+            orchestrator.execute_plan(plan, {
+                "V1": 1.0, "V2": 1.0, "V3": 0.0, "OVERRIDE": 0.0, "PRIORITY_VOTE": 0.0
+            })
+
+        assert synthesize.call_count == 1
+        assert orchestrator.circuit_cache.get_circuit("MUX_2to1") is None
