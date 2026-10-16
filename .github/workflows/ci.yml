@@ -1,4 +1,4 @@
-name: SOL Systems CI
+name: CI
 
 on:
   push:
@@ -7,63 +7,112 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
-concurrency:
-  group: sol-systems-ci-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   integration:
-    name: Integration (${{ matrix.os }} / Python ${{ matrix.python }})
+    name: Integration (${{ matrix.os }} / py${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python: ["3.11", "3.12"]
-    env:
-      OPENBLAS_NUM_THREADS: "1"
-      OMP_NUM_THREADS: "1"
-      MKL_NUM_THREADS: "1"
-    steps:
-      - uses: actions/checkout@v6
-      - name: Check out pinned integration dependencies
-        # sol-edge is private and is not used by the integration suite.
-        run: git submodule update --init sol Frontier_OS sol-lens
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python }}
-          cache: pip
-          cache-dependency-path: |
-            requirements.txt
-            sol-decide/pyproject.toml
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-      - name: Install test dependencies
-        run: python -m pip install -r requirements.txt "pytest>=8,<10"
-      - name: Run integrated tests
-        run: python -m pytest tests -q --junitxml=integration-results.xml
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: integration-${{ matrix.os }}-py${{ matrix.python }}
-          path: integration-results.xml
+        python-version: ["3.11", "3.12"]
 
-  frontier-lint:
-    name: Frontier_OS lint and formatting
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
-      - run: git submodule update --init Frontier_OS
-      - uses: actions/setup-python@v6
+      - name: Checkout superproject
+        uses: actions/checkout@v6
+        with:
+          lfs: false
+          submodules: false
+
+      - name: Initialize public integration submodules
+        run: |
+          git submodule sync -- sol Frontier_OS sol-lens sol-edge sol-holo
+          git submodule update --init sol Frontier_OS sol-lens sol-edge sol-holo
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Preflight editable dependency check
+        shell: python
+        run: |
+          from pathlib import Path
+          import sys
+
+          req_path = Path("requirements.txt")
+          missing = []
+          for raw in req_path.read_text(encoding="utf-8").splitlines():
+              line = raw.strip()
+              if line.startswith("-e "):
+                  target = Path(line[3:].strip())
+                  has_pkg = (target / "pyproject.toml").is_file() or (target / "setup.py").is_file()
+                  print(f"[preflight] editable target {target}: exists={target.exists()} package_meta={has_pkg}")
+                  if not has_pkg:
+                      missing.append(str(target))
+          if missing:
+              sys.exit(f"Editable dependency preflight failed; missing pyproject.toml/setup.py in: {missing}")
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run integration suite
+        env:
+          PYTHONUTF8: "1"
+        run: |
+          python -m pytest --import-mode=importlib tests sol/tests/test_circuit_metric_evaluation.py sol-continuum/tests/test_sol_continuum.py sol-change/tests sol-holo/tests/test_sol_holo.py -k "not live" -q --junitxml=integration-results.xml
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-results-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: integration-results.xml
+          if-no-files-found: ignore
+
+  lint-submodules:
+    name: Frontier_OS ruff check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout superproject
+        uses: actions/checkout@v6
+        with:
+          lfs: false
+          submodules: false
+
+      - name: Initialize Frontier_OS
+        run: |
+          git submodule sync -- Frontier_OS
+          git submodule update --init Frontier_OS
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python -m pip install ruff==0.15.11
-      - run: python -m ruff check Frontier_OS/Exciton-MoA
-      - run: python -m ruff format --check Frontier_OS/Exciton-MoA
+
+      - name: Install ruff
+        run: python -m pip install ruff==0.15.11
+
+      - name: Ruff lint & format check (Exciton-MoA)
+        working-directory: Frontier_OS
+        run: |
+          ruff check Exciton-MoA
+          ruff format --check Exciton-MoA

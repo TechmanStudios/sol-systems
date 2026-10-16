@@ -53,11 +53,19 @@ def handler_for(store):
             method = self.command
             data = None
             if method in ("POST", "PATCH"):
+                try:
+                    raw_len = int(self.headers.get("Content-Length", "0"))
+                except ValueError:
+                    raw_len = -1
                 origin = self.headers.get("Origin")
                 if origin and origin not in {f"http://{item}" for item in allowed}:
+                    if 0 < raw_len <= MAX_BODY:
+                        self.rfile.read(raw_len)
                     self.send(403, {"errors": ["Cross-origin writes are not allowed."]})
                     return
                 if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+                    if 0 < raw_len <= MAX_BODY:
+                        self.rfile.read(raw_len)
                     self.send(415, {"errors": ["Use Content-Type: application/json."]})
                     return
                 try:

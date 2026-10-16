@@ -18,7 +18,7 @@
     "is_simulated_signature": true,
     "authorization_notice": "SYNTHETIC DEMONSTRATION ONLY — No Army authorization or actual official signature.",
     "signer": "SYNTHETIC DEMO REVIEWER (role-only placeholder)",
-    "proof_hash": "222a5a5a46b130fb286719e0659e1e00f3e9e319677a7fde1a44a0323b4339fa"
+    "proof_hash": "f2890d49aa09619eb1bbc04af8c95805c8d76b119ddc17c31c7d278255473d1e"
   },
   "dialectical_bias_verification": {
     "bias_category": "confirmation_bias",
