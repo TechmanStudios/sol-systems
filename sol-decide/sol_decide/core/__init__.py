@@ -17,6 +17,8 @@ from .primitives import (
 from .sheaf_decision_complex import (
     SheafDecisionComplex,
     SheafEdge,
+    SheafFace,
+    HodgeDecompositionReport,
     DecisionEvaluationReport
 )
 from .serialization import (
@@ -39,6 +41,8 @@ __all__ = [
     "BiasCheck",
     "SheafDecisionComplex",
     "SheafEdge",
+    "SheafFace",
+    "HodgeDecompositionReport",
     "DecisionEvaluationReport",
     "export_complex_to_dict",
     "import_complex_from_dict",

@@ -238,6 +238,46 @@ def build_ngcv_trade_study() -> SheafDecisionComplex:
             edge_type="constraint_check"
         )
 
+    # 8. Assumption & Risk Sheaf Couplings (equilibrium-calibrated restriction maps)
+    # Battery energy density (450 Wh/kg) -> HED Gross Vehicle Weight (42.0 tons, channel 0)
+    complex_obj.add_edge(
+        edge_id="e_ass_battery_hed",
+        source_id="ass_battery_density",
+        target_id="opt_hed",
+        dim_edge=1,
+        source_map=np.array([[42.0 / 450.0]]),
+        target_map=np.array([[1.0, 0.0, 0.0, 0.0]]),
+        weight=1.0,
+        description="Couples Li-Ion specific energy density to HED battery pack mass",
+        edge_type="assumption_link"
+    )
+
+    # Fuel burden cost (35 USD/gal) -> Diesel effective logistics weight/burden (43.5, channel 0)
+    complex_obj.add_edge(
+        edge_id="e_ass_fuel_diesel",
+        source_id="ass_fuel_cost",
+        target_id="opt_diesel",
+        dim_edge=1,
+        source_map=np.array([[43.5 / 35.0]]),
+        target_map=np.array([[1.0, 0.0, 0.0, 0.0]]),
+        weight=1.0,
+        description="Couples theater fuel logistics burden to diesel platform envelope",
+        edge_type="assumption_link"
+    )
+
+    # SiC Inverter Thermal Risk (severity 0.14) -> HED Lead Time (32.0 weeks, channel 3)
+    complex_obj.add_edge(
+        edge_id="e_risk_inverter_hed",
+        source_id="risk_inverter_thermal",
+        target_id="opt_hed",
+        dim_edge=1,
+        source_map=np.array([[32.0 / 0.14]]),
+        target_map=np.array([[0.0, 0.0, 0.0, 1.0]]),
+        weight=1.0,
+        description="Couples SiC inverter thermal qualification risk to procurement schedule",
+        edge_type="risk_mitigation"
+    )
+
     return complex_obj
 
 

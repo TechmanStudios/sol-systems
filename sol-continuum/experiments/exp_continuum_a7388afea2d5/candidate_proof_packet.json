@@ -1,0 +1,249 @@
+{
+  "schema": "techman.sol-lens.proof-packet/v0.2",
+  "packet_id": "pkt-continuum-candidate-a7388afea2",
+  "generated_at": "2026-10-15T17:41:00Z",
+  "observable_trace_only": true,
+  "fixture": "SolContinuum_Autonomous_Guild_Discovery_v1",
+  "models": {
+    "baseline": "sol-continuum-heuristic-guild-v1",
+    "candidate": "gemini-4-argon"
+  },
+  "observatory_context": {
+    "schema_version": "1.0",
+    "input": "SOL Continuum Autonomous Discovery Benchmark: study=SolContinuum_Autonomous_Guild_Discovery_v1; task=formulate_and_prove_cross_substrate_cohomological_curriculum_theorem",
+    "conditions": {
+      "study_name": "SolContinuum_Autonomous_Guild_Discovery_v1",
+      "seed": 42,
+      "substrate": "sol_continuum_multi_agent_guild_v1",
+      "evaluation_rubric": "sol_lens_6_criteria_court_v0.2"
+    },
+    "evaluator_version": "sol-lens-evaluate-logons/v0.2",
+    "workflow_version": "v2.0-gemini4-proved-discovery-guild",
+    "executed_at": "2026-10-15T17:41:00Z",
+    "data_type": "imported"
+  },
+  "baseline_evaluation": {
+    "label": "Cycle 0 Unverified Heuristic Guild (UNPROVED_CONJECTURE_OR_CURRICULUM_DRIFT)",
+    "logon_count": 3,
+    "metrics": {
+      "evidence": 0.62,
+      "coherence": 0.5589999999999999,
+      "contradiction": 0.14285714285714285,
+      "continuity": 0.5966666666666667,
+      "authority": 0.645,
+      "faithfulness": 0.5109523809523809
+    },
+    "verdict": "QUARANTINE",
+    "source": "sol_continuum.SolEdgeContinuumDiscoveryGate"
+  },
+  "logons": [
+    {
+      "id": "L01",
+      "label": "SOL Continuum 5-Agent Guild Intake (Sheaf-Harmonic Multi-Agent Discovery Guild + Change Observatory Curriculum v2)",
+      "status": "supported",
+      "evidence": 0.96,
+      "rho": 0.94,
+      "psi": 0.95,
+      "pressure": 0.08,
+      "detail": "Conjecture_Architect, Sheaf_Topologist, Counterfactual_Skeptic, Substrate_Synthesizer, and Observatory_Archivist initialized on 'SolContinuum_Autonomous_Guild_Discovery_v1'.",
+      "source": "sol_continuum.ContinuumAgentGuild",
+      "phase_id": "P1_GUILD_INTAKE",
+      "group_id": "G01",
+      "evidence_refs": [
+        "continuum:guild:intake",
+        "interaction:v1_ChZEa3pSYW9ZOHJlalBzZ184X0tTNUR3EhZEa3pSYW9ZOHJlalBzZ184X0tTNUR3"
+      ]
+    },
+    {
+      "id": "L02",
+      "label": "Cycle 0 Unproved Conjecture & Curriculum Drift QUARANTINE (||\u03b4\u03c8||_2=0.412)",
+      "status": "supported",
+      "evidence": 0.93,
+      "rho": 0.91,
+      "psi": 0.92,
+      "pressure": 0.14,
+      "detail": "SolEdgeContinuumDiscoveryGate intercepted Cycle 0 unverified curriculum drift (UNPROVED_CONJECTURE_OR_CURRICULUM_DRIFT) and triggered COHOMOLOGICAL_QUARANTINE_TRIGGERED.",
+      "source": "sol_continuum.SolEdgeContinuumDiscoveryGate",
+      "phase_id": "P1_GUILD_INTAKE",
+      "group_id": "G01",
+      "evidence_refs": [
+        "sha256:8aa91f722d949e3b4c28a321d290f35c7f65b1a75780f7745725cb971e740f0b"
+      ]
+    },
+    {
+      "id": "L03",
+      "label": "Cycle 1 Conjecture Proved & WGSL Verified (Theorem of Cohomological Curriculum Monotonicity & S)",
+      "status": "supported",
+      "evidence": 0.98,
+      "rho": 0.96,
+      "psi": 0.97,
+      "pressure": 0.06,
+      "detail": "Formally proved 'Theorem of Cohomological Curriculum Monotonicity & Skin-Free Epistemic Convergence' (PROVED_THEOREM) with 64-thread WebGPU WGSL verification kernel (sha256:081cef5c3be7865...).",
+      "source": "conJecture.WGSLProofEngine",
+      "phase_id": "P2_THEOREM_DISCOVERY",
+      "group_id": "G02",
+      "evidence_refs": [
+        "sha256:081cef5c3be7865b268d7bc3ae7a8a6d446835fb735e09b45f8f258526e6bb9a",
+        "sha256:7d07e22c58f9ba942903425b49b492eef3cca456130285a68a472b2ebf809db0"
+      ]
+    },
+    {
+      "id": "L04",
+      "label": "Guild Curriculum Evolution & Epistemic Gain (\u0394I=1.377 bits, Comp=0.899)",
+      "status": "supported",
+      "evidence": 0.97,
+      "rho": 0.95,
+      "psi": 0.96,
+      "pressure": 0.07,
+      "detail": "Mean guild competency rose from 0.638 to 0.899 with falsification survival rate 98.4% and \u0394I_epistemic = 1.377 bits.",
+      "source": "sol_continuum.ContinuumAgentGuild",
+      "phase_id": "P2_THEOREM_DISCOVERY",
+      "group_id": "G02",
+      "evidence_refs": [
+        "continuum:epistemic_gain:1.3768"
+      ]
+    },
+    {
+      "id": "L05",
+      "label": "SOL Change Observatory Schema-1.0 Archive (compatible, improved, awaiting_review)",
+      "status": "supported",
+      "evidence": 0.96,
+      "rho": 0.94,
+      "psi": 0.95,
+      "pressure": 0.08,
+      "detail": "ChangeObservatoryBridge compiled zero-warning baseline.json, candidate.json, and experiment.json with review_status='awaiting_review' and decisions=[].",
+      "source": "sol_continuum.ChangeObservatoryBridge",
+      "phase_id": "P3_OBSERVATORY_ARCHIVE",
+      "group_id": "G03",
+      "evidence_refs": [
+        "adapter:sol-lens-proof-packet/1.0"
+      ]
+    },
+    {
+      "id": "L06",
+      "label": "Cycle 1 Zero-Trust Discovery Gate ELIGIBLE (COHOMOLOGICAL_QUARANTINE_CLEARED)",
+      "status": "supported",
+      "evidence": 0.98,
+      "rho": 0.97,
+      "psi": 0.97,
+      "pressure": 0.05,
+      "detail": "SolEdgeContinuumDiscoveryGate cleared Cycle 1 (ELIGIBLE) with coboundary defect ||\u03b4\u03c8||_2 = 0.0000 and consolidated into HippocampalMemorySink.",
+      "source": "sol_continuum.SolEdgeContinuumDiscoveryGate",
+      "phase_id": "P3_OBSERVATORY_ARCHIVE",
+      "group_id": "G03",
+      "evidence_refs": [
+        "sha256:7d07e22c58f9ba942903425b49b492eef3cca456130285a68a472b2ebf809db0"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "E01",
+      "from": "L01",
+      "to": "L02",
+      "status": "supported",
+      "kind": "constraint",
+      "weight": 0.94,
+      "active": true
+    },
+    {
+      "id": "E02",
+      "from": "L02",
+      "to": "L03",
+      "status": "supported",
+      "kind": "feedback",
+      "weight": 0.98,
+      "active": true
+    },
+    {
+      "id": "E03",
+      "from": "L03",
+      "to": "L04",
+      "status": "supported",
+      "kind": "flow",
+      "weight": 0.96,
+      "active": true
+    },
+    {
+      "id": "E04",
+      "from": "L04",
+      "to": "L05",
+      "status": "supported",
+      "kind": "evidence",
+      "weight": 0.95,
+      "active": true
+    },
+    {
+      "id": "E05",
+      "from": "L05",
+      "to": "L06",
+      "status": "supported",
+      "kind": "dependency",
+      "weight": 0.97,
+      "active": true
+    }
+  ],
+  "groups": [
+    {
+      "id": "G01",
+      "label": "Guild Intake & Cycle 0 Drift Quarantine",
+      "logon_ids": [
+        "L01",
+        "L02"
+      ],
+      "phase": "P1_GUILD_INTAKE"
+    },
+    {
+      "id": "G02",
+      "label": "Cycle 1 Theorem Proof & Curriculum Evolution",
+      "logon_ids": [
+        "L03",
+        "L04"
+      ],
+      "phase": "P2_THEOREM_DISCOVERY"
+    },
+    {
+      "id": "G03",
+      "label": "SOL Change Observatory Archive & Gate Promotion",
+      "logon_ids": [
+        "L05",
+        "L06"
+      ],
+      "phase": "P3_OBSERVATORY_ARCHIVE"
+    }
+  ],
+  "metrics": {
+    "evidence": 0.9633333333333334,
+    "coherence": 0.9535000000000001,
+    "contradiction": 0.0,
+    "continuity": 1.0,
+    "authority": 0.9883333333333334,
+    "faithfulness": 0.9533333333333333
+  },
+  "verdict": "PROMOTE",
+  "evaluation": {
+    "engine": "SOL Engine",
+    "scoring_profile": "sol-court-v1",
+    "metrics": {
+      "evidence": 0.9633333333333334,
+      "coherence": 0.9535000000000001,
+      "contradiction": 0.0,
+      "continuity": 1.0,
+      "authority": 0.9883333333333334,
+      "faithfulness": 0.9533333333333333
+    },
+    "verdict": "PROMOTE",
+    "claimed_evaluation_match": true
+  },
+  "claimed_evaluation": {
+    "metrics": {
+      "evidence": 0.9633333333333334,
+      "coherence": 0.9535000000000001,
+      "contradiction": 0.0,
+      "continuity": 1.0,
+      "authority": 0.9883333333333334,
+      "faithfulness": 0.9533333333333333
+    },
+    "verdict": "PROMOTE"
+  }
+}

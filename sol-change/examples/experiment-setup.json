@@ -1,0 +1,47 @@
+{
+  "title": "A better sourced research agent",
+  "task": "Research whether a small public library should pilot a lending collection of home energy monitors. Summarize benefits, limitations, and a practical pilot plan with source support.",
+  "proposed_change": "Add a claim-to-source verification pass before the agent writes its final brief.",
+  "hypothesis": "A verification pass will improve citation support while keeping execution time and cost within the pilot budget.",
+  "intended_improvement": "At least 85% of factual claims have matching source support.",
+  "constraints": "Finish within 120 seconds and spend no more than $0.50 per run. Do not reduce reader usefulness.",
+  "acceptable_tradeoffs": "Up to 60% longer and 50% more expensive if citation support reaches 85%. Reader usefulness still requires review.",
+  "criteria": [
+    {
+      "id": "citation_support",
+      "label": "Citation support",
+      "unit": "%",
+      "direction": "higher",
+      "threshold": 85,
+      "max_regression_percent": 0,
+      "required": true
+    },
+    {
+      "id": "duration",
+      "label": "Execution time",
+      "unit": "s",
+      "direction": "lower",
+      "threshold": 120,
+      "max_regression_percent": 60,
+      "required": true
+    },
+    {
+      "id": "cost",
+      "label": "Run cost",
+      "unit": "USD",
+      "direction": "lower",
+      "threshold": 0.5,
+      "max_regression_percent": 50,
+      "required": true
+    },
+    {
+      "id": "usefulness",
+      "label": "Reader usefulness",
+      "unit": "rating/5",
+      "direction": "higher",
+      "threshold": 4,
+      "max_regression_percent": 0,
+      "required": true
+    }
+  ]
+}

@@ -10,3 +10,6 @@
 [submodule "sol-edge"]
 	path = sol-edge
 	url = https://github.com/TechmanStudios/sol-edge.git
+[submodule "sol-holo"]
+	path = sol-holo
+	url = https://github.com/TechmanStudios/sol-holo.git

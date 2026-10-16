@@ -59,7 +59,7 @@ def export_complex_to_dict(complex_obj: SheafDecisionComplex) -> Dict[str, Any]:
     edges = []
     for eid in complex_obj.edge_order:
         e = complex_obj.edges[eid]
-        edges.append({
+        edge_dict: Dict[str, Any] = {
             "id": e.id,
             "source_id": e.source_id,
             "target_id": e.target_id,
@@ -68,15 +68,33 @@ def export_complex_to_dict(complex_obj: SheafDecisionComplex) -> Dict[str, Any]:
             "target_map": e.target_map.tolist(),
             "weight": float(e.weight),
             "description": e.description,
-            "edge_type": e.edge_type
+            "edge_type": e.edge_type,
+        }
+        if e.edge_offset is not None:
+            edge_dict["edge_offset"] = e.edge_offset.tolist()
+        edges.append(edge_dict)
+
+    faces = []
+    for fid in complex_obj.face_order:
+        f = complex_obj.faces[fid]
+        faces.append({
+            "id": f.id,
+            "edge_ids": list(f.edge_ids),
+            "orientations": [float(o) for o in f.orientations],
+            "dim_face": f.dim_face,
+            "weight": float(f.weight),
+            "description": f.description,
         })
 
-    return {
+    result: Dict[str, Any] = {
         "name": complex_obj.name,
         "zero_tolerance": complex_obj.zero_tolerance,
         "nodes": nodes,
-        "edges": edges
+        "edges": edges,
     }
+    if faces:
+        result["faces"] = faces
+    return result
 
 
 def import_complex_from_dict(data: Dict[str, Any]) -> SheafDecisionComplex:
@@ -178,7 +196,17 @@ def import_complex_from_dict(data: Dict[str, Any]) -> SheafDecisionComplex:
             target_map=np.array(edge["target_map"], dtype=np.float64),
             weight=edge.get("weight", 1.0),
             description=edge.get("description", ""),
-            edge_type=edge.get("edge_type", "allocation")
+            edge_type=edge.get("edge_type", "allocation"),
+            edge_offset=np.array(edge["edge_offset"], dtype=np.float64) if "edge_offset" in edge else None,
+        )
+
+    for face in data.get("faces", []):
+        complex_obj.add_face(
+            face_id=face["id"],
+            edge_ids=list(face["edge_ids"]),
+            orientations=list(face.get("orientations", [1.0 for _ in face["edge_ids"]])),
+            weight=face.get("weight", 1.0),
+            description=face.get("description", ""),
         )
 
     return complex_obj
