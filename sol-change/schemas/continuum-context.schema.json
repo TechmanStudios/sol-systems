@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOL Change optional producer context v1.0",
+  "description": "A sidecar for a saved SOL Lens v0.2 packet. Omitted facts remain unknown. This does not authorize execution or attest source authenticity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "input": {"type": "string", "minLength": 1, "maxLength": 100000, "pattern": "\\S"},
+    "conditions": {"type": "object"},
+    "evaluator_version": {"type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S"},
+    "workflow_version": {"type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S"},
+    "executed_at": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"},
+    "data_type": {"enum": ["imported", "manual", "synthetic"]}
+  }
+}

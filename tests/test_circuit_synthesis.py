@@ -109,6 +109,24 @@ class TestCanonicalCircuitSynthesis:
         assert res.verified is True
         assert res.accuracy == 1.0
 
+    def test_blind_algebraic_synthesis_without_spec_name(self, synthesizer):
+        """Verifies that circuit topology synthesis is driven by spec.table, not spec.name."""
+        blind_xor = TruthTableSpec(
+            name="ANONYMOUS_NONLINEAR_TABLE_01",
+            inputs=["IN_ALPHA", "IN_BETA"],
+            outputs=["OUT_GAMMA"],
+            table={
+                (0, 0): (0,),
+                (0, 1): (1,),
+                (1, 0): (1,),
+                (1, 1): (0,)
+            }
+        )
+        res = synthesizer.synthesize(blind_xor)
+        assert res.verified is True
+        assert res.accuracy == 1.0
+        assert any(n.node_type == CircuitNodeType.INTERFERENCE for n in res.circuit.nodes.values())
+
 
 class TestCausalEmergenceInSynthesizedCircuits:
     """Verifies Erik Hoel's quantitative Causal Emergence in synthesized Riemannian circuits."""

@@ -84,28 +84,64 @@ class DialecticalAdversary:
 
         # Sweep strain levels from 0.01 up to strain_magnitude
         strain_steps = np.linspace(0.01, self.strain_magnitude, 15)
+        trials_per_step = max(2, self.max_strain_trials // len(strain_steps))
+
+        # Collect directional strain directions from restriction maps on opt.id
+        directional_axes: List[np.ndarray] = []
+        for edge in complex_obj.edges.values():
+            if edge.source_id == opt.id and edge.target_id in complex_obj.primitives:
+                target_prim = complex_obj.primitives[edge.target_id]
+                if target_prim.primitive_type == PrimitiveType.CONSTRAINT:
+                    for row in edge.source_map:
+                        norm = float(la.norm(row))
+                        if norm > 1e-12:
+                            unit_dir = row / norm
+                            directional_axes.append(unit_dir)
+                            directional_axes.append(-unit_dir)
+
+        total_trials_executed = 0
+        unflagged_commits = 0
 
         for s_mag in strain_steps:
             trial_failed = False
-            for _ in range(max(2, self.max_strain_trials // len(strain_steps))):
-                # Inject Lie-algebraic shear perturbation: delta S = Lie bracket noise
-                perturbation = self.rng.uniform(-s_mag, s_mag, size=opt.stalk_dim)
-                strained_state = base_state * (1.0 + perturbation)
+            candidate_perturbations: List[np.ndarray] = [
+                s_mag * d_vec for d_vec in directional_axes
+            ]
+            for _ in range(trials_per_step):
+                candidate_perturbations.append(
+                    self.rng.uniform(-s_mag, s_mag, size=opt.stalk_dim)
+                )
 
-                # Check if any hard constraint is breached
+            for perturbation in candidate_perturbations:
+                total_trials_executed += 1
+                strained_state = base_state * (1.0 + perturbation)
+                opt.set_state(strained_state)
+
+                # 1. Ground-truth check: did any hard constraint breach?
+                actual_violation = False
                 for con in constraints:
                     for edge in complex_obj.edges.values():
                         if edge.source_id == opt.id and edge.target_id == con.id:
                             proj = edge.source_map @ strained_state
-                            viol, mag = con.evaluate_violation(float(proj[0]))
+                            viol, _ = con.evaluate_violation(float(proj[0]))
                             if viol:
-                                trial_failed = True
-                                witness = strained_state.copy()
-                                inflection_found = True
+                                actual_violation = True
                                 break
-                    if trial_failed:
+                    if actual_violation:
                         break
-                if trial_failed:
+
+                # 2. Governance check: did the sheaf obstruction auditor flag the breach?
+                if actual_violation:
+                    obstructions = complex_obj.audit_obstructions()
+                    sheaf_flagged = any(
+                        obs.get("source_id") == opt.id for obs in obstructions
+                    )
+                    if not sheaf_flagged:
+                        unflagged_commits += 1
+
+                    trial_failed = True
+                    witness = strained_state.copy()
+                    inflection_found = True
                     break
 
             if trial_failed:
@@ -117,7 +153,7 @@ class DialecticalAdversary:
         opt.set_state(base_state)
 
         is_resilient = not inflection_found
-        false_commit_rate = 0.0 if is_resilient else 0.0
+        false_commit_rate = float(unflagged_commits) / float(max(1, total_trials_executed))
 
         # Update BiasCheck primitive in complex if present
         for p in complex_obj.primitives.values():
