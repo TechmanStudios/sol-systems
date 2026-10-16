@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Compare agent runs, inspect the evidence, and record your decision. A local SOL Change Observatory.">
+  <title>SOL · Change Observatory</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script type="module" src="/static/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar">
+    <a class="brand" href="#/" aria-label="SOL Change Observatory home"><span class="brand-icon">S<span>O</span>L</span><span class="brand-name">Change<br>Observatory</span></a>
+    <div class="workspace-label">LOCAL WORKSPACE</div>
+    <nav aria-label="Main navigation"><a class="nav-item active" href="#/" id="experiments-nav"><span aria-hidden="true">▦</span> Experiments <span class="nav-count" id="experiment-count">—</span></a></nav>
+    <div class="sidebar-section"><div class="workspace-label">YOUR REVIEW LOOP</div><ol><li>Define the change</li><li>Compare the evidence</li><li>Make the call</li></ol></div>
+    <div class="sidebar-bottom"><div class="local-status"><span class="status-dot"></span> Local &amp; private</div><p>Stored on this computer.<br>No accounts. No API calls.</p><a href="#/guide">Import &amp; export guide <span aria-hidden="true">↗</span></a><div class="version">SOL CONTINUUM · CHANGE v0.2</div></div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar"><div class="breadcrumbs" id="breadcrumbs">Workspace <span>/</span> Experiments</div><a class="mobile-guide" href="#/guide">Import guide ↗</a><div class="topbar-note"><span class="status-dot"></span> Evidence first. Human decided.</div></header>
+    <main id="main" tabindex="-1"><div class="loading">Opening the observatory…</div></main>
+    <footer class="footer"><span>SOL CHANGE OBSERVATORY</span><span>Every conclusion has a trail.</span></footer>
+  </div>
+  <div class="toast" role="status" aria-live="polite" id="toast" hidden></div>
+  <dialog id="import-dialog" aria-labelledby="import-title"></dialog>
+</body>
+</html>

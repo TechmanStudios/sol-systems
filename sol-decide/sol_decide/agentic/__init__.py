@@ -16,6 +16,22 @@ from .sensitivity_ablation import (
     SensitivityReport,
     ParameterFlipThreshold
 )
+from .live_llm_elicitation import (
+    CohomologicalRepairRecord,
+    GeminiReasoningTelemetry,
+    H1ObstructionResolutionRecord,
+    HodgeHarmonicNegotiationSpec,
+    LiveGeminiMoAElicitor,
+    LiveGovernedDecisionBundle,
+    QuarantineRepairProposalSpec,
+    SolEdgePreExecutionBridge,
+    SolEdgeGovernanceArtifact,
+    SolLensProofPacketCompiler,
+    SOL_LENS_SCHEMA_V02,
+    MultiAgentTradeStudySpec,
+    SpecialistSubsystemProposalSpec,
+    ViolatedSheafInvariant,
+)
 
 __all__ = [
     "SevenGiantsElicitor",
@@ -25,5 +41,23 @@ __all__ = [
     "DialecticalBiasReport",
     "SensitivityAblator",
     "SensitivityReport",
-    "ParameterFlipThreshold"
+    "ParameterFlipThreshold",
+    "CohomologicalRepairRecord",
+    "GeminiReasoningTelemetry",
+    "H1ObstructionResolutionRecord",
+    "HodgeHarmonicNegotiationSpec",
+    "LiveGeminiMoAElicitor",
+    "LiveGovernedDecisionBundle",
+    "QuarantineRepairProposalSpec",
+    "SolEdgePreExecutionBridge",
+    "SolEdgeGovernanceArtifact",
+    "SolLensProofPacketCompiler",
+    "SOL_LENS_SCHEMA_V02",
+    "MultiAgentTradeStudySpec",
+    "SpecialistSubsystemProposalSpec",
+    "ViolatedSheafInvariant",
 ]
+
+
+
+
