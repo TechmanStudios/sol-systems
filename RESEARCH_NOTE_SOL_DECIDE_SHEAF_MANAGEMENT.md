@@ -132,7 +132,7 @@ This answers the vital PM question: *"What is the exact minimum shift in battery
   - `opt_hed` satisfied all hard constraints ($42.0$ tons, $8.0$ hours, $52.0$ mph, $32.0$ weeks).
   - Evaluated Betti numbers: $\beta_0 = 11$, $\beta_1 = 0$ (Feasible Section).
   - Adversarial strain injection ($12.0\%$ shear) withstood; **0.00% False Commit Rate** certified.
-  - Signer-ready Decision Package generated and signed by PEO GCS Chief Engineer.
+  - Synthetic demonstration Decision Package generated with a simulated sign-off by a role-only placeholder (`SYNTHETIC DEMO REVIEWER`). Metadata explicitly records `is_demo: true`, `is_simulated_signature: true`, and `is_signed: false`. No Army authorization or actual official signature is represented; mathematical certification and the proof hash concern the trade-study calculation only.
 
 ### 5.2 Demonstration 2: Long-Horizon Living Decision Program (Multi-Episode 18-Month Refresh)
 - **Operational Shocks Applied:**

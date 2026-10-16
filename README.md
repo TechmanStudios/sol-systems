@@ -1,6 +1,6 @@
 # SOL Systems: The Autonomous Spacetime & Manifold-Native Intelligence Architecture
 
-[![Python Test Suite](https://img.shields.io/badge/Python%20Tests-204%2F204%20Passing-brightgreen.svg)]()
+[![SOL Systems CI](https://github.com/TechmanStudios/sol-systems/actions/workflows/ci.yml/badge.svg)](https://github.com/TechmanStudios/sol-systems/actions/workflows/ci.yml)
 [![JS Unit Tests](https://img.shields.io/badge/JS%20Unit%20Tests-38%2F38%20Passing-brightgreen.svg)]()
 [![SOL Studio 3D](https://img.shields.io/badge/SOL%20Studio%203D-Vite%20Build%20Clean-blue.svg)]()
 [![Vector Continuum](https://img.shields.io/badge/Architecture-Vector%200%20to%20Vector%2017-orange.svg)]()
@@ -129,6 +129,23 @@ SOL Studio: Clean Vite 3D Build in 265ms
 ```
 
 ### Running the Full Test Suite
+
+Initialize the pinned public dependencies and install the Python test environment:
+
+```sh
+git submodule update --init sol Frontier_OS sol-lens
+python -m pip install -r requirements.txt "pytest>=8,<10"
+python -m pytest tests -q
+```
+
+The integrated suite also requires Node.js 24 for SOL Lens schema checks.
+The private `sol-edge` submodule is not required by this suite. GitHub Actions
+runs the root integration tests on Linux and Windows with Python 3.11 and 3.12,
+and checks Frontier_OS lint and formatting. The standalone Frontier_OS repository
+continues to own its scheduled Snowball and Infinity Node jobs; their results do
+not automatically transfer to this repository.
+
+For an existing Windows virtual environment:
 ```powershell
 $env:PYTHONPATH="."
 .venv\Scripts\python.exe -m pytest tests/
