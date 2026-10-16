@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 640" width="100%" height="100%">
+<rect width="1180" height="640" rx="14" fill="#090e1c" stroke="#1e293b" stroke-width="2"/>
+<text x="590" y="36" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="18" font-weight="800" letter-spacing="0.6">SOL-HOLO MULTI-SUBSTRATE TOPOLOGICAL PHYSICS &amp; SOVEREIGN HARDWARE DASHBOARD</text>
+<rect x="24" y="54" width="554" height="272" rx="10" fill="#11182d" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="301" y="78" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="13" font-weight="800">Panel A — Persistent Homology Barcodes &amp; Ollivier–Ricci Surgery (Frontier G)</text>
+<text x="301" y="96" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10.5">Neck-Pinch Excised (κ: -0.7668 → +0.1112) • Bottleneck Shift Δ_BN: 4.00 → 0.00</text>
+<text x="180" y="132" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Cycle 0 Pinched H₁ (w=0.04)</text>
+<rect x="190" y="118" width="12" height="20" rx="4" fill="#f43f5e" fill-opacity="0.85" stroke="#f8fafc" stroke-width="0.8"/>
+<text x="210" y="132" fill="#f43f5e" font-family="Consolas, monospace" font-size="10" font-weight="700">Collapsed (τ = 0.00 • QUARANTINE)</text>
+<text x="180" y="170" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Cycle 0 Plaquette Noise</text>
+<rect x="275" y="156" width="58" height="20" rx="4" fill="#f59e0b" fill-opacity="0.85" stroke="#f8fafc" stroke-width="0.8"/>
+<text x="341" y="170" fill="#f59e0b" font-family="Consolas, monospace" font-size="10" font-weight="700">[1.25, 2.00) Killed by im ∂₂</text>
+<text x="180" y="208" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Cycle 1 Restored H₁ (ch 0)</text>
+<rect x="255" y="194" width="285" height="20" rx="4" fill="#10b981" fill-opacity="0.85" stroke="#f8fafc" stroke-width="0.8"/>
+<text x="548" y="208" fill="#10b981" font-family="Consolas, monospace" font-size="10" font-weight="700">[1.00, ∞) Essential Wormhole (τ = 0.80)</text>
+<text x="180" y="246" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Cycle 1 Restored H₁ (ch 1)</text>
+<rect x="255" y="232" width="285" height="20" rx="4" fill="#10b981" fill-opacity="0.85" stroke="#f8fafc" stroke-width="0.8"/>
+<text x="548" y="246" fill="#10b981" font-family="Consolas, monospace" font-size="10" font-weight="700">[1.00, ∞) Essential Wormhole (τ = 0.80)</text>
+<text x="180" y="284" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Cycle 1 Restored H₁ (ch 2)</text>
+<rect x="255" y="270" width="285" height="20" rx="4" fill="#10b981" fill-opacity="0.85" stroke="#f8fafc" stroke-width="0.8"/>
+<text x="548" y="284" fill="#10b981" font-family="Consolas, monospace" font-size="10" font-weight="700">[1.00, ∞) Essential Wormhole (τ = 0.80)</text>
+<rect x="602" y="54" width="554" height="272" rx="10" fill="#11182d" stroke="#a855f7" stroke-width="1.5"/>
+<text x="879" y="78" text-anchor="middle" fill="#a855f7" font-family="Segoe UI, sans-serif" font-size="13" font-weight="800">Panel B — Non-Hermitian Skin Effect &amp; PT-Symmetry Spectrum (Frontier H)</text>
+<text x="879" y="96" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10.5">GBZ Gauge S = diag(e^{-γx}) • Petermann K_max: 26.30 (ν=-1) → 1.14 (Im λ = 0, ν=0)</text>
+<line x1="650" y1="200" x2="1110" y2="200" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="4,3"/>
+<line x1="880" y1="115" x2="880" y2="285" stroke="#253252" stroke-width="1.2"/>
+<text x="1115" y="204" fill="#22d3ee" font-family="Consolas, monospace" font-size="10">Im(λ)=0</text>
+<ellipse cx="880" cy="200" rx="165" ry="68" fill="none" stroke="#f43f5e" stroke-width="1.8" stroke-dasharray="5,3"/>
+<circle cx="1045.0" cy="200.0" r="4.2" fill="#f43f5e"/>
+<circle cx="1028.7" cy="229.5" r="4.2" fill="#f43f5e"/>
+<circle cx="982.9" cy="253.2" r="4.2" fill="#f43f5e"/>
+<circle cx="916.7" cy="266.3" r="4.2" fill="#f43f5e"/>
+<circle cx="843.3" cy="266.3" r="4.2" fill="#f43f5e"/>
+<circle cx="777.1" cy="253.2" r="4.2" fill="#f43f5e"/>
+<circle cx="731.3" cy="229.5" r="4.2" fill="#f43f5e"/>
+<circle cx="715.0" cy="200.0" r="4.2" fill="#f43f5e"/>
+<circle cx="731.3" cy="170.5" r="4.2" fill="#f43f5e"/>
+<circle cx="777.1" cy="146.8" r="4.2" fill="#f43f5e"/>
+<circle cx="843.3" cy="133.7" r="4.2" fill="#f43f5e"/>
+<circle cx="916.7" cy="133.7" r="4.2" fill="#f43f5e"/>
+<circle cx="982.9" cy="146.8" r="4.2" fill="#f43f5e"/>
+<circle cx="1028.7" cy="170.5" r="4.2" fill="#f43f5e"/>
+<polygon points="720.0,194 725.0,200 720.0,206 715.0,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="755.5,194 760.5,200 755.5,206 750.5,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="791.0,194 796.0,200 791.0,206 786.0,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="826.5,194 831.5,200 826.5,206 821.5,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="862.0,194 867.0,200 862.0,206 857.0,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="897.5,194 902.5,200 897.5,206 892.5,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="933.0,194 938.0,200 933.0,206 928.0,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="968.5,194 973.5,200 968.5,206 963.5,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="1004.0,194 1009.0,200 1004.0,206 999.0,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<polygon points="1039.5,194 1044.5,200 1039.5,206 1034.5,200" fill="#10b981" stroke="#0b1020" stroke-width="0.8"/>
+<circle cx="655" cy="304" r="4.5" fill="#f43f5e"/><text x="666" y="308" fill="#f43f5e" font-family="Segoe UI, sans-serif" font-size="10.5">Cycle 0 Broken PT Loop (g=1.35 &gt; g_EP, ν=-1, IPR=0.74 QUARANTINE)</text>
+<polygon points="655,282 660,287 655,292 650,287" fill="#10b981"/><text x="666" y="291" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="10.5" font-weight="700">Cycle 1 GBZ Unbroken Real Spectrum (g=0.35 &lt; g_EP, ν=0, IPR=0.25 ELIGIBLE)</text>
+<rect x="24" y="346" width="554" height="270" rx="10" fill="#11182d" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="301" y="370" text-anchor="middle" fill="#f59e0b" font-family="Segoe UI, sans-serif" font-size="13" font-weight="800">Panel C — Sovereign WideWord 32/64b VM &amp; 68-Case Fault Matrix (Frontier L)</text>
+<text x="301" y="388" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10.5">32b R7=0x7D5D7757 • 64b R7=0x0078005655775757 • 0 Oracle Mismatches • 3-Manifold 2PC</text>
+<text x="200" y="425" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Pipeline/Wavefront Faults</text>
+<rect x="212" y="410" width="240" height="20" rx="4" fill="#0b1020" stroke="#253252"/>
+<rect x="212" y="410" width="240" height="20" rx="4" fill="#22d3ee" fill-opacity="0.82"/>
+<text x="462" y="425" fill="#10b981" font-family="Consolas, monospace" font-size="10.5" font-weight="700">33 / 33 PASS</text>
+<text x="200" y="463" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">State Relocation Faults</text>
+<rect x="212" y="448" width="240" height="20" rx="4" fill="#0b1020" stroke="#253252"/>
+<rect x="212" y="448" width="240" height="20" rx="4" fill="#3b82f6" fill-opacity="0.82"/>
+<text x="462" y="463" fill="#10b981" font-family="Consolas, monospace" font-size="10.5" font-weight="700">21 / 21 PASS</text>
+<text x="200" y="501" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Realtime Calibration Faults</text>
+<rect x="212" y="486" width="240" height="20" rx="4" fill="#0b1020" stroke="#253252"/>
+<rect x="212" y="486" width="240" height="20" rx="4" fill="#a855f7" fill-opacity="0.82"/>
+<text x="462" y="501" fill="#10b981" font-family="Consolas, monospace" font-size="10.5" font-weight="700">14 / 14 PASS</text>
+<text x="200" y="539" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Micro-ISA v0/v1 Backends</text>
+<rect x="212" y="524" width="240" height="20" rx="4" fill="#0b1020" stroke="#253252"/>
+<rect x="212" y="524" width="240" height="20" rx="4" fill="#f59e0b" fill-opacity="0.82"/>
+<text x="462" y="539" fill="#10b981" font-family="Consolas, monospace" font-size="10.5" font-weight="700">10 / 10 PASS</text>
+<text x="200" y="577" text-anchor="end" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">8-Ranger Lumina Squadron</text>
+<rect x="212" y="562" width="240" height="20" rx="4" fill="#0b1020" stroke="#253252"/>
+<rect x="212" y="562" width="240" height="20" rx="4" fill="#10b981" fill-opacity="0.82"/>
+<text x="462" y="577" fill="#10b981" font-family="Consolas, monospace" font-size="10.5" font-weight="700">8 / 8 CLEAR</text>
+<rect x="602" y="346" width="554" height="270" rx="10" fill="#11182d" stroke="#10b981" stroke-width="1.5"/>
+<text x="879" y="370" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="13" font-weight="800">Panel D — Bilateral EntanglerGiant MSF &amp; Bimodal Dream Sink (Frontier N)</text>
+<text x="879" y="388" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10.5">Lyapunov λ̂: +0.178 (UNSTABLE BLOCKED) → -0.418 (STABLE) • Mahalanobis-SVD r = 1.0000</text>
+<line x1="665.0" y1="560.0" x2="1105.0" y2="560.0" stroke="#475569" stroke-width="1.4"/>
+<line x1="665.0" y1="415.0" x2="665.0" y2="560.0" stroke="#475569" stroke-width="1.4"/>
+<line x1="665.0" y1="537.7" x2="1105.0" y2="537.7" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="4,3"/>
+<text x="1101.0" y="532.7" text-anchor="end" fill="#22d3ee" font-family="Consolas, monospace" font-size="9.5">Phase Lock Threshold (0.10 rad)</text>
+<polyline points="680.0,484.2 816.7,468.5 953.3,450.7 1090.0,430.6" fill="none" stroke="#f43f5e" stroke-width="2.6" stroke-dasharray="5,3"/>
+<polyline points="680.0,484.2 816.7,513.2 953.3,535.5 1090.0,545.7" fill="none" stroke="#10b981" stroke-width="2.8"/>
+<circle cx="680.0" cy="484.2" r="4.5" fill="#f43f5e"/>
+<text x="680.0" y="476.2" text-anchor="middle" fill="#f43f5e" font-family="Consolas, monospace" font-size="9.5">0.34</text>
+<circle cx="816.7" cy="468.5" r="4.5" fill="#f43f5e"/>
+<text x="816.7" y="460.5" text-anchor="middle" fill="#f43f5e" font-family="Consolas, monospace" font-size="9.5">0.41</text>
+<circle cx="953.3" cy="450.7" r="4.5" fill="#f43f5e"/>
+<text x="953.3" y="442.7" text-anchor="middle" fill="#f43f5e" font-family="Consolas, monospace" font-size="9.5">0.49</text>
+<circle cx="1090.0" cy="430.6" r="4.5" fill="#f43f5e"/>
+<text x="1090.0" y="422.6" text-anchor="middle" fill="#f43f5e" font-family="Consolas, monospace" font-size="9.5">0.58</text>
+<circle cx="680.0" cy="484.2" r="4.5" fill="#10b981"/>
+<text x="680.0" y="499.2" text-anchor="middle" fill="#10b981" font-family="Consolas, monospace" font-size="9.5" font-weight="700">0.340</text>
+<text x="680.0" y="576.0" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">Step 0</text>
+<circle cx="816.7" cy="513.2" r="4.5" fill="#10b981"/>
+<text x="816.7" y="528.2" text-anchor="middle" fill="#10b981" font-family="Consolas, monospace" font-size="9.5" font-weight="700">0.210</text>
+<text x="816.7" y="576.0" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">Step 1</text>
+<circle cx="953.3" cy="535.5" r="4.5" fill="#10b981"/>
+<text x="953.3" y="550.5" text-anchor="middle" fill="#10b981" font-family="Consolas, monospace" font-size="9.5" font-weight="700">0.110</text>
+<text x="953.3" y="576.0" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">Step 2</text>
+<circle cx="1090.0" cy="545.7" r="4.5" fill="#10b981"/>
+<text x="1090.0" y="560.7" text-anchor="middle" fill="#10b981" font-family="Consolas, monospace" font-size="9.5" font-weight="700">0.064</text>
+<text x="1090.0" y="576.0" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">Step 3</text>
+<text x="879" y="598" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="10.5" font-weight="700">Red: Cycle 0 Divergent Gap (λ̂ = +0.178 BLOCKED)  •  Green: Cycle 1 Phase-Locked (λ̂ = -0.418 STABLE)</text>
+</svg>
