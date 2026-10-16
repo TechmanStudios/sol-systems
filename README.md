@@ -16,6 +16,41 @@
 
 ---
 
+## In Plain English: What Is `SOL-Holo` & SOL Systems?
+
+> **The One-Sentence Pitch:**
+> *"Today’s AI models are brilliant brainstormers, but they can still confidently make up facts or miss hidden contradictions; we built a 'constitutional nervous system' (`SOL-Holo`) around frontier AI that forces every AI idea to pass strict laws of math, physics, and hardware verification—and automatically repairs its own mistakes—before a human ever approves it."*
+
+<details open>
+<summary><b>Read the Everyday Guide (No Advanced Math Required)</b></summary>
+
+### 1. The Problem Everyone Sees with Today's AI
+If you ask a powerful AI to design a lunar rover, a power grid, or a piece of software, it sounds like an expert. In high-stakes work, however, three things go wrong:
+- **The "Left Hand Doesn't Know What the Right Hand Is Doing" Problem:** One AI agent designs a battery that is light enough, another designs a robot arm that is strong enough, and a third designs the computer—but when you bolt them together, the whole rover is 200 pounds too heavy or overheats. Each part looked fine on its own, but they clashed where they connected.
+- **Grading Its Own Homework:** Most AI systems check their own work using another AI prompt—which is just a second guesser agreeing with the first guesser.
+- **Amnesia:** When an AI makes a mistake and fixes it today, it doesn't permanently rewire its rules so that the same mistake becomes impossible tomorrow.
+
+### 2. How `SOL-Holo` Works: Four "Organs" of a Digital Organism
+Instead of treating AI as a chatbot, `SOL-Holo` connects 11 software repositories into a single self-checking organism with four distinct organs:
+
+1. **The Physics & Geometry Detector (`Frontiers A–H`):**
+   Instead of leaving an AI's plan as a wall of text, `SOL-Holo` turns the plan into a **3D geometric web** (like a suspension bridge made of math). If three AI specialists subtly contradict each other around a loop, or if a sudden real-world shock hits (such as adding `+11.5 kg` of armor to a rover arm), it shows up as physical tension in that web. The system immediately **quarantines** the bad design, points out the exact tension to the AI, and has the AI redesign the part until the tension drops to zero.
+2. **The Proof & Circuit Forge (`Frontiers I & K`):**
+   Rather than trusting an AI's hunch, a **5-agent research team** inside `SOL-Holo` must **formally prove** its claim like a mathematician. Once proven, the system wires the idea into a **virtual logic circuit** and tests every possible input on a graphics chip (GPU) to prove there are zero hidden edge-case bugs.
+3. **The 8-Ranger Immune System & Crash-Test Lab (`Frontiers J & L`):**
+   Before any new code or hardware adjustment is trusted, it is inspected by a squadron of **8 specialized "Rangers"**—digital inspectors that can inspect anything, are only allowed to make tiny, bounded adjustments, and are strictly forbidden from altering the core laws of the system. They run the code through a **32-bit and 64-bit virtual processor** and blast it with **68 simulated hardware crashes and glitches** to prove that if anything goes wrong, the system rolls back to its exact safe state in a split second.
+4. **Sleep, Memory & The Black-Box Courtroom (`Frontiers C, M & N`):**
+   - **Finding its own blind spots:** The system scans its own notebooks (`Epistemic Gap Detector`) to find unanswered questions without waiting to be told what to fix.
+   - **Dreaming ("Hippocampal Consolidation"):** Just like the human brain replays the day's events during sleep to turn short-term experiences into long-term wisdom, `SOL-Holo` replays its verified discoveries and turns every hard-learned lesson into a **permanent constitutional law** (*"Lessons become law"*).
+   - **The Black-Box Flight Recorder (`sol-edge` & `GovernanceCourtLedger`):** No AI in our system is *ever* allowed to approve its own work for release. Every step—from the first failed attempt (`Cycle 0 QUARANTINE`), to the AI's internal reasoning signature, to the final verified fix (`Cycle 1 ELIGIBLE`)—is locked into a tamper-proof cryptographic ledger waiting for a human's final sign-off.
+
+### 3. Why Call It "SOL-Holo" (Like a Hologram)?
+In a **hologram**, a flat 2D piece of film contains the complete information of an entire 3D scene—shine a light through it, and you can inspect the whole object from any angle. Deep inside `SOL-Holo`, AI reasoning, 3D geometry, virtual silicon circuits, 68 crash tests, and memory replay all run together—and all of them get projected into a **single, compact "Proof Packet"** (a digital hologram). Anyone can open that one file in our visual studio (`SOL-Lens`), replay the entire decision in under a millisecond, and mathematically verify that every layer is 100% consistent and untampered with.
+
+</details>
+
+---
+
 ## SOL-Holo (`sol-holo`): Holographic Autopoietic Continuum & Sovereign Digital Organism (Frontiers A–N)
 
 **[`sol-holo/`](sol-holo/)** ([`TechmanStudios/sol-holo`](https://github.com/TechmanStudios/sol-holo)) unifies all 14 cross-repository synthesis frontiers (**Frontiers A–N**) across [`sol-decide/`](sol-decide/), [`sol-edge/`](sol-edge/), [`sol-continuum/`](sol-continuum/), [`sol-change/`](sol-change/), [`Frontier_OS/`](Frontier_OS/), [`conJecture/`](conJecture/), [`sol/`](sol/), and [`sol-lens/`](sol-lens/):
