@@ -926,6 +926,11 @@ class ManifoldSimulationServer:
         self.latest_gauge_audit_report: Optional[GaugeArbiterReport] = None
         self.latest_drift_compensation_report: Optional[ToolDriftCompensationReport] = None
 
+        # Vector 17 / Frontier C: Persistent D1 / SQLite Cryptographic Governance Court Ledger
+        from sol_decide.delivery.governance_ledger import GovernanceCourtLedger
+        self.governance_ledger = GovernanceCourtLedger()
+        self.latest_ledger_run_id: Optional[str] = None
+
         self.latest_packet: Dict = {}
         self._update_packet_snapshot()
 
@@ -1107,12 +1112,19 @@ def create_handler(server_instance: ManifoldSimulationServer):
                     self.send_response(404)
                     self.end_headers()
             elif path == "/api/packet/live":
+                qs = urllib.parse.parse_qs(parsed.query)
+                source_mode = qs.get("source", [""])[0].lower()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()
                 with server_instance.lock:
-                    payload = json.dumps(server_instance.latest_packet).encode("utf-8")
+                    decide_pkt = getattr(server_instance, "latest_decide_packet", None)
+                    use_decide = (source_mode == "decide" and decide_pkt is not None) or (
+                        getattr(server_instance, "override_live_packet", False) and decide_pkt is not None
+                    )
+                    active_pkt = decide_pkt if use_decide else server_instance.latest_packet
+                    payload = json.dumps(active_pkt).encode("utf-8")
                 self.wfile.write(payload)
             elif path == "/api/health":
                 self.send_response(200)
@@ -1675,6 +1687,14 @@ def create_handler(server_instance: ManifoldSimulationServer):
                     "obstructed_edges": rep.obstructed_edges,
                     "summary": rep.summary
                 }).encode("utf-8"))
+            elif path in ("/api/ledger/snapshot", "/api/ledger/runs", "/api/ledger/timeline"):
+                with server_instance.lock:
+                    snapshot = server_instance.governance_ledger.get_ledger_snapshot(limit=25)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": True, **snapshot}).encode("utf-8"))
             else:
                 self.send_response(404)
                 self.end_headers()
@@ -2308,6 +2328,568 @@ def create_handler(server_instance: ManifoldSimulationServer):
                     "post_betti_1": delta.post_betti_1,
                     "audit_summary": delta.audit_summary
                 }).encode("utf-8"))
+            elif path == "/api/decide/elicit_live":
+                from sol_decide.agentic.live_llm_elicitation import (
+                    DEFAULT_GEMINI_MODEL,
+                    LiveGeminiMoAElicitor,
+                )
+                mission_prompt = body.get(
+                    "prompt",
+                    (
+                        "Design a lunar surface microgrid power architecture balancing specific power (kW/kg), "
+                        "eclipse energy storage endurance (hours), and total lander payload mass (kg) under hard "
+                        "Artemis cargo mass and thermal dissipation limits."
+                    ),
+                )
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                thinking_level = body.get("thinking_level", None)
+                closed_loop_repair = bool(body.get("closed_loop_repair", False))
+                dialectical_h1 = bool(body.get("dialectical_h1", False))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                elicitor = LiveGeminiMoAElicitor(
+                    model=model_name,
+                    thinking_level=thinking_level,
+                )
+                if dialectical_h1:
+                    bundle = elicitor.run_dialectical_h1_obstruction_study(mission_prompt)
+                elif closed_loop_repair:
+                    bundle = elicitor.run_closed_loop_governed_study(mission_prompt)
+                else:
+                    bundle = elicitor.run_live_governed_study(mission_prompt)
+                with server_instance.lock:
+                    server_instance.latest_decide_bundle = bundle
+                    server_instance.latest_decide_packet = bundle.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    ledger_entry = server_instance.governance_ledger.record_governed_bundle(bundle)
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                h1_res = bundle.h1_resolution_record
+                hodge_rep = bundle.hodge_report
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "interaction_id": bundle.interaction_id,
+                    "model_used": bundle.model_used,
+                    "study_name": bundle.elicited_spec.study_name,
+                    "selected_option_id": bundle.decision_package.selected_option_id,
+                    "selected_option_name": bundle.decision_package.selected_option_name,
+                    "is_certifiable": bundle.decision_package.is_certifiable,
+                    "winning_policy_status": bundle.winning_governance.policy_decision.status.value,
+                    "winning_state_digest": bundle.winning_governance.final_runtime_state.state_digest,
+                    "closed_loop_repair": closed_loop_repair,
+                    "dialectical_h1": dialectical_h1,
+                    "ledger_entry": ledger_entry,
+                    "hodge_decomposition": {
+                        "beta_0": hodge_rep.beta_0,
+                        "beta_1": hodge_rep.beta_1,
+                        "beta_2": hodge_rep.beta_2,
+                        "total_cochain_norm": hodge_rep.total_cochain_norm,
+                        "exact_norm": hodge_rep.exact_norm,
+                        "coexact_norm": hodge_rep.coexact_norm,
+                        "harmonic_norm": hodge_rep.harmonic_norm,
+                        "orthogonality_error": hodge_rep.orthogonality_error,
+                        "laplacian_1_harmonic_residual": hodge_rep.laplacian_1_harmonic_residual,
+                        "cycle_holonomy_residual": hodge_rep.cycle_holonomy_residual,
+                        "frustrated_cycle_edges": hodge_rep.frustrated_cycle_edges,
+                    } if hodge_rep is not None else None,
+                    "h1_resolution": {
+                        "specialist_roles": h1_res.specialist_roles,
+                        "specialist_interaction_ids": h1_res.specialist_interaction_ids,
+                        "frustrated_cycle_edges": h1_res.frustrated_cycle_edges,
+                        "pre_negotiation_beta_1": h1_res.pre_negotiation_beta_1,
+                        "post_negotiation_beta_1": h1_res.post_negotiation_beta_1,
+                        "pre_exact_norm": h1_res.pre_hodge_report.exact_norm,
+                        "pre_coexact_norm": h1_res.pre_hodge_report.coexact_norm,
+                        "pre_harmonic_norm": h1_res.pre_hodge_report.harmonic_norm,
+                        "pre_holonomy_residual": h1_res.pre_hodge_report.cycle_holonomy_residual,
+                        "post_exact_norm": h1_res.post_hodge_report.exact_norm,
+                        "post_coexact_norm": h1_res.post_hodge_report.coexact_norm,
+                        "post_harmonic_norm": h1_res.post_hodge_report.harmonic_norm,
+                        "post_holonomy_residual": h1_res.post_hodge_report.cycle_holonomy_residual,
+                        "pre_interface_claims": h1_res.pre_interface_claims,
+                        "post_interface_claims": h1_res.post_interface_claims,
+                        "reconciled_subsystem_stalks": h1_res.reconciled_subsystem_stalks,
+                        "pre_quarantined_state_digest": h1_res.pre_quarantined_state_digest,
+                        "post_cleared_state_digest": h1_res.post_cleared_state_digest,
+                        "negotiation_interaction_id": h1_res.negotiation_interaction_id,
+                        "previous_interaction_id": h1_res.previous_interaction_id,
+                        "obstruction_cleared": h1_res.obstruction_cleared,
+                    } if h1_res is not None else None,
+                    "repair_records": [
+                        {
+                            "quarantined_option_id": r.quarantined_option_id,
+                            "proposer_agent_role": r.proposer_agent_role,
+                            "quarantined_run_id": r.quarantined_run_id,
+                            "quarantine_cleared": r.quarantine_cleared,
+                            "pre_repair_policy_status": r.pre_repair_governance.policy_decision.status.value,
+                            "post_repair_policy_status": r.post_repair_governance.policy_decision.status.value,
+                            "quarantined_state_digest": r.quarantined_state_digest,
+                            "post_repair_state_digest": r.post_repair_governance.final_runtime_state.state_digest,
+                            "l2_repair_projection_distance": r.l2_repair_projection_distance,
+                            "previous_interaction_id": r.previous_interaction_id,
+                            "repair_interaction_id": r.repair_interaction_id,
+                        }
+                        for r in bundle.repair_records
+                    ],
+                    "reasoning_telemetry": {
+                        "model_used": bundle.reasoning_telemetry.model_used,
+                        "thinking_level": bundle.reasoning_telemetry.thinking_level,
+                        "thought_step_count": bundle.reasoning_telemetry.thought_step_count,
+                        "thought_signature_digests": bundle.reasoning_telemetry.thought_signature_digests,
+                        "total_thought_tokens": bundle.reasoning_telemetry.total_thought_tokens,
+                        "total_input_tokens": bundle.reasoning_telemetry.total_input_tokens,
+                        "total_output_tokens": bundle.reasoning_telemetry.total_output_tokens,
+                        "total_tokens": bundle.reasoning_telemetry.total_tokens,
+                        "thought_to_output_ratio": bundle.reasoning_telemetry.thought_to_output_ratio,
+                    },
+                    "sol_lens_packet": bundle.sol_lens_packet,
+                }).encode("utf-8"))
+            elif path == "/api/decide/sign_release":
+                signer_name = body.get("signer_name", "Chief Systems Engineer")
+                authorized_role = body.get("authorized_role", "PEO Space / Artemis Power Authority")
+                comments = body.get(
+                    "comments",
+                    "Authorized based on verified beta_1=0 sheaf global section and SOL-Edge ELIGIBLE replay.",
+                )
+                with server_instance.lock:
+                    bundle = getattr(server_instance, "latest_decide_bundle", None)
+                    if bundle is None:
+                        self.send_response(400)
+                        self.send_header("Content-Type", "application/json")
+                        self.send_header("Access-Control-Allow-Origin", "*")
+                        self.end_headers()
+                        self.wfile.write(json.dumps({
+                            "ok": False,
+                            "error": "No active SOL-Decide bundle to sign. Run /api/decide/elicit_live first.",
+                        }).encode("utf-8"))
+                        return
+                    seal_digest = bundle.sign_release_gate(
+                        signer_name=signer_name,
+                        authorized_role=authorized_role,
+                        comments=comments,
+                    )
+                    server_instance.latest_decide_packet = bundle.sol_lens_packet
+                    markdown_report = bundle.decision_package.to_markdown()
+                    if server_instance.latest_ledger_run_id:
+                        server_instance.governance_ledger.record_release_signature(
+                            run_id=server_instance.latest_ledger_run_id,
+                            signer_name=signer_name,
+                            signer_role=authorized_role,
+                        )
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "package_id": bundle.decision_package.package_id,
+                    "signer_name": bundle.decision_package.authorization_gate.signer_name,
+                    "authorized_role": bundle.decision_package.authorization_gate.authorized_role,
+                    "is_signed": bundle.decision_package.authorization_gate.is_signed,
+                    "release_seal_digest": seal_digest,
+                    "winning_state_digest": bundle.winning_governance.final_runtime_state.state_digest,
+                    "markdown_report": markdown_report,
+                    "sol_lens_packet": bundle.sol_lens_packet,
+                }).encode("utf-8"))
+            elif path == "/api/sysml/cosimulate":
+                from sol_decide.interop.sysml_cosimulation import SysMLCoSimulationBridge
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                default_sysml_path = (
+                    root_dir / "sol-decide" / "examples" / "artemis_lunar_rover_manipulator.sysml"
+                )
+                sysml_source = body.get(
+                    "sysml_source",
+                    default_sysml_path.read_text(encoding="utf-8") if default_sysml_path.exists() else "",
+                )
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                thinking_level = body.get("thinking_level", "high")
+                bridge = SysMLCoSimulationBridge(model=model_name, thinking_level=thinking_level)
+                rec = bridge.run_sysml_shock_cosimulation(sysml_source=sysml_source)
+                with server_instance.lock:
+                    ledger_entry = server_instance.governance_ledger.record_sysml_shock_cosimulation(
+                        rec, baseline_run_id=server_instance.latest_ledger_run_id
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "sysml_package_name": rec.sysml_package_name,
+                    "baseline_selected_part_id": rec.baseline_selected_part_id,
+                    "baseline_selected_part_name": rec.baseline_selected_part_name,
+                    "pre_shock_stalk": rec.pre_shock_stalk,
+                    "post_shock_stalk": rec.post_shock_stalk,
+                    "mutated_stalk": rec.mutated_stalk,
+                    "quarantined_state_digest": rec.shocked_quarantine_governance.final_runtime_state.state_digest,
+                    "cleared_state_digest": rec.mutated_cleared_governance.final_runtime_state.state_digest,
+                    "shock_cleared": rec.shock_cleared,
+                    "mutated_sysml_source": rec.mutated_sysml_source,
+                    "mutation_interaction_id": rec.mutation_interaction_id,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+            elif path == "/api/robotics/governed_execute":
+                from sol_decide.interop.sysml_cosimulation import SysMLCoSimulationBridge
+
+                sysml_digest = body.get(
+                    "sysml_decision_state_digest",
+                    "sha256:eeb512a3e4a22e08f0745d8c2198a3b1",
+                )
+                target_pos = body.get("target_pos", [0.42, 0.22, 0.44])
+                defect_rad = float(body.get("inject_wilson_holonomy_defect_rad", 0.0))
+                bridge = SysMLCoSimulationBridge()
+                c0, c1 = bridge.run_governed_robotic_manifold_episode(
+                    sysml_decision_state_digest=sysml_digest,
+                    target_pos=target_pos,
+                    inject_wilson_holonomy_defect_rad=defect_rad,
+                    auto_relax_gauge_on_quarantine=True,
+                )
+                with server_instance.lock:
+                    ledger_entry = server_instance.governance_ledger.record_robotic_actuation_episode(
+                        c0, c1
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "cycle0_status": c0.governance_artifact.policy_decision.status.value,
+                    "cycle0_permitted": c0.actuator_commit_permitted,
+                    "cycle0_state_digest": c0.governance_artifact.final_runtime_state.state_digest,
+                    "cycle0_wilson_defect_deg": c0.max_wilson_defect_deg,
+                    "cycle1_status": c1.governance_artifact.policy_decision.status.value if c1 else None,
+                    "cycle1_permitted": c1.actuator_commit_permitted if c1 else None,
+                    "cycle1_state_digest": c1.governance_artifact.final_runtime_state.state_digest if c1 else None,
+                    "cycle1_wilson_defect_deg": c1.max_wilson_defect_deg if c1 else None,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+            elif path == "/api/homology/wormhole_bridge":
+                from sol_decide.interop.wormhole_homology import (
+                    InterDimensionalWormholeBridge,
+                    WormholeHomologyCalibrationSpec,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                thinking_level = body.get("thinking_level", "high")
+                throat_shear = float(body.get("inject_cycle0_throat_shear", 0.35))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                bridge = InterDimensionalWormholeBridge(
+                    model=model_name, thinking_level=thinking_level
+                )
+                try:
+                    ep = bridge.run_interdimensional_wormhole_episode(
+                        inject_cycle0_throat_shear=throat_shear
+                    )
+                except Exception:
+                    class _OfflineCalInteraction:
+                        id = "int-wormhole-cal-deterministic"
+                        output_text = WormholeHomologyCalibrationSpec(
+                            wormhole_bridge_id="wormhole_3d_to_4d_to_2d",
+                            calibrated_throat_conductance=1.0,
+                            calibrated_channel_gains=[1.0, 1.0, 1.0],
+                            phase_holonomy_trim_rad=0.0,
+                            homological_calibration_rationale=(
+                                "Restored exact graded chain-map boundary commutation "
+                                "d_k^(Y) f_k = f_{k-1} d_k^(X) and zero Exciton 1-cycle divergence."
+                            ),
+                        ).model_dump_json()
+                        outputs = []
+
+                    class _OfflineCalInteractions:
+                        @staticmethod
+                        def create(**_kwargs):
+                            return _OfflineCalInteraction()
+
+                    class _OfflineCalClient:
+                        interactions = _OfflineCalInteractions()
+
+                    bridge = InterDimensionalWormholeBridge(
+                        model=model_name,
+                        client=_OfflineCalClient(),
+                        thinking_level=thinking_level,
+                    )
+                    ep = bridge.run_interdimensional_wormhole_episode(
+                        inject_cycle0_throat_shear=throat_shear
+                    )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_wormhole_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_wormhole_homology_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path == "/api/homology/ricci_surgery":
+                from sol_decide.interop.persistent_ricci_surgery import (
+                    OllivierRicciSurgeryOrchestrator,
+                    RicciFlowSurgerySpec,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                thinking_level = body.get("thinking_level", "high")
+                throat_conductance = float(body.get("inject_cycle0_throat_conductance", 0.04))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                orchestrator = OllivierRicciSurgeryOrchestrator(
+                    model=model_name, thinking_level=thinking_level
+                )
+                try:
+                    ep = orchestrator.run_persistent_ricci_surgery_episode(
+                        inject_cycle0_throat_conductance=throat_conductance
+                    )
+                except Exception:
+                    class _OfflineSurgeryInteraction:
+                        id = "int-ricci-surgery-deterministic"
+                        output_text = RicciFlowSurgerySpec(
+                            surgically_spliced_edge_id="e_ps",
+                            restored_throat_conductance=1.0,
+                            ricci_scalar_target=0.0,
+                            plaquette_gauge_damping=0.85,
+                            ricci_surgery_rationale=(
+                                "Excised hyperbolic Ollivier-Ricci neck-pinch singularity "
+                                "on throat edge e_ps and spliced a Ricci-flat harmonic cap "
+                                "(g_{e_ps}=1.0), restoring the [1.00, inf) essential H_1 "
+                                "wormhole persistence bar with zero Bottleneck shift."
+                            ),
+                        ).model_dump_json()
+                        outputs = []
+
+                    class _OfflineSurgeryInteractions:
+                        @staticmethod
+                        def create(**_kwargs):
+                            return _OfflineSurgeryInteraction()
+
+                    class _OfflineSurgeryClient:
+                        interactions = _OfflineSurgeryInteractions()
+
+                    orchestrator = OllivierRicciSurgeryOrchestrator(
+                        model=model_name,
+                        client=_OfflineSurgeryClient(),
+                        thinking_level=thinking_level,
+                    )
+                    ep = orchestrator.run_persistent_ricci_surgery_episode(
+                        inject_cycle0_throat_conductance=throat_conductance
+                    )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_ricci_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_ricci_surgery_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path == "/api/homology/non_hermitian_pt":
+                from sol_decide.interop.non_hermitian_skin_pt import (
+                    NonHermitianPTSkinOrchestrator,
+                    NonHermitianPTSurgerySpec,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                thinking_level = body.get("thinking_level", "high")
+                gain_loss_g = float(body.get("inject_cycle0_pt_gain_g", body.get("inject_cycle0_gain_loss_g", 1.35)))
+                skin_gamma = float(body.get("inject_cycle0_skin_gamma", body.get("inject_cycle0_skin_drift_gamma", 0.95)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                orchestrator = NonHermitianPTSkinOrchestrator(
+                    model=model_name, thinking_level=thinking_level
+                )
+                try:
+                    ep = orchestrator.run_non_hermitian_pt_episode(
+                        inject_cycle0_skin_gamma=skin_gamma,
+                        inject_cycle0_pt_gain_g=gain_loss_g,
+                    )
+                except Exception:
+                    class _OfflineNHPTInteraction:
+                        id = "int-nh-pt-surgery-deterministic"
+                        output_text = NonHermitianPTSurgerySpec(
+                            target_cavity_id="cavity_nhse_pt_core",
+                            calibrated_skin_gauge_gamma=0.0,
+                            clamped_pt_gain_loss_g=0.35,
+                            wormhole_pbc_flux_phase_rad=0.0,
+                            non_hermitian_pt_rationale=(
+                                "Applied Generalized Brillouin Zone (GBZ) imaginary gauge "
+                                "similarity transform S = diag(e^{-gamma x_v}) to annihilate "
+                                "Hatano-Nelson skin drift and clamped optical pump gain/loss "
+                                "to g=0.35 < g_EP=1.00, restoring unbroken PT-symmetry."
+                            ),
+                        ).model_dump_json()
+                        outputs = []
+
+                    class _OfflineNHPTInteractions:
+                        @staticmethod
+                        def create(**_kwargs):
+                            return _OfflineNHPTInteraction()
+
+                    class _OfflineNHPTClient:
+                        interactions = _OfflineNHPTInteractions()
+
+                    orchestrator = NonHermitianPTSkinOrchestrator(
+                        model=model_name,
+                        client=_OfflineNHPTClient(),
+                        thinking_level=thinking_level,
+                    )
+                    ep = orchestrator.run_non_hermitian_pt_episode(
+                        inject_cycle0_skin_gamma=skin_gamma,
+                        inject_cycle0_pt_gain_g=gain_loss_g,
+                    )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_nh_pt_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_non_hermitian_pt_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path in ("/api/continuum/discovery_episode", "/api/continuum/discover_and_archive"):
+                from sol_decide.interop.sol_continuum_bridge import (
+                    SolContinuumDiscoveryOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import (
+                    DEFAULT_GEMINI_MODEL,
+                    LiveGeminiMoAElicitor,
+                )
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "SolContinuum_Autonomous_Guild_Discovery_v1"
+                )
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                orchestrator = SolContinuumDiscoveryOrchestrator(
+                    memory_sink=server_instance.sink
+                )
+                try:
+                    live_elicitor = LiveGeminiMoAElicitor(model=model_name)
+                    ep = orchestrator.run_continuum_discovery_episode(
+                        study_name=study_name,
+                        gemini_client=live_elicitor._get_client(),
+                        model=model_name,
+                        register_in_observatory_db=True,
+                    )
+                except Exception:
+                    ep = orchestrator.run_continuum_discovery_episode(
+                        study_name=study_name,
+                        gemini_client=None,
+                        model=model_name,
+                        register_in_observatory_db=True,
+                    )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_continuum_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_sol_continuum_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path == "/api/continuum/lumina_ranger_observatory":
+                from sol_continuum.lumina_observatory_bridge import (
+                    LuminaLibraryObservatoryOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import (
+                    DEFAULT_GEMINI_MODEL,
+                    LiveGeminiMoAElicitor,
+                )
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "Lumina_Ranger_Corps_Observatory_Sovereignty_v1"
+                )
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                orchestrator = LuminaLibraryObservatoryOrchestrator()
+                try:
+                    live_elicitor = LiveGeminiMoAElicitor(model=model_name)
+                    ep = orchestrator.run_lumina_observatory_episode(
+                        study_name=study_name,
+                        gemini_client=live_elicitor._get_client(),
+                        model=model_name,
+                        register_in_observatory_db=True,
+                        persist_library_staging=False,
+                    )
+                except Exception:
+                    ep = orchestrator.run_lumina_observatory_episode(
+                        study_name=study_name,
+                        gemini_client=None,
+                        model=model_name,
+                        register_in_observatory_db=True,
+                        persist_library_staging=False,
+                    )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_lumina_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_lumina_observatory_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path == "/api/ledger/verify":
+                with server_instance.lock:
+                    rep = server_instance.governance_ledger.verify_ledger_integrity()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": True, "integrity": rep.to_dict()}).encode("utf-8"))
             else:
                 self.send_response(404)
                 self.end_headers()

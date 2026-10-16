@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOL Change Observatory run v1.0",
+  "description": "The runtime additionally validates evidence references, unique IDs, revision continuity, original source hashes, and decision snapshot bindings.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "kind": {
+      "const": "sol-change/run"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"
+    },
+    "designation": {
+      "enum": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    "input": {
+      "type": "string",
+      "maxLength": 100000,
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "output": {
+      "type": "string",
+      "maxLength": 100000
+    },
+    "configuration": {
+      "type": "object"
+    },
+    "workflow_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "conditions": {
+      "type": "object"
+    },
+    "data_type": {
+      "enum": [
+        "imported",
+        "manual",
+        "synthetic"
+      ]
+    },
+    "measurements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": -1e+100,
+                "maximum": 1e+100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "method": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "measured",
+                  "human_rating",
+                  "automated_assessment"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 5000,
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "kind",
+              "description",
+              "version"
+            ],
+            "additionalProperties": false
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"
+            },
+            "maxItems": 200,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "criterion_id",
+          "value",
+          "unit",
+          "method",
+          "evidence_ids"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 200,
+      "minItems": 0
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "reference": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "provenance": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "reference",
+          "provenance"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 200,
+      "minItems": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "id",
+    "designation",
+    "input",
+    "output",
+    "configuration",
+    "workflow_version",
+    "executed_at",
+    "conditions",
+    "data_type",
+    "measurements",
+    "evidence"
+  ],
+  "additionalProperties": false
+}

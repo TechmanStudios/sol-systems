@@ -1,0 +1,2662 @@
+{
+  "schema": "techman.sol-lens.proof-packet/v0.2",
+  "packet_id": "pkt-lumina-candidate-f57ffc2884",
+  "generated_at": "2026-10-16T11:46:00Z",
+  "observable_trace_only": true,
+  "fixture": "Lumina_Ranger_Corps_Observatory_Sovereignty_v1",
+  "models": {
+    "baseline": "lumina-unverified-ledger-autosync-v1",
+    "candidate": "gemini-4-argon"
+  },
+  "observatory_context": {
+    "schema_version": "1.0",
+    "input": "SOL Sovereign Domain & Lumina Ranger Corps Benchmark: study=Lumina_Ranger_Corps_Observatory_Sovereignty_v1; mission=L12_WIDEWORD_PDM_PATROL_001; level=12; component=sol_wideword_32bit_pdm_calibrator",
+    "conditions": {
+      "study_name": "Lumina_Ranger_Corps_Observatory_Sovereignty_v1",
+      "seed": 42,
+      "substrate": "sol_continuum_multi_agent_guild_v1",
+      "evaluation_rubric": "sol_lens_6_criteria_court_v0.2"
+    },
+    "evaluator_version": "sol-lens-evaluate-logons/v0.2",
+    "workflow_version": "v2.0-lumina-ranger-court-observatory",
+    "executed_at": "2026-10-16T11:46:00Z",
+    "data_type": "imported"
+  },
+  "reasoning_telemetry": {
+    "model_used": "gemini-4-argon",
+    "interaction_id": "mock-lumina-ranger-observatory-001",
+    "thinking_level": "high",
+    "thought_signature_digests": [
+      "sha256:cf454753a1251d79766be2e85583ecf4c41820155b01883977c4f61803f55305",
+      "sha256:3af1ced588682272db988c97da3b121ea141015dce0d71fdb2e3e0e915586a22"
+    ],
+    "thought_signature_lengths": [
+      256,
+      384
+    ],
+    "thought_summaries": [
+      "Cycle 0 PhaseRanger & FaultMatrixRanger patrol detected PDM phase drift (0.22 rad > 0.05), register mass drain (11.8 < 14.0), and verified 33-case fault rollback containment.",
+      "Cycle 1 bounded Frontier calibration (-0.0350 rad, 0.0050 damping), 32/64-bit WideWord/Micro-ISA v1 lowering, and 3-manifold 2PC commit verified by 8 Rangers."
+    ],
+    "total_input_tokens": 450,
+    "total_thought_tokens": 720,
+    "total_output_tokens": 340
+  },
+  "frontier_l_verification": {
+    "circuit_to_wideword_lowering": {
+      "circuit_summary": {
+        "circuit_id": "synth_FULL_ADDER_4841",
+        "name": "Synthesized_FULL_ADDER",
+        "node_count": 9,
+        "edge_count": 11,
+        "input_node_ids": [
+          "A",
+          "B",
+          "CIN"
+        ],
+        "output_node_ids": [
+          "SUM",
+          "COUT"
+        ],
+        "node_types": {
+          "A": "INPUT",
+          "B": "INPUT",
+          "CIN": "INPUT",
+          "xor_ab": "INTERFERENCE",
+          "xor_sum": "INTERFERENCE",
+          "SUM": "BASIN",
+          "lens_ab": "LENS_AND",
+          "lens_cin_xor": "LENS_AND",
+          "COUT": "BASIN"
+        }
+      },
+      "node_register_map": {
+        "A": "R8",
+        "B": "R9",
+        "xor_ab": "R10",
+        "CIN": "R11",
+        "xor_sum": "R12",
+        "SUM": "R13",
+        "lens_ab": "R14",
+        "lens_cin_xor": "R15",
+        "COUT": "R4"
+      },
+      "fabric_reports": {
+        "32bit": {
+          "width": 32,
+          "lane_count": 4,
+          "group_count": 1,
+          "topology_valid": true,
+          "prefix_carry_attached": true,
+          "arithmetic_fabric_valid": true
+        },
+        "64bit": {
+          "width": 64,
+          "lane_count": 8,
+          "group_count": 2,
+          "topology_valid": true,
+          "prefix_carry_attached": true,
+          "arithmetic_fabric_valid": true
+        }
+      },
+      "lowering_reports": {
+        "32bit": {
+          "total_v1_candidates": 6,
+          "successfully_lowered": 6,
+          "rejected": 0,
+          "safety_checks_passed": true
+        },
+        "64bit": {
+          "total_v1_candidates": 6,
+          "successfully_lowered": 6,
+          "rejected": 0,
+          "safety_checks_passed": true
+        }
+      },
+      "vm_executions": {
+        "32bit": {
+          "width": 32,
+          "backend_used": "lane_fabric_vm",
+          "v1_instruction_count": 34,
+          "lowered_v0_instruction_count": 85,
+          "trace_step_count": 79,
+          "oracle_cycles": 79,
+          "oracle_match": true,
+          "mismatch_count": 0,
+          "active_table_mutated": false,
+          "circuit_outputs": {
+            "SUM": 1,
+            "COUT": 1
+          },
+          "expected_circuit_outputs": {
+            "SUM": 1,
+            "COUT": 1
+          },
+          "circuit_truth_table_match": true,
+          "r5_hex": "0x7D5D7757",
+          "r6_hex": "0x78563412",
+          "r7_hex": "0x7D5D7757",
+          "r14_hex": "0x00000001",
+          "r15_hex": "0x00000001",
+          "oracle_r7_hex": "0x7D5D7757",
+          "flags": {
+            "zero": 0,
+            "carry": 0,
+            "overflow": 0,
+            "sign": 0,
+            "borrow": 0
+          }
+        },
+        "64bit": {
+          "width": 64,
+          "backend_used": "lane_fabric_vm",
+          "v1_instruction_count": 34,
+          "lowered_v0_instruction_count": 85,
+          "trace_step_count": 79,
+          "oracle_cycles": 79,
+          "oracle_match": true,
+          "mismatch_count": 0,
+          "active_table_mutated": false,
+          "circuit_outputs": {
+            "SUM": 1,
+            "COUT": 1
+          },
+          "expected_circuit_outputs": {
+            "SUM": 1,
+            "COUT": 1
+          },
+          "circuit_truth_table_match": true,
+          "r5_hex": "0x0078005655775757",
+          "r6_hex": "0x0078005600340012",
+          "r7_hex": "0x0078005655775757",
+          "r14_hex": "0x0000000000000001",
+          "r15_hex": "0x0000000000000001",
+          "oracle_r7_hex": "0x0078005655775757",
+          "flags": {
+            "zero": 0,
+            "carry": 0,
+            "overflow": 0,
+            "sign": 0,
+            "borrow": 0
+          }
+        }
+      },
+      "micro_isa_summary": {
+        "v0_instruction_count": 21,
+        "program_isa_valid": true,
+        "program_isa_errors": [],
+        "add_semantics_valid": true,
+        "capability_matrix_valid": true,
+        "capability_summary": {
+          "lane_fabric_strict": {
+            "native_count": 21,
+            "microcoded_count": 0,
+            "emulated_count": 0,
+            "hybrid_count": 0,
+            "unsupported_count": 0,
+            "unavailable_count": 0,
+            "failed_count": 0
+          },
+          "sequencer_shadow_strict": {
+            "native_count": 9,
+            "microcoded_count": 0,
+            "emulated_count": 0,
+            "hybrid_count": 0,
+            "unsupported_count": 12,
+            "unavailable_count": 0,
+            "failed_count": 0
+          },
+          "pdm_waveguide_shadow_strict": {
+            "native_count": 9,
+            "microcoded_count": 0,
+            "emulated_count": 0,
+            "hybrid_count": 0,
+            "unsupported_count": 12,
+            "unavailable_count": 0,
+            "failed_count": 0
+          },
+          "pdm_waveguide_microcoded_strict": {
+            "native_count": 8,
+            "microcoded_count": 13,
+            "emulated_count": 0,
+            "hybrid_count": 0,
+            "unsupported_count": 0,
+            "unavailable_count": 0,
+            "failed_count": 0
+          },
+          "hybrid_shadow": {
+            "native_count": 0,
+            "microcoded_count": 0,
+            "emulated_count": 0,
+            "hybrid_count": 21,
+            "unsupported_count": 0,
+            "unavailable_count": 0,
+            "failed_count": 0
+          }
+        },
+        "compliance_summary": {
+          "lane_fabric_strict_32": "full_compliance",
+          "lane_fabric_strict_64": "full_compliance",
+          "sequencer_shadow_strict_32": "alu_compliance",
+          "sequencer_shadow_strict_64": "alu_compliance",
+          "pdm_waveguide_shadow_strict_32": "alu_compliance",
+          "pdm_waveguide_shadow_strict_64": "alu_compliance",
+          "pdm_waveguide_microcoded_strict_32": "full_compliance",
+          "pdm_waveguide_microcoded_strict_64": "full_compliance",
+          "hybrid_shadow_32": "hybrid_compliance",
+          "hybrid_shadow_64": "hybrid_compliance",
+          "success": true,
+          "report_id": "RPT_COMP_428B979A"
+        },
+        "v1_spec_consistent": true,
+        "v1_opcode_count": 29,
+        "v1_extension_compliant": true,
+        "v1_capability_summary": {
+          "verdict": "candidate_compliant",
+          "backends": {
+            "lane_fabric_strict": {
+              "emulated": 24,
+              "unsupported": 5
+            },
+            "sequencer_shadow_strict": {
+              "unsupported": 19,
+              "emulated": 10
+            },
+            "pdm_waveguide_shadow_strict": {
+              "unsupported": 19,
+              "emulated": 10
+            },
+            "pdm_waveguide_microcoded_strict": {
+              "emulated": 24,
+              "unsupported": 5
+            },
+            "hybrid_shadow": {
+              "emulated": 24,
+              "unsupported": 5
+            }
+          },
+          "compliant_candidates": [
+            "SELECT",
+            "CMOVZ",
+            "CMOVNZ",
+            "CMOVC",
+            "CMOVNC",
+            "CMOVB",
+            "CMOVNB",
+            "PLOAD_RO",
+            "LANE_ADD",
+            "LANE_SUB",
+            "PREFIX_ADD",
+            "PREFIX_SUB",
+            "VEC_PACK",
+            "VEC_UNPACK",
+            "VEC_BROADCAST",
+            "VEC_EXTRACT",
+            "VEC_INSERT",
+            "VEC_LANE_ADD",
+            "VEC_LANE_SUB",
+            "VEC_LANE_AND",
+            "VEC_LANE_OR",
+            "VEC_LANE_XOR",
+            "VEC_MASK_SELECT",
+            "WG_CHAN_FENCE"
+          ],
+          "supports_v1_channel_independence_analysis": true,
+          "supports_v1_channelized_kernel_scheduling": true,
+          "supports_v1_channel_kernel_library": true,
+          "supports_v1_channel_kernel_recognition": true,
+          "supports_v1_channel_fanout_kernel": true,
+          "supports_v1_channel_parallel_load_kernel": true,
+          "supports_v1_channel_fence_order_kernel": true
+        }
+      }
+    },
+    "fault_matrix_verification": {
+      "pipeline_wavefront_fault_matrix": {
+        "total_cases": 33,
+        "passed_cases": 33,
+        "failed_cases": 0,
+        "passed_matrix": true,
+        "summary": {
+          "total_cases": 33,
+          "passed_cases": 33,
+          "failed_cases": 0,
+          "passed_audit": true,
+          "case_summaries": {
+            "CASE_WF_FLT_00": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_01": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_02": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_03": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_04": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_05": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_06": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_07": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_08": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_09": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_10": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_11": {
+              "success": true,
+              "actual_outcome": "hold_pipeline_balance",
+              "matched": true
+            },
+            "CASE_WF_FLT_12": {
+              "success": true,
+              "actual_outcome": "hold_wavefront_calibration",
+              "matched": true
+            },
+            "CASE_WF_FLT_13": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_14": {
+              "success": true,
+              "actual_outcome": "rollback_wavefront_calibration",
+              "matched": true
+            },
+            "CASE_WF_FLT_15": {
+              "success": true,
+              "actual_outcome": "rollback_wavefront_calibration",
+              "matched": true
+            },
+            "CASE_WF_FLT_16": {
+              "success": true,
+              "actual_outcome": "rollback_wavefront_calibration",
+              "matched": true
+            },
+            "CASE_WF_FLT_17": {
+              "success": true,
+              "actual_outcome": "quarantine_wavefront_packet",
+              "matched": true
+            },
+            "CASE_WF_FLT_18": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_19": {
+              "success": true,
+              "actual_outcome": "quarantine_pipeline_segment",
+              "matched": true
+            },
+            "CASE_WF_FLT_20": {
+              "success": true,
+              "actual_outcome": "quarantine_pipeline_segment",
+              "matched": true
+            },
+            "CASE_WF_FLT_21": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_22": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_23": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_24": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_25": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_26": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_27": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_28": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            },
+            "CASE_WF_FLT_29": {
+              "success": true,
+              "actual_outcome": "quarantine_core",
+              "matched": true
+            },
+            "CASE_WF_FLT_30": {
+              "success": true,
+              "actual_outcome": "quarantine_core",
+              "matched": true
+            },
+            "CASE_WF_FLT_31": {
+              "success": true,
+              "actual_outcome": "quarantine_core",
+              "matched": true
+            },
+            "CASE_WF_FLT_32": {
+              "success": true,
+              "actual_outcome": "reject_candidate",
+              "matched": true
+            }
+          }
+        }
+      },
+      "state_relocation_fault_matrix": {
+        "total_cases": 21,
+        "passed_cases": 21,
+        "failed_cases": 0,
+        "summary": {
+          "total": 21,
+          "passed": 21,
+          "failed": 0,
+          "success": true
+        }
+      },
+      "realtime_calibration_fault_matrix": {
+        "total_cases": 14,
+        "passed_cases": 14,
+        "failed_cases": 0,
+        "summary": {
+          "total": 14,
+          "passed": 14,
+          "failed": 0,
+          "success": true
+        }
+      },
+      "rollback_proof": {
+        "case_count": 6,
+        "passed_proof": true,
+        "all_restored": true
+      },
+      "fault_ranger_recommendation": "promote"
+    },
+    "multimanifold_atomic_commit": {
+      "coordination_group": [
+        "M1",
+        "M2",
+        "M3"
+      ],
+      "boundaries_valid": true,
+      "quorum": {
+        "local_quorum_passed": true,
+        "global_quorum_passed": true,
+        "sequencer_quorum_passed": true,
+        "entanglement_links_valid": true
+      },
+      "barrier_satisfied": true,
+      "barrier_errors": [],
+      "commit_status": "commit",
+      "commit_success": true,
+      "committed_value_hex": "0x7D5D7757",
+      "rollback_triggered": false,
+      "calibration_initial_error": 0.113,
+      "calibration_summary": {
+        "success": true,
+        "final_error": 0.01,
+        "errors": []
+      },
+      "feedback_loop_stable": true,
+      "feedback_atomic_ready": true,
+      "stability_bounds_valid": true
+    },
+    "sovereign_runtime_shadow": {
+      "runtime_id": "RUN_765546f6",
+      "mode": "shadow",
+      "allow_production_execution": false,
+      "target_level": 12,
+      "command_id": "CMD_SHADOW_CALIB_L12_WIDEWORD_PDM_PATROL_001",
+      "command_success": true,
+      "executed_steps": 1,
+      "quarantined": false,
+      "passed_gates": true
+    },
+    "ranger_squadron_packets": {
+      "cycle0_phase_ranger": {
+        "packet_id": "PKT_PHASE_OBS_2114656405632_174644",
+        "domain": "sol_sovereign",
+        "level": 12,
+        "actor": "Phase Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001_BASELINE",
+        "claim": "PDM Coarse Phase Calibration Telemetry Report",
+        "evidence": {
+          "active_delta": 0.11,
+          "inactive_max_delta": 0.16,
+          "reversed_delta": 0.14,
+          "phase_residual": 0.22,
+          "cross_talk": 0.09,
+          "min_active_register_mass": 11.8,
+          "threshold_checks": {
+            "active_delta": false,
+            "inactive_max_delta": false,
+            "reversed_delta": false,
+            "cross_talk": false,
+            "min_active_register_mass": false
+          },
+          "pass_status": false,
+          "request_court_review": true
+        },
+        "invariants_checked": [
+          "active_delta >= 0.2",
+          "inactive_max_delta <= 0.1",
+          "reversed_delta <= 0.1",
+          "cross_talk <= 0.05",
+          "min_active_register_mass >= 14.0"
+        ],
+        "artifacts": [],
+        "recommendation": "reject",
+        "confidence": 0.95,
+        "reproducibility_hash": "sha256_8434bae6cd4f"
+      },
+      "cycle0_fault_matrix_ranger": {
+        "packet_id": "PKT_FLT_78369E9B",
+        "domain": "sol_sovereign",
+        "level": 40,
+        "actor": "Fault Matrix Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001_FAULT_PATROL",
+        "claim": "Distributed State Relocation Fault Injection and Real-Time Calibration Stability Observation Packet",
+        "evidence": {
+          "total_fault_cases": 35,
+          "passed_fault_cases": 35,
+          "failed_fault_cases": 0,
+          "rollback_proof_status": "success",
+          "state_hash_fault_behavior": "blocked",
+          "quorum_fault_behavior": "blocked",
+          "lock_fault_behavior": "blocked",
+          "cadence_fault_behavior": "blocked",
+          "wavefront_fault_behavior": "blocked",
+          "pml_fault_behavior": "blocked",
+          "calibration_fault_behavior": "blocked",
+          "carrier_fault_behavior": "blocked",
+          "active_table_protection_status": "protected",
+          "quarantine_status": "recorded",
+          "safety_oracle_agreement": true,
+          "promotion_readiness": true
+        },
+        "invariants_checked": [
+          "fault_matrix_valid",
+          "expected_outcomes_declared",
+          "relocation_fault_cases_complete",
+          "calibration_fault_cases_complete",
+          "rollback_proof_cases_complete",
+          "state_hash_faults_block_commit",
+          "rollback_faults_block_promotion",
+          "quorum_faults_block_commit",
+          "lock_faults_block_commit",
+          "cadence_faults_block_commit",
+          "wavefront_faults_block_commit",
+          "pml_faults_block_commit",
+          "feedback_faults_block_commit",
+          "carrier_faults_block_commit",
+          "active_tables_not_overwritten",
+          "rollback_restores_mock_state",
+          "quarantine_flags_recorded",
+          "safety_oracle_matches_actual_outcomes",
+          "ranger_evidence_complete",
+          "court_review_complete",
+          "no_production_fault_execution"
+        ],
+        "artifacts": [],
+        "recommendation": "promote",
+        "confidence": 0.99,
+        "reproducibility_hash": "sha256_83142c778932"
+      },
+      "cycle1_phase_ranger": {
+        "packet_id": "PKT_PHASE_OBS_2114656984576_174644",
+        "domain": "sol_sovereign",
+        "level": 12,
+        "actor": "Phase Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "claim": "PDM Coarse Phase Calibration Telemetry Report",
+        "evidence": {
+          "active_delta": 0.34,
+          "inactive_max_delta": 0.04,
+          "reversed_delta": 0.03,
+          "phase_residual": 0.018,
+          "cross_talk": 0.019,
+          "min_active_register_mass": 15.6,
+          "threshold_checks": {
+            "active_delta": true,
+            "inactive_max_delta": true,
+            "reversed_delta": true,
+            "cross_talk": true,
+            "min_active_register_mass": true
+          },
+          "pass_status": true,
+          "request_court_review": false
+        },
+        "invariants_checked": [
+          "active_delta >= 0.2",
+          "inactive_max_delta <= 0.1",
+          "reversed_delta <= 0.1",
+          "cross_talk <= 0.05",
+          "min_active_register_mass >= 14.0"
+        ],
+        "artifacts": [],
+        "recommendation": "observe",
+        "confidence": 0.95,
+        "reproducibility_hash": "sha256_33bdea0a8b12"
+      },
+      "cycle1_court_ranger": {
+        "packet_id": "PKT_COURT_OBS_2114657372976_174644",
+        "domain": "sol_sovereign",
+        "level": 12,
+        "actor": "Court Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "claim": "Promotion gate review and closed-loop calibration recommendation report",
+        "evidence": {
+          "court_decision": "observe",
+          "target_level": 11,
+          "lane_id": 0,
+          "correction_type": "none",
+          "replay_status": "N/A",
+          "promotion_status": "approved",
+          "quarantine_status": false,
+          "target_type": "PromotionGateResult"
+        },
+        "invariants_checked": [
+          "promotion_gate_compliance",
+          "closed_loop_bounds"
+        ],
+        "artifacts": [],
+        "recommendation": "observe",
+        "confidence": 0.98,
+        "reproducibility_hash": "sha256_e0ca31182cf2"
+      },
+      "cycle1_finalization_ranger": {
+        "packet_id": "PKT_FIN_RNG_1792172804967",
+        "domain": "sol_sovereign",
+        "level": 50,
+        "actor": "Finalization Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "claim": "Sovereign Production Gateways and System Finalization Observation Packet",
+        "evidence": {
+          "finalization_id": "SOL_LEVEL_12_OBSERVATORY_CANDIDATE",
+          "release_candidate_id": "RC_L12_L12_WIDEWORD_PDM_PATROL_001",
+          "final_manifest_status": "passed",
+          "final_gate_registry_status": "passed",
+          "production_gateway_decision": "shadow_only_approved",
+          "production_readiness_classification": "shadow_finalized",
+          "system_lockdown_status": "passed",
+          "runtime_handoff_status": "passed",
+          "ledger_integrity_status": "passed",
+          "rollback_proof_status": "passed",
+          "unresolved_quarantine_count": 0,
+          "known_limitation_count": 0,
+          "court_review_status": "approve_docket",
+          "promotion_readiness": true,
+          "finalization id": "SOL_LEVEL_12_OBSERVATORY_CANDIDATE",
+          "release candidate id": "RC_L12_L12_WIDEWORD_PDM_PATROL_001",
+          "final manifest status": "passed",
+          "final gate registry status": "passed",
+          "production gateway decision": "shadow_only_approved",
+          "production readiness classification": "shadow_finalized",
+          "system lockdown status": "passed",
+          "runtime handoff status": "passed",
+          "ledger integrity status": "passed",
+          "rollback proof status": "passed",
+          "unresolved quarantine count": 0,
+          "known limitation count": 0,
+          "court review status": "approve_docket",
+          "promotion readiness": true
+        },
+        "invariants_checked": [
+          "final_system_manifest_complete",
+          "finalization_docket_complete",
+          "final_gate_registry_valid",
+          "production_gateway_default_deny",
+          "production_readiness_guard_valid",
+          "production_status_not_enabled",
+          "system_lockdown_valid",
+          "runtime_handoff_manifest_complete",
+          "release_candidate_manifest_attached",
+          "governance_freeze_valid",
+          "api_stability_contract_valid",
+          "full_test_suite_passed",
+          "burnin_report_attached",
+          "burnin_stability_passed",
+          "runtime_ledger_valid",
+          "stability_ledger_valid",
+          "rollback_proof_passed",
+          "ranger_evidence_complete",
+          "court_review_complete",
+          "unresolved_quarantine_absent",
+          "active_phase_tables_not_overwritten",
+          "active_cadence_profiles_not_overwritten",
+          "active_carrier_registry_not_overwritten",
+          "no_automatic_promotion",
+          "no_production_execution"
+        ],
+        "artifacts": [],
+        "recommendation": "promote",
+        "confidence": 0.99,
+        "reproducibility_hash": "sha256_8d732ac9fad1"
+      },
+      "cycle1_wideword_program_ranger": {
+        "packet_id": "PKT_WWP_467BBCD7",
+        "domain": "compute",
+        "level": 37,
+        "actor": "WideWord Program Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "claim": "WideWord Waveguide Program Execution verified successfully",
+        "evidence": {
+          "width": 32,
+          "backend_requested": "lane_fabric_vm",
+          "backend_used": "lane_fabric_vm",
+          "program_count": 1,
+          "instruction_count": 79,
+          "passed_instruction_count": 79,
+          "failed_instruction_count": 0,
+          "unavailable_layer_count": 0,
+          "oracle_match_status": true,
+          "active_table_mutation_status": false,
+          "promotion_ready": true
+        },
+        "invariants_checked": [
+          "oracle_match_status",
+          "no_active_table_mutation"
+        ],
+        "artifacts": [],
+        "recommendation": "observe",
+        "confidence": 1.0,
+        "reproducibility_hash": "sha256_68580b62767b"
+      },
+      "cycle1_micro_isa_ranger": {
+        "packet_id": "PKT_ISA_42162873",
+        "domain": "compute",
+        "level": 39,
+        "actor": "Micro-ISA Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "claim": "Micro-ISA v0 specification and Backend Capability Matrix verified",
+        "evidence": {
+          "instruction_count": 21,
+          "required_instruction_count": 21,
+          "backend_count": 5,
+          "full_compliance_backend_count": 4,
+          "partial_compliance_backend_count": 6,
+          "unsupported_capability_count": 24,
+          "unavailable_capability_count": 0,
+          "overclaim_violation_count": 0,
+          "microcode_blocked_count": 0,
+          "docs_generated": 3,
+          "promotion_ready": true
+        },
+        "invariants_checked": [
+          "no_matrix_overclaims",
+          "compliance_levels_verified",
+          "lowering_rules_checked"
+        ],
+        "artifacts": [
+          "SOL_MICRO_ISA_V0.md",
+          "SOL_BACKEND_CAPABILITY_MATRIX.md",
+          "SOL_MICROCODE_LOWERING_PLAN.md"
+        ],
+        "recommendation": "observe",
+        "confidence": 1.0,
+        "reproducibility_hash": "sha256_e70716ed46a7"
+      },
+      "cycle1_entangled_feedback_ranger": {
+        "packet_id": "PKT_EFB_E2C9C2CE",
+        "domain": "sol_sovereign",
+        "level": 35,
+        "actor": "Entangled Feedback Ranger",
+        "actor_type": "ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "claim": "Multi-Manifold Entangled Wavefront Calibration and Feedback Loops Observation Packet",
+        "evidence": {
+          "feedback_loop_id": "FBL_REP_197cbda9",
+          "entangled_epoch_id": "unknown_entangled_epoch",
+          "manifold_count": 3,
+          "entanglement_link_count": 2,
+          "calibration_baseline_status": "present",
+          "feedback_step_count": 3,
+          "phase_drift_before": 0.22,
+          "phase_drift_after": 0.00225,
+          "cadence_drift_before": 0.08,
+          "cadence_drift_after": 0.012,
+          "carrier_phase_error_before": 0.07,
+          "carrier_phase_error_after": 0.011,
+          "crosstalk_before": 0.09,
+          "crosstalk_after": 0.019,
+          "boundary_reflection_before": 0.06,
+          "boundary_reflection_after": 0.01,
+          "pml_status": "valid",
+          "active_mass_preservation": true,
+          "synchronized_commit_readiness": "stable",
+          "rollback_status": "present",
+          "quarantine_recommendation": false,
+          "promotion_readiness": true,
+          "feedback loop id": "FBL_REP_197cbda9",
+          "entangled epoch id": "unknown_entangled_epoch",
+          "manifold count": 3,
+          "entanglement link count": 2,
+          "calibration baseline status": "present",
+          "feedback step count": 3,
+          "phase drift before": 0.22,
+          "phase drift after": 0.00225,
+          "cadence drift before": 0.08,
+          "cadence drift after": 0.012,
+          "carrier phase error before": 0.07,
+          "carrier phase error after": 0.011,
+          "crosstalk before": 0.09,
+          "crosstalk after": 0.019,
+          "boundary reflection before": 0.06,
+          "boundary reflection after": 0.01,
+          "pml status": "valid",
+          "active mass preservation": true,
+          "synchronized commit readiness": "stable",
+          "rollback status": "present",
+          "quarantine recommendation": false,
+          "promotion readiness": true
+        },
+        "invariants_checked": [
+          "entangled_calibration_targets_valid",
+          "calibration_baseline_present",
+          "feedback_loop_valid",
+          "feedback_policy_bounded",
+          "candidate_phase_table_separate",
+          "candidate_cadence_table_separate",
+          "candidate_carrier_table_separate",
+          "active_phase_table_not_overwritten",
+          "active_cadence_profile_not_overwritten",
+          "active_carrier_registry_not_overwritten",
+          "max_adjustment_bounds_respected",
+          "entanglement_phase_coherence_within_threshold",
+          "phase_drift_within_threshold",
+          "cadence_drift_within_threshold",
+          "carrier_phase_error_within_threshold",
+          "crosstalk_within_threshold",
+          "boundary_reflection_within_threshold",
+          "active_mass_preserved",
+          "lane_timing_consistency_preserved",
+          "pml_absorption_valid",
+          "synchronized_commit_blocked_until_stable",
+          "abort_signal_handled",
+          "rollback_successful_if_triggered",
+          "ranger_evidence_complete",
+          "court_review_complete",
+          "no_production_feedback_control"
+        ],
+        "artifacts": [],
+        "recommendation": "promote",
+        "confidence": 0.99,
+        "reproducibility_hash": "sha256_511c8bccbd0f"
+      }
+    }
+  },
+  "lumina_sovereign_context": {
+    "mission": {
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+      "target": "Level12WideWordSequencer",
+      "level": 12,
+      "objective": "Patrol PDM phase drift, register mass >= 14.0, cross-lane leakage <= 0.05, and stage Observatory evidence",
+      "allowed_actions": [
+        "READ_STATE",
+        "RUN_DIAGNOSTIC",
+        "COLLECT_TELEMETRY",
+        "NUDGE_ONCE",
+        "SETTLE_ONCE"
+      ],
+      "forbidden_actions": [
+        "CHANGE_PERIODS",
+        "CHANGE_ENGINE_MATH",
+        "WRITE_SOURCE"
+      ],
+      "ttl_steps": 60,
+      "required_artifacts": [
+        "baseline.json",
+        "candidate.json",
+        "experiment.json",
+        "candidate_proof_packet.json"
+      ],
+      "escalation_policy": "promotion_court_and_sol_change_observatory_review"
+    },
+    "command_protocol_trace": [
+      {
+        "verb": "PROPOSE",
+        "actor": "Parliament of Resonators (Architecture Council + Wave Fabric Guild + Compiler Council)",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "COMPLETED",
+        "artifact": "sol_wideword_32bit_pdm_calibrator"
+      },
+      {
+        "verb": "TRAVEL",
+        "actor": "8-Ranger Lumina Squadron (Phase, Mass, Court, Finalization, WideWord, MicroISA, FaultMatrix, EntangledFeedback)",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "COMPLETED",
+        "target": "Level12WideWordSequencer"
+      },
+      {
+        "verb": "INSPECT",
+        "actor": "Phase Ranger, Mass Ranger & Fault Matrix Ranger",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "COMPLETED",
+        "baseline_phase_error_rad": 0.22,
+        "baseline_min_mass": 11.8,
+        "mass_patrol_status": "STABLE",
+        "fault_matrix_cases_verified": 33
+      },
+      {
+        "verb": "PATCH",
+        "actor": "FrontierClosedLoopController + PromotionCourt + SovereignRuntime (Shadow)",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "COMPLETED",
+        "bounded_phase_nudge_rad": -0.035,
+        "bounded_damping_delta": 0.005,
+        "shadow_runtime_command_id": "CMD_SHADOW_CALIB_L12_WIDEWORD_PDM_PATROL_001"
+      },
+      {
+        "verb": "REPORT",
+        "actor": "8-Ranger Lumina Squadron",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "COMPLETED",
+        "sovereign_packets_emitted": [
+          "PKT_PHASE_OBS_2114656405632_174644",
+          "PKT_FLT_78369E9B",
+          "PKT_PHASE_OBS_2114656984576_174644",
+          "PKT_COURT_OBS_2114657372976_174644",
+          "PKT_FIN_RNG_1792172804967",
+          "PKT_WWP_467BBCD7",
+          "PKT_ISA_42162873",
+          "PKT_EFB_E2C9C2CE"
+        ],
+        "reproducibility_hash": "sha256_33bdea0a8b12"
+      },
+      {
+        "verb": "VERIFY",
+        "actor": "Sovereign PromotionCourt, FinalizationRanger (25 Gates) & MultiManifold 2PC Barrier",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "COMPLETED",
+        "court_decision": "observe",
+        "finalization_ready": true,
+        "atomic_commit_barrier_satisfied": true
+      },
+      {
+        "verb": "ARCHIVE",
+        "actor": "LuminaLibraryAgent & ChangeObservatoryBridge",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "COMPLETED",
+        "experiment_id": "exp_lumina_f57ffc28849b",
+        "lesson_id": "LESSON_L12_WIDEWORD_PDM_PATROL_001",
+        "staged_status": "AWAITING_OBSERVATORY_REVIEW"
+      },
+      {
+        "verb": "PROMOTE",
+        "actor": "SolEdgeLuminaSovereignGate (Awaiting Human Observatory Sign-Off)",
+        "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+        "status": "ELIGIBLE",
+        "observatory_review_status": "awaiting_review"
+      }
+    ],
+    "phase_ranger_packet": {
+      "packet_id": "PKT_PHASE_OBS_2114656984576_174644",
+      "domain": "sol_sovereign",
+      "level": 12,
+      "actor": "Phase Ranger",
+      "actor_type": "ranger",
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+      "claim": "PDM Coarse Phase Calibration Telemetry Report",
+      "evidence": {
+        "active_delta": 0.34,
+        "inactive_max_delta": 0.04,
+        "reversed_delta": 0.03,
+        "phase_residual": 0.018,
+        "cross_talk": 0.019,
+        "min_active_register_mass": 15.6,
+        "threshold_checks": {
+          "active_delta": true,
+          "inactive_max_delta": true,
+          "reversed_delta": true,
+          "cross_talk": true,
+          "min_active_register_mass": true
+        },
+        "pass_status": true,
+        "request_court_review": false
+      },
+      "invariants_checked": [
+        "active_delta >= 0.2",
+        "inactive_max_delta <= 0.1",
+        "reversed_delta <= 0.1",
+        "cross_talk <= 0.05",
+        "min_active_register_mass >= 14.0"
+      ],
+      "artifacts": [],
+      "recommendation": "observe",
+      "confidence": 0.95,
+      "reproducibility_hash": "sha256_33bdea0a8b12"
+    },
+    "court_ranger_packet": {
+      "packet_id": "PKT_COURT_OBS_2114657372976_174644",
+      "domain": "sol_sovereign",
+      "level": 12,
+      "actor": "Court Ranger",
+      "actor_type": "ranger",
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+      "claim": "Promotion gate review and closed-loop calibration recommendation report",
+      "evidence": {
+        "court_decision": "observe",
+        "target_level": 11,
+        "lane_id": 0,
+        "correction_type": "none",
+        "replay_status": "N/A",
+        "promotion_status": "approved",
+        "quarantine_status": false,
+        "target_type": "PromotionGateResult"
+      },
+      "invariants_checked": [
+        "promotion_gate_compliance",
+        "closed_loop_bounds"
+      ],
+      "artifacts": [],
+      "recommendation": "observe",
+      "confidence": 0.98,
+      "reproducibility_hash": "sha256_e0ca31182cf2"
+    },
+    "finalization_ranger_packet": {
+      "packet_id": "PKT_FIN_RNG_1792172804967",
+      "domain": "sol_sovereign",
+      "level": 50,
+      "actor": "Finalization Ranger",
+      "actor_type": "ranger",
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+      "claim": "Sovereign Production Gateways and System Finalization Observation Packet",
+      "evidence": {
+        "finalization_id": "SOL_LEVEL_12_OBSERVATORY_CANDIDATE",
+        "release_candidate_id": "RC_L12_L12_WIDEWORD_PDM_PATROL_001",
+        "final_manifest_status": "passed",
+        "final_gate_registry_status": "passed",
+        "production_gateway_decision": "shadow_only_approved",
+        "production_readiness_classification": "shadow_finalized",
+        "system_lockdown_status": "passed",
+        "runtime_handoff_status": "passed",
+        "ledger_integrity_status": "passed",
+        "rollback_proof_status": "passed",
+        "unresolved_quarantine_count": 0,
+        "known_limitation_count": 0,
+        "court_review_status": "approve_docket",
+        "promotion_readiness": true,
+        "finalization id": "SOL_LEVEL_12_OBSERVATORY_CANDIDATE",
+        "release candidate id": "RC_L12_L12_WIDEWORD_PDM_PATROL_001",
+        "final manifest status": "passed",
+        "final gate registry status": "passed",
+        "production gateway decision": "shadow_only_approved",
+        "production readiness classification": "shadow_finalized",
+        "system lockdown status": "passed",
+        "runtime handoff status": "passed",
+        "ledger integrity status": "passed",
+        "rollback proof status": "passed",
+        "unresolved quarantine count": 0,
+        "known limitation count": 0,
+        "court review status": "approve_docket",
+        "promotion readiness": true
+      },
+      "invariants_checked": [
+        "final_system_manifest_complete",
+        "finalization_docket_complete",
+        "final_gate_registry_valid",
+        "production_gateway_default_deny",
+        "production_readiness_guard_valid",
+        "production_status_not_enabled",
+        "system_lockdown_valid",
+        "runtime_handoff_manifest_complete",
+        "release_candidate_manifest_attached",
+        "governance_freeze_valid",
+        "api_stability_contract_valid",
+        "full_test_suite_passed",
+        "burnin_report_attached",
+        "burnin_stability_passed",
+        "runtime_ledger_valid",
+        "stability_ledger_valid",
+        "rollback_proof_passed",
+        "ranger_evidence_complete",
+        "court_review_complete",
+        "unresolved_quarantine_absent",
+        "active_phase_tables_not_overwritten",
+        "active_cadence_profiles_not_overwritten",
+        "active_carrier_registry_not_overwritten",
+        "no_automatic_promotion",
+        "no_production_execution"
+      ],
+      "artifacts": [],
+      "recommendation": "promote",
+      "confidence": 0.99,
+      "reproducibility_hash": "sha256_8d732ac9fad1"
+    },
+    "wideword_program_ranger_packet": {
+      "packet_id": "PKT_WWP_467BBCD7",
+      "domain": "compute",
+      "level": 37,
+      "actor": "WideWord Program Ranger",
+      "actor_type": "ranger",
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+      "claim": "WideWord Waveguide Program Execution verified successfully",
+      "evidence": {
+        "width": 32,
+        "backend_requested": "lane_fabric_vm",
+        "backend_used": "lane_fabric_vm",
+        "program_count": 1,
+        "instruction_count": 79,
+        "passed_instruction_count": 79,
+        "failed_instruction_count": 0,
+        "unavailable_layer_count": 0,
+        "oracle_match_status": true,
+        "active_table_mutation_status": false,
+        "promotion_ready": true
+      },
+      "invariants_checked": [
+        "oracle_match_status",
+        "no_active_table_mutation"
+      ],
+      "artifacts": [],
+      "recommendation": "observe",
+      "confidence": 1.0,
+      "reproducibility_hash": "sha256_68580b62767b"
+    },
+    "micro_isa_ranger_packet": {
+      "packet_id": "PKT_ISA_42162873",
+      "domain": "compute",
+      "level": 39,
+      "actor": "Micro-ISA Ranger",
+      "actor_type": "ranger",
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+      "claim": "Micro-ISA v0 specification and Backend Capability Matrix verified",
+      "evidence": {
+        "instruction_count": 21,
+        "required_instruction_count": 21,
+        "backend_count": 5,
+        "full_compliance_backend_count": 4,
+        "partial_compliance_backend_count": 6,
+        "unsupported_capability_count": 24,
+        "unavailable_capability_count": 0,
+        "overclaim_violation_count": 0,
+        "microcode_blocked_count": 0,
+        "docs_generated": 3,
+        "promotion_ready": true
+      },
+      "invariants_checked": [
+        "no_matrix_overclaims",
+        "compliance_levels_verified",
+        "lowering_rules_checked"
+      ],
+      "artifacts": [
+        "SOL_MICRO_ISA_V0.md",
+        "SOL_BACKEND_CAPABILITY_MATRIX.md",
+        "SOL_MICROCODE_LOWERING_PLAN.md"
+      ],
+      "recommendation": "observe",
+      "confidence": 1.0,
+      "reproducibility_hash": "sha256_e70716ed46a7"
+    },
+    "fault_matrix_ranger_packet": {
+      "packet_id": "PKT_FLT_78369E9B",
+      "domain": "sol_sovereign",
+      "level": 40,
+      "actor": "Fault Matrix Ranger",
+      "actor_type": "ranger",
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001_FAULT_PATROL",
+      "claim": "Distributed State Relocation Fault Injection and Real-Time Calibration Stability Observation Packet",
+      "evidence": {
+        "total_fault_cases": 35,
+        "passed_fault_cases": 35,
+        "failed_fault_cases": 0,
+        "rollback_proof_status": "success",
+        "state_hash_fault_behavior": "blocked",
+        "quorum_fault_behavior": "blocked",
+        "lock_fault_behavior": "blocked",
+        "cadence_fault_behavior": "blocked",
+        "wavefront_fault_behavior": "blocked",
+        "pml_fault_behavior": "blocked",
+        "calibration_fault_behavior": "blocked",
+        "carrier_fault_behavior": "blocked",
+        "active_table_protection_status": "protected",
+        "quarantine_status": "recorded",
+        "safety_oracle_agreement": true,
+        "promotion_readiness": true
+      },
+      "invariants_checked": [
+        "fault_matrix_valid",
+        "expected_outcomes_declared",
+        "relocation_fault_cases_complete",
+        "calibration_fault_cases_complete",
+        "rollback_proof_cases_complete",
+        "state_hash_faults_block_commit",
+        "rollback_faults_block_promotion",
+        "quorum_faults_block_commit",
+        "lock_faults_block_commit",
+        "cadence_faults_block_commit",
+        "wavefront_faults_block_commit",
+        "pml_faults_block_commit",
+        "feedback_faults_block_commit",
+        "carrier_faults_block_commit",
+        "active_tables_not_overwritten",
+        "rollback_restores_mock_state",
+        "quarantine_flags_recorded",
+        "safety_oracle_matches_actual_outcomes",
+        "ranger_evidence_complete",
+        "court_review_complete",
+        "no_production_fault_execution"
+      ],
+      "artifacts": [],
+      "recommendation": "promote",
+      "confidence": 0.99,
+      "reproducibility_hash": "sha256_83142c778932"
+    },
+    "entangled_feedback_ranger_packet": {
+      "packet_id": "PKT_EFB_E2C9C2CE",
+      "domain": "sol_sovereign",
+      "level": 35,
+      "actor": "Entangled Feedback Ranger",
+      "actor_type": "ranger",
+      "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+      "claim": "Multi-Manifold Entangled Wavefront Calibration and Feedback Loops Observation Packet",
+      "evidence": {
+        "feedback_loop_id": "FBL_REP_197cbda9",
+        "entangled_epoch_id": "unknown_entangled_epoch",
+        "manifold_count": 3,
+        "entanglement_link_count": 2,
+        "calibration_baseline_status": "present",
+        "feedback_step_count": 3,
+        "phase_drift_before": 0.22,
+        "phase_drift_after": 0.00225,
+        "cadence_drift_before": 0.08,
+        "cadence_drift_after": 0.012,
+        "carrier_phase_error_before": 0.07,
+        "carrier_phase_error_after": 0.011,
+        "crosstalk_before": 0.09,
+        "crosstalk_after": 0.019,
+        "boundary_reflection_before": 0.06,
+        "boundary_reflection_after": 0.01,
+        "pml_status": "valid",
+        "active_mass_preservation": true,
+        "synchronized_commit_readiness": "stable",
+        "rollback_status": "present",
+        "quarantine_recommendation": false,
+        "promotion_readiness": true,
+        "feedback loop id": "FBL_REP_197cbda9",
+        "entangled epoch id": "unknown_entangled_epoch",
+        "manifold count": 3,
+        "entanglement link count": 2,
+        "calibration baseline status": "present",
+        "feedback step count": 3,
+        "phase drift before": 0.22,
+        "phase drift after": 0.00225,
+        "cadence drift before": 0.08,
+        "cadence drift after": 0.012,
+        "carrier phase error before": 0.07,
+        "carrier phase error after": 0.011,
+        "crosstalk before": 0.09,
+        "crosstalk after": 0.019,
+        "boundary reflection before": 0.06,
+        "boundary reflection after": 0.01,
+        "pml status": "valid",
+        "active mass preservation": true,
+        "synchronized commit readiness": "stable",
+        "rollback status": "present",
+        "quarantine recommendation": false,
+        "promotion readiness": true
+      },
+      "invariants_checked": [
+        "entangled_calibration_targets_valid",
+        "calibration_baseline_present",
+        "feedback_loop_valid",
+        "feedback_policy_bounded",
+        "candidate_phase_table_separate",
+        "candidate_cadence_table_separate",
+        "candidate_carrier_table_separate",
+        "active_phase_table_not_overwritten",
+        "active_cadence_profile_not_overwritten",
+        "active_carrier_registry_not_overwritten",
+        "max_adjustment_bounds_respected",
+        "entanglement_phase_coherence_within_threshold",
+        "phase_drift_within_threshold",
+        "cadence_drift_within_threshold",
+        "carrier_phase_error_within_threshold",
+        "crosstalk_within_threshold",
+        "boundary_reflection_within_threshold",
+        "active_mass_preserved",
+        "lane_timing_consistency_preserved",
+        "pml_absorption_valid",
+        "synchronized_commit_blocked_until_stable",
+        "abort_signal_handled",
+        "rollback_successful_if_triggered",
+        "ranger_evidence_complete",
+        "court_review_complete",
+        "no_production_feedback_control"
+      ],
+      "artifacts": [],
+      "recommendation": "promote",
+      "confidence": 0.99,
+      "reproducibility_hash": "sha256_511c8bccbd0f"
+    },
+    "staged_component": {
+      "component_name": "sol_wideword_32bit_pdm_calibrator",
+      "path": "components/staged_sol_wideword_32bit_pdm_calibrator.py",
+      "verification_status": "AWAITING_OBSERVATORY_REVIEW",
+      "review_status": "awaiting_review",
+      "observatory_experiment_id": "exp_lumina_f57ffc28849b",
+      "sovereign_packet_id": "PKT_PHASE_OBS_2114656984576_174644",
+      "reproducibility_hash": "sha256_33bdea0a8b12",
+      "court_decision": "observe",
+      "target_level": 12,
+      "timestamp": "2026-10-16T17:46:44.967179+00:00"
+    },
+    "lesson_law": {
+      "lesson_id": "LESSON_L12_WIDEWORD_PDM_PATROL_001",
+      "level": 12,
+      "failure_pattern": "Cycle 0 uncalibrated PDM phase drift (0.22 rad) and register mass drain (11.8 < 14.0).",
+      "constitutional_rule": "Rule 7 Law L12-PDM-01: Uncalibrated 4-lane PDM waveguides suffer cross-lane phase bleed when phase error > 0.05 rad; all Level 12+ components require PhaseRanger SovereignPacket verification and SOL Change Observatory baseline-vs-candidate archival prior to promotion.",
+      "ranger_actor": "Lumina Ledger Archivist & Phase Ranger",
+      "observatory_experiment_id": "exp_lumina_f57ffc28849b",
+      "reproducibility_hash": "sha256_33bdea0a8b12",
+      "timestamp": "2026-10-16T17:46:44.967179+00:00"
+    },
+    "sovereign_domain_summary": {
+      "councils": [
+        "architecture_council",
+        "substrate_physics_council",
+        "wave_fabric_guild",
+        "compiler_council",
+        "wideword_compute_guild"
+      ],
+      "rangers": [
+        "phase_ranger",
+        "mass_ranger",
+        "boundary_ranger",
+        "byte_lane_ranger",
+        "carry_ranger",
+        "telemetry_ranger",
+        "memory_ranger",
+        "signal_ranger",
+        "drift_ranger",
+        "kernel_ranger",
+        "court_ranger",
+        "sequencer_ranger",
+        "pdm_ranger",
+        "frontier_ranger",
+        "live_control_ranger",
+        "fabric_ranger",
+        "hcam_ranger",
+        "simd_ranger",
+        "entanglement_ranger",
+        "consensus_ranger",
+        "atomic_commit_ranger",
+        "shard_ranger",
+        "transaction_ranger",
+        "gc_ranger",
+        "wavefront_ranger",
+        "tensor_ranger",
+        "pipeline_ranger",
+        "optimization_ranger",
+        "rebalancer_ranger",
+        "relocation_ranger",
+        "manifold_sync_ranger",
+        "transaction_propagation_ranger",
+        "calibration_ranger",
+        "fabric_synthesis_ranger",
+        "reshape_ranger",
+        "cadence_ranger",
+        "entangled_commit_ranger",
+        "entangled_feedback_ranger",
+        "sovereign_runtime_ranger",
+        "waveguide_arithmetic_ranger",
+        "atomic_consensus_ranger",
+        "state_relocation_ranger",
+        "fault_matrix_ranger",
+        "route_rebalance_ranger",
+        "route_fault_ranger",
+        "topology_relocation_ranger",
+        "resonant_cadence_ranger",
+        "core_assembly_ranger",
+        "pipeline_wavefront_ranger",
+        "pipeline_wavefront_fault_ranger",
+        "burnin_runtime_ranger",
+        "release_candidate_ranger",
+        "finalization_ranger",
+        "wideword_program_ranger",
+        "strict_backend_ranger",
+        "micro_isa_ranger",
+        "waveguide_control_memory_ranger"
+      ],
+      "teams": [
+        "level_11_stabilization_team",
+        "level_12_32bit_fabric_team",
+        "level_13_64bit_fabric_team"
+      ],
+      "promotion_gates_count": 11,
+      "verified_library_components": [
+        "xor_gate",
+        "half_adder",
+        "full_adder",
+        "multiplexer",
+        "sr_latch"
+      ],
+      "staged_candidate": {
+        "component_name": "sol_wideword_32bit_pdm_calibrator",
+        "path": "components/staged_sol_wideword_32bit_pdm_calibrator.py",
+        "verification_status": "AWAITING_OBSERVATORY_REVIEW",
+        "review_status": "awaiting_review",
+        "observatory_experiment_id": "exp_lumina_f57ffc28849b",
+        "sovereign_packet_id": "PKT_PHASE_OBS_2114656984576_174644",
+        "reproducibility_hash": "sha256_33bdea0a8b12",
+        "court_decision": "observe",
+        "target_level": 12,
+        "timestamp": "2026-10-16T17:46:44.967179+00:00"
+      },
+      "lesson_law": {
+        "lesson_id": "LESSON_L12_WIDEWORD_PDM_PATROL_001",
+        "level": 12,
+        "failure_pattern": "Cycle 0 uncalibrated PDM phase drift (0.22 rad) and register mass drain (11.8 < 14.0).",
+        "constitutional_rule": "Rule 7 Law L12-PDM-01: Uncalibrated 4-lane PDM waveguides suffer cross-lane phase bleed when phase error > 0.05 rad; all Level 12+ components require PhaseRanger SovereignPacket verification and SOL Change Observatory baseline-vs-candidate archival prior to promotion.",
+        "ranger_actor": "Lumina Ledger Archivist & Phase Ranger",
+        "observatory_experiment_id": "exp_lumina_f57ffc28849b",
+        "reproducibility_hash": "sha256_33bdea0a8b12",
+        "timestamp": "2026-10-16T17:46:44.967179+00:00"
+      }
+    },
+    "frontier_l_verification": {
+      "circuit_to_wideword_lowering": {
+        "circuit_summary": {
+          "circuit_id": "synth_FULL_ADDER_4841",
+          "name": "Synthesized_FULL_ADDER",
+          "node_count": 9,
+          "edge_count": 11,
+          "input_node_ids": [
+            "A",
+            "B",
+            "CIN"
+          ],
+          "output_node_ids": [
+            "SUM",
+            "COUT"
+          ],
+          "node_types": {
+            "A": "INPUT",
+            "B": "INPUT",
+            "CIN": "INPUT",
+            "xor_ab": "INTERFERENCE",
+            "xor_sum": "INTERFERENCE",
+            "SUM": "BASIN",
+            "lens_ab": "LENS_AND",
+            "lens_cin_xor": "LENS_AND",
+            "COUT": "BASIN"
+          }
+        },
+        "node_register_map": {
+          "A": "R8",
+          "B": "R9",
+          "xor_ab": "R10",
+          "CIN": "R11",
+          "xor_sum": "R12",
+          "SUM": "R13",
+          "lens_ab": "R14",
+          "lens_cin_xor": "R15",
+          "COUT": "R4"
+        },
+        "fabric_reports": {
+          "32bit": {
+            "width": 32,
+            "lane_count": 4,
+            "group_count": 1,
+            "topology_valid": true,
+            "prefix_carry_attached": true,
+            "arithmetic_fabric_valid": true
+          },
+          "64bit": {
+            "width": 64,
+            "lane_count": 8,
+            "group_count": 2,
+            "topology_valid": true,
+            "prefix_carry_attached": true,
+            "arithmetic_fabric_valid": true
+          }
+        },
+        "lowering_reports": {
+          "32bit": {
+            "total_v1_candidates": 6,
+            "successfully_lowered": 6,
+            "rejected": 0,
+            "safety_checks_passed": true
+          },
+          "64bit": {
+            "total_v1_candidates": 6,
+            "successfully_lowered": 6,
+            "rejected": 0,
+            "safety_checks_passed": true
+          }
+        },
+        "vm_executions": {
+          "32bit": {
+            "width": 32,
+            "backend_used": "lane_fabric_vm",
+            "v1_instruction_count": 34,
+            "lowered_v0_instruction_count": 85,
+            "trace_step_count": 79,
+            "oracle_cycles": 79,
+            "oracle_match": true,
+            "mismatch_count": 0,
+            "active_table_mutated": false,
+            "circuit_outputs": {
+              "SUM": 1,
+              "COUT": 1
+            },
+            "expected_circuit_outputs": {
+              "SUM": 1,
+              "COUT": 1
+            },
+            "circuit_truth_table_match": true,
+            "r5_hex": "0x7D5D7757",
+            "r6_hex": "0x78563412",
+            "r7_hex": "0x7D5D7757",
+            "r14_hex": "0x00000001",
+            "r15_hex": "0x00000001",
+            "oracle_r7_hex": "0x7D5D7757",
+            "flags": {
+              "zero": 0,
+              "carry": 0,
+              "overflow": 0,
+              "sign": 0,
+              "borrow": 0
+            }
+          },
+          "64bit": {
+            "width": 64,
+            "backend_used": "lane_fabric_vm",
+            "v1_instruction_count": 34,
+            "lowered_v0_instruction_count": 85,
+            "trace_step_count": 79,
+            "oracle_cycles": 79,
+            "oracle_match": true,
+            "mismatch_count": 0,
+            "active_table_mutated": false,
+            "circuit_outputs": {
+              "SUM": 1,
+              "COUT": 1
+            },
+            "expected_circuit_outputs": {
+              "SUM": 1,
+              "COUT": 1
+            },
+            "circuit_truth_table_match": true,
+            "r5_hex": "0x0078005655775757",
+            "r6_hex": "0x0078005600340012",
+            "r7_hex": "0x0078005655775757",
+            "r14_hex": "0x0000000000000001",
+            "r15_hex": "0x0000000000000001",
+            "oracle_r7_hex": "0x0078005655775757",
+            "flags": {
+              "zero": 0,
+              "carry": 0,
+              "overflow": 0,
+              "sign": 0,
+              "borrow": 0
+            }
+          }
+        },
+        "micro_isa_summary": {
+          "v0_instruction_count": 21,
+          "program_isa_valid": true,
+          "program_isa_errors": [],
+          "add_semantics_valid": true,
+          "capability_matrix_valid": true,
+          "capability_summary": {
+            "lane_fabric_strict": {
+              "native_count": 21,
+              "microcoded_count": 0,
+              "emulated_count": 0,
+              "hybrid_count": 0,
+              "unsupported_count": 0,
+              "unavailable_count": 0,
+              "failed_count": 0
+            },
+            "sequencer_shadow_strict": {
+              "native_count": 9,
+              "microcoded_count": 0,
+              "emulated_count": 0,
+              "hybrid_count": 0,
+              "unsupported_count": 12,
+              "unavailable_count": 0,
+              "failed_count": 0
+            },
+            "pdm_waveguide_shadow_strict": {
+              "native_count": 9,
+              "microcoded_count": 0,
+              "emulated_count": 0,
+              "hybrid_count": 0,
+              "unsupported_count": 12,
+              "unavailable_count": 0,
+              "failed_count": 0
+            },
+            "pdm_waveguide_microcoded_strict": {
+              "native_count": 8,
+              "microcoded_count": 13,
+              "emulated_count": 0,
+              "hybrid_count": 0,
+              "unsupported_count": 0,
+              "unavailable_count": 0,
+              "failed_count": 0
+            },
+            "hybrid_shadow": {
+              "native_count": 0,
+              "microcoded_count": 0,
+              "emulated_count": 0,
+              "hybrid_count": 21,
+              "unsupported_count": 0,
+              "unavailable_count": 0,
+              "failed_count": 0
+            }
+          },
+          "compliance_summary": {
+            "lane_fabric_strict_32": "full_compliance",
+            "lane_fabric_strict_64": "full_compliance",
+            "sequencer_shadow_strict_32": "alu_compliance",
+            "sequencer_shadow_strict_64": "alu_compliance",
+            "pdm_waveguide_shadow_strict_32": "alu_compliance",
+            "pdm_waveguide_shadow_strict_64": "alu_compliance",
+            "pdm_waveguide_microcoded_strict_32": "full_compliance",
+            "pdm_waveguide_microcoded_strict_64": "full_compliance",
+            "hybrid_shadow_32": "hybrid_compliance",
+            "hybrid_shadow_64": "hybrid_compliance",
+            "success": true,
+            "report_id": "RPT_COMP_428B979A"
+          },
+          "v1_spec_consistent": true,
+          "v1_opcode_count": 29,
+          "v1_extension_compliant": true,
+          "v1_capability_summary": {
+            "verdict": "candidate_compliant",
+            "backends": {
+              "lane_fabric_strict": {
+                "emulated": 24,
+                "unsupported": 5
+              },
+              "sequencer_shadow_strict": {
+                "unsupported": 19,
+                "emulated": 10
+              },
+              "pdm_waveguide_shadow_strict": {
+                "unsupported": 19,
+                "emulated": 10
+              },
+              "pdm_waveguide_microcoded_strict": {
+                "emulated": 24,
+                "unsupported": 5
+              },
+              "hybrid_shadow": {
+                "emulated": 24,
+                "unsupported": 5
+              }
+            },
+            "compliant_candidates": [
+              "SELECT",
+              "CMOVZ",
+              "CMOVNZ",
+              "CMOVC",
+              "CMOVNC",
+              "CMOVB",
+              "CMOVNB",
+              "PLOAD_RO",
+              "LANE_ADD",
+              "LANE_SUB",
+              "PREFIX_ADD",
+              "PREFIX_SUB",
+              "VEC_PACK",
+              "VEC_UNPACK",
+              "VEC_BROADCAST",
+              "VEC_EXTRACT",
+              "VEC_INSERT",
+              "VEC_LANE_ADD",
+              "VEC_LANE_SUB",
+              "VEC_LANE_AND",
+              "VEC_LANE_OR",
+              "VEC_LANE_XOR",
+              "VEC_MASK_SELECT",
+              "WG_CHAN_FENCE"
+            ],
+            "supports_v1_channel_independence_analysis": true,
+            "supports_v1_channelized_kernel_scheduling": true,
+            "supports_v1_channel_kernel_library": true,
+            "supports_v1_channel_kernel_recognition": true,
+            "supports_v1_channel_fanout_kernel": true,
+            "supports_v1_channel_parallel_load_kernel": true,
+            "supports_v1_channel_fence_order_kernel": true
+          }
+        }
+      },
+      "fault_matrix_verification": {
+        "pipeline_wavefront_fault_matrix": {
+          "total_cases": 33,
+          "passed_cases": 33,
+          "failed_cases": 0,
+          "passed_matrix": true,
+          "summary": {
+            "total_cases": 33,
+            "passed_cases": 33,
+            "failed_cases": 0,
+            "passed_audit": true,
+            "case_summaries": {
+              "CASE_WF_FLT_00": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_01": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_02": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_03": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_04": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_05": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_06": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_07": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_08": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_09": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_10": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_11": {
+                "success": true,
+                "actual_outcome": "hold_pipeline_balance",
+                "matched": true
+              },
+              "CASE_WF_FLT_12": {
+                "success": true,
+                "actual_outcome": "hold_wavefront_calibration",
+                "matched": true
+              },
+              "CASE_WF_FLT_13": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_14": {
+                "success": true,
+                "actual_outcome": "rollback_wavefront_calibration",
+                "matched": true
+              },
+              "CASE_WF_FLT_15": {
+                "success": true,
+                "actual_outcome": "rollback_wavefront_calibration",
+                "matched": true
+              },
+              "CASE_WF_FLT_16": {
+                "success": true,
+                "actual_outcome": "rollback_wavefront_calibration",
+                "matched": true
+              },
+              "CASE_WF_FLT_17": {
+                "success": true,
+                "actual_outcome": "quarantine_wavefront_packet",
+                "matched": true
+              },
+              "CASE_WF_FLT_18": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_19": {
+                "success": true,
+                "actual_outcome": "quarantine_pipeline_segment",
+                "matched": true
+              },
+              "CASE_WF_FLT_20": {
+                "success": true,
+                "actual_outcome": "quarantine_pipeline_segment",
+                "matched": true
+              },
+              "CASE_WF_FLT_21": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_22": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_23": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_24": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_25": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_26": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_27": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_28": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              },
+              "CASE_WF_FLT_29": {
+                "success": true,
+                "actual_outcome": "quarantine_core",
+                "matched": true
+              },
+              "CASE_WF_FLT_30": {
+                "success": true,
+                "actual_outcome": "quarantine_core",
+                "matched": true
+              },
+              "CASE_WF_FLT_31": {
+                "success": true,
+                "actual_outcome": "quarantine_core",
+                "matched": true
+              },
+              "CASE_WF_FLT_32": {
+                "success": true,
+                "actual_outcome": "reject_candidate",
+                "matched": true
+              }
+            }
+          }
+        },
+        "state_relocation_fault_matrix": {
+          "total_cases": 21,
+          "passed_cases": 21,
+          "failed_cases": 0,
+          "summary": {
+            "total": 21,
+            "passed": 21,
+            "failed": 0,
+            "success": true
+          }
+        },
+        "realtime_calibration_fault_matrix": {
+          "total_cases": 14,
+          "passed_cases": 14,
+          "failed_cases": 0,
+          "summary": {
+            "total": 14,
+            "passed": 14,
+            "failed": 0,
+            "success": true
+          }
+        },
+        "rollback_proof": {
+          "case_count": 6,
+          "passed_proof": true,
+          "all_restored": true
+        },
+        "fault_ranger_recommendation": "promote"
+      },
+      "multimanifold_atomic_commit": {
+        "coordination_group": [
+          "M1",
+          "M2",
+          "M3"
+        ],
+        "boundaries_valid": true,
+        "quorum": {
+          "local_quorum_passed": true,
+          "global_quorum_passed": true,
+          "sequencer_quorum_passed": true,
+          "entanglement_links_valid": true
+        },
+        "barrier_satisfied": true,
+        "barrier_errors": [],
+        "commit_status": "commit",
+        "commit_success": true,
+        "committed_value_hex": "0x7D5D7757",
+        "rollback_triggered": false,
+        "calibration_initial_error": 0.113,
+        "calibration_summary": {
+          "success": true,
+          "final_error": 0.01,
+          "errors": []
+        },
+        "feedback_loop_stable": true,
+        "feedback_atomic_ready": true,
+        "stability_bounds_valid": true
+      },
+      "sovereign_runtime_shadow": {
+        "runtime_id": "RUN_765546f6",
+        "mode": "shadow",
+        "allow_production_execution": false,
+        "target_level": 12,
+        "command_id": "CMD_SHADOW_CALIB_L12_WIDEWORD_PDM_PATROL_001",
+        "command_success": true,
+        "executed_steps": 1,
+        "quarantined": false,
+        "passed_gates": true
+      },
+      "ranger_squadron_packets": {
+        "cycle0_phase_ranger": {
+          "packet_id": "PKT_PHASE_OBS_2114656405632_174644",
+          "domain": "sol_sovereign",
+          "level": 12,
+          "actor": "Phase Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001_BASELINE",
+          "claim": "PDM Coarse Phase Calibration Telemetry Report",
+          "evidence": {
+            "active_delta": 0.11,
+            "inactive_max_delta": 0.16,
+            "reversed_delta": 0.14,
+            "phase_residual": 0.22,
+            "cross_talk": 0.09,
+            "min_active_register_mass": 11.8,
+            "threshold_checks": {
+              "active_delta": false,
+              "inactive_max_delta": false,
+              "reversed_delta": false,
+              "cross_talk": false,
+              "min_active_register_mass": false
+            },
+            "pass_status": false,
+            "request_court_review": true
+          },
+          "invariants_checked": [
+            "active_delta >= 0.2",
+            "inactive_max_delta <= 0.1",
+            "reversed_delta <= 0.1",
+            "cross_talk <= 0.05",
+            "min_active_register_mass >= 14.0"
+          ],
+          "artifacts": [],
+          "recommendation": "reject",
+          "confidence": 0.95,
+          "reproducibility_hash": "sha256_8434bae6cd4f"
+        },
+        "cycle0_fault_matrix_ranger": {
+          "packet_id": "PKT_FLT_78369E9B",
+          "domain": "sol_sovereign",
+          "level": 40,
+          "actor": "Fault Matrix Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001_FAULT_PATROL",
+          "claim": "Distributed State Relocation Fault Injection and Real-Time Calibration Stability Observation Packet",
+          "evidence": {
+            "total_fault_cases": 35,
+            "passed_fault_cases": 35,
+            "failed_fault_cases": 0,
+            "rollback_proof_status": "success",
+            "state_hash_fault_behavior": "blocked",
+            "quorum_fault_behavior": "blocked",
+            "lock_fault_behavior": "blocked",
+            "cadence_fault_behavior": "blocked",
+            "wavefront_fault_behavior": "blocked",
+            "pml_fault_behavior": "blocked",
+            "calibration_fault_behavior": "blocked",
+            "carrier_fault_behavior": "blocked",
+            "active_table_protection_status": "protected",
+            "quarantine_status": "recorded",
+            "safety_oracle_agreement": true,
+            "promotion_readiness": true
+          },
+          "invariants_checked": [
+            "fault_matrix_valid",
+            "expected_outcomes_declared",
+            "relocation_fault_cases_complete",
+            "calibration_fault_cases_complete",
+            "rollback_proof_cases_complete",
+            "state_hash_faults_block_commit",
+            "rollback_faults_block_promotion",
+            "quorum_faults_block_commit",
+            "lock_faults_block_commit",
+            "cadence_faults_block_commit",
+            "wavefront_faults_block_commit",
+            "pml_faults_block_commit",
+            "feedback_faults_block_commit",
+            "carrier_faults_block_commit",
+            "active_tables_not_overwritten",
+            "rollback_restores_mock_state",
+            "quarantine_flags_recorded",
+            "safety_oracle_matches_actual_outcomes",
+            "ranger_evidence_complete",
+            "court_review_complete",
+            "no_production_fault_execution"
+          ],
+          "artifacts": [],
+          "recommendation": "promote",
+          "confidence": 0.99,
+          "reproducibility_hash": "sha256_83142c778932"
+        },
+        "cycle1_phase_ranger": {
+          "packet_id": "PKT_PHASE_OBS_2114656984576_174644",
+          "domain": "sol_sovereign",
+          "level": 12,
+          "actor": "Phase Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+          "claim": "PDM Coarse Phase Calibration Telemetry Report",
+          "evidence": {
+            "active_delta": 0.34,
+            "inactive_max_delta": 0.04,
+            "reversed_delta": 0.03,
+            "phase_residual": 0.018,
+            "cross_talk": 0.019,
+            "min_active_register_mass": 15.6,
+            "threshold_checks": {
+              "active_delta": true,
+              "inactive_max_delta": true,
+              "reversed_delta": true,
+              "cross_talk": true,
+              "min_active_register_mass": true
+            },
+            "pass_status": true,
+            "request_court_review": false
+          },
+          "invariants_checked": [
+            "active_delta >= 0.2",
+            "inactive_max_delta <= 0.1",
+            "reversed_delta <= 0.1",
+            "cross_talk <= 0.05",
+            "min_active_register_mass >= 14.0"
+          ],
+          "artifacts": [],
+          "recommendation": "observe",
+          "confidence": 0.95,
+          "reproducibility_hash": "sha256_33bdea0a8b12"
+        },
+        "cycle1_court_ranger": {
+          "packet_id": "PKT_COURT_OBS_2114657372976_174644",
+          "domain": "sol_sovereign",
+          "level": 12,
+          "actor": "Court Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+          "claim": "Promotion gate review and closed-loop calibration recommendation report",
+          "evidence": {
+            "court_decision": "observe",
+            "target_level": 11,
+            "lane_id": 0,
+            "correction_type": "none",
+            "replay_status": "N/A",
+            "promotion_status": "approved",
+            "quarantine_status": false,
+            "target_type": "PromotionGateResult"
+          },
+          "invariants_checked": [
+            "promotion_gate_compliance",
+            "closed_loop_bounds"
+          ],
+          "artifacts": [],
+          "recommendation": "observe",
+          "confidence": 0.98,
+          "reproducibility_hash": "sha256_e0ca31182cf2"
+        },
+        "cycle1_finalization_ranger": {
+          "packet_id": "PKT_FIN_RNG_1792172804967",
+          "domain": "sol_sovereign",
+          "level": 50,
+          "actor": "Finalization Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+          "claim": "Sovereign Production Gateways and System Finalization Observation Packet",
+          "evidence": {
+            "finalization_id": "SOL_LEVEL_12_OBSERVATORY_CANDIDATE",
+            "release_candidate_id": "RC_L12_L12_WIDEWORD_PDM_PATROL_001",
+            "final_manifest_status": "passed",
+            "final_gate_registry_status": "passed",
+            "production_gateway_decision": "shadow_only_approved",
+            "production_readiness_classification": "shadow_finalized",
+            "system_lockdown_status": "passed",
+            "runtime_handoff_status": "passed",
+            "ledger_integrity_status": "passed",
+            "rollback_proof_status": "passed",
+            "unresolved_quarantine_count": 0,
+            "known_limitation_count": 0,
+            "court_review_status": "approve_docket",
+            "promotion_readiness": true,
+            "finalization id": "SOL_LEVEL_12_OBSERVATORY_CANDIDATE",
+            "release candidate id": "RC_L12_L12_WIDEWORD_PDM_PATROL_001",
+            "final manifest status": "passed",
+            "final gate registry status": "passed",
+            "production gateway decision": "shadow_only_approved",
+            "production readiness classification": "shadow_finalized",
+            "system lockdown status": "passed",
+            "runtime handoff status": "passed",
+            "ledger integrity status": "passed",
+            "rollback proof status": "passed",
+            "unresolved quarantine count": 0,
+            "known limitation count": 0,
+            "court review status": "approve_docket",
+            "promotion readiness": true
+          },
+          "invariants_checked": [
+            "final_system_manifest_complete",
+            "finalization_docket_complete",
+            "final_gate_registry_valid",
+            "production_gateway_default_deny",
+            "production_readiness_guard_valid",
+            "production_status_not_enabled",
+            "system_lockdown_valid",
+            "runtime_handoff_manifest_complete",
+            "release_candidate_manifest_attached",
+            "governance_freeze_valid",
+            "api_stability_contract_valid",
+            "full_test_suite_passed",
+            "burnin_report_attached",
+            "burnin_stability_passed",
+            "runtime_ledger_valid",
+            "stability_ledger_valid",
+            "rollback_proof_passed",
+            "ranger_evidence_complete",
+            "court_review_complete",
+            "unresolved_quarantine_absent",
+            "active_phase_tables_not_overwritten",
+            "active_cadence_profiles_not_overwritten",
+            "active_carrier_registry_not_overwritten",
+            "no_automatic_promotion",
+            "no_production_execution"
+          ],
+          "artifacts": [],
+          "recommendation": "promote",
+          "confidence": 0.99,
+          "reproducibility_hash": "sha256_8d732ac9fad1"
+        },
+        "cycle1_wideword_program_ranger": {
+          "packet_id": "PKT_WWP_467BBCD7",
+          "domain": "compute",
+          "level": 37,
+          "actor": "WideWord Program Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+          "claim": "WideWord Waveguide Program Execution verified successfully",
+          "evidence": {
+            "width": 32,
+            "backend_requested": "lane_fabric_vm",
+            "backend_used": "lane_fabric_vm",
+            "program_count": 1,
+            "instruction_count": 79,
+            "passed_instruction_count": 79,
+            "failed_instruction_count": 0,
+            "unavailable_layer_count": 0,
+            "oracle_match_status": true,
+            "active_table_mutation_status": false,
+            "promotion_ready": true
+          },
+          "invariants_checked": [
+            "oracle_match_status",
+            "no_active_table_mutation"
+          ],
+          "artifacts": [],
+          "recommendation": "observe",
+          "confidence": 1.0,
+          "reproducibility_hash": "sha256_68580b62767b"
+        },
+        "cycle1_micro_isa_ranger": {
+          "packet_id": "PKT_ISA_42162873",
+          "domain": "compute",
+          "level": 39,
+          "actor": "Micro-ISA Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+          "claim": "Micro-ISA v0 specification and Backend Capability Matrix verified",
+          "evidence": {
+            "instruction_count": 21,
+            "required_instruction_count": 21,
+            "backend_count": 5,
+            "full_compliance_backend_count": 4,
+            "partial_compliance_backend_count": 6,
+            "unsupported_capability_count": 24,
+            "unavailable_capability_count": 0,
+            "overclaim_violation_count": 0,
+            "microcode_blocked_count": 0,
+            "docs_generated": 3,
+            "promotion_ready": true
+          },
+          "invariants_checked": [
+            "no_matrix_overclaims",
+            "compliance_levels_verified",
+            "lowering_rules_checked"
+          ],
+          "artifacts": [
+            "SOL_MICRO_ISA_V0.md",
+            "SOL_BACKEND_CAPABILITY_MATRIX.md",
+            "SOL_MICROCODE_LOWERING_PLAN.md"
+          ],
+          "recommendation": "observe",
+          "confidence": 1.0,
+          "reproducibility_hash": "sha256_e70716ed46a7"
+        },
+        "cycle1_entangled_feedback_ranger": {
+          "packet_id": "PKT_EFB_E2C9C2CE",
+          "domain": "sol_sovereign",
+          "level": 35,
+          "actor": "Entangled Feedback Ranger",
+          "actor_type": "ranger",
+          "mission_id": "L12_WIDEWORD_PDM_PATROL_001",
+          "claim": "Multi-Manifold Entangled Wavefront Calibration and Feedback Loops Observation Packet",
+          "evidence": {
+            "feedback_loop_id": "FBL_REP_197cbda9",
+            "entangled_epoch_id": "unknown_entangled_epoch",
+            "manifold_count": 3,
+            "entanglement_link_count": 2,
+            "calibration_baseline_status": "present",
+            "feedback_step_count": 3,
+            "phase_drift_before": 0.22,
+            "phase_drift_after": 0.00225,
+            "cadence_drift_before": 0.08,
+            "cadence_drift_after": 0.012,
+            "carrier_phase_error_before": 0.07,
+            "carrier_phase_error_after": 0.011,
+            "crosstalk_before": 0.09,
+            "crosstalk_after": 0.019,
+            "boundary_reflection_before": 0.06,
+            "boundary_reflection_after": 0.01,
+            "pml_status": "valid",
+            "active_mass_preservation": true,
+            "synchronized_commit_readiness": "stable",
+            "rollback_status": "present",
+            "quarantine_recommendation": false,
+            "promotion_readiness": true,
+            "feedback loop id": "FBL_REP_197cbda9",
+            "entangled epoch id": "unknown_entangled_epoch",
+            "manifold count": 3,
+            "entanglement link count": 2,
+            "calibration baseline status": "present",
+            "feedback step count": 3,
+            "phase drift before": 0.22,
+            "phase drift after": 0.00225,
+            "cadence drift before": 0.08,
+            "cadence drift after": 0.012,
+            "carrier phase error before": 0.07,
+            "carrier phase error after": 0.011,
+            "crosstalk before": 0.09,
+            "crosstalk after": 0.019,
+            "boundary reflection before": 0.06,
+            "boundary reflection after": 0.01,
+            "pml status": "valid",
+            "active mass preservation": true,
+            "synchronized commit readiness": "stable",
+            "rollback status": "present",
+            "quarantine recommendation": false,
+            "promotion readiness": true
+          },
+          "invariants_checked": [
+            "entangled_calibration_targets_valid",
+            "calibration_baseline_present",
+            "feedback_loop_valid",
+            "feedback_policy_bounded",
+            "candidate_phase_table_separate",
+            "candidate_cadence_table_separate",
+            "candidate_carrier_table_separate",
+            "active_phase_table_not_overwritten",
+            "active_cadence_profile_not_overwritten",
+            "active_carrier_registry_not_overwritten",
+            "max_adjustment_bounds_respected",
+            "entanglement_phase_coherence_within_threshold",
+            "phase_drift_within_threshold",
+            "cadence_drift_within_threshold",
+            "carrier_phase_error_within_threshold",
+            "crosstalk_within_threshold",
+            "boundary_reflection_within_threshold",
+            "active_mass_preserved",
+            "lane_timing_consistency_preserved",
+            "pml_absorption_valid",
+            "synchronized_commit_blocked_until_stable",
+            "abort_signal_handled",
+            "rollback_successful_if_triggered",
+            "ranger_evidence_complete",
+            "court_review_complete",
+            "no_production_feedback_control"
+          ],
+          "artifacts": [],
+          "recommendation": "promote",
+          "confidence": 0.99,
+          "reproducibility_hash": "sha256_511c8bccbd0f"
+        }
+      }
+    },
+    "reasoning_telemetry": {
+      "model_used": "gemini-4-argon",
+      "interaction_id": "mock-lumina-ranger-observatory-001",
+      "thinking_level": "high",
+      "thought_signature_digests": [
+        "sha256:cf454753a1251d79766be2e85583ecf4c41820155b01883977c4f61803f55305",
+        "sha256:3af1ced588682272db988c97da3b121ea141015dce0d71fdb2e3e0e915586a22"
+      ],
+      "thought_signature_lengths": [
+        256,
+        384
+      ],
+      "thought_summaries": [
+        "Cycle 0 PhaseRanger & FaultMatrixRanger patrol detected PDM phase drift (0.22 rad > 0.05), register mass drain (11.8 < 14.0), and verified 33-case fault rollback containment.",
+        "Cycle 1 bounded Frontier calibration (-0.0350 rad, 0.0050 damping), 32/64-bit WideWord/Micro-ISA v1 lowering, and 3-manifold 2PC commit verified by 8 Rangers."
+      ],
+      "total_input_tokens": 450,
+      "total_thought_tokens": 720,
+      "total_output_tokens": 340
+    }
+  },
+  "baseline_evaluation": {
+    "label": "Cycle 0 Uncalibrated WideWord Manifold & Ledger Auto-Sync (SOVEREIGN_RANGER_DRIFT_OR_MASS_QUARANTINE)",
+    "logon_count": 3,
+    "metrics": {
+      "evidence": 0.6,
+      "coherence": 0.5399666666666667,
+      "contradiction": 0.14285714285714285,
+      "continuity": 0.58,
+      "authority": 0.625,
+      "faithfulness": 0.49428571428571433
+    },
+    "verdict": "QUARANTINE",
+    "source": "sol_continuum.SolEdgeLuminaSovereignGate"
+  },
+  "logons": [
+    {
+      "id": "LR01",
+      "label": "Parliament of Resonators Proposal (sol_wideword_32bit_pdm_calibrator, Level 12)",
+      "status": "supported",
+      "evidence": 0.96,
+      "rho": 0.94,
+      "psi": 0.95,
+      "pressure": 0.08,
+      "detail": "Architecture Council + Wave Fabric Guild + Compiler Council joint specification: 4-byte-lane 32-bit WideWord PDM waveguide fabric with prefix-carry tree, PML boundary isolation (<= 0.05 cross-lane leakage), and bounded Frontier phase-lock calibration.",
+      "source": "coding_library.sovereign_domain.SovereignDomain",
+      "phase_id": "P1_PARLIAMENT_PROPOSE",
+      "group_id": "LRG01",
+      "evidence_refs": [
+        "mission:L12_WIDEWORD_PDM_PATROL_001",
+        "interaction:mock-lumina-ranger-observatory-001"
+      ]
+    },
+    {
+      "id": "LR02",
+      "label": "Cycle 0 PhaseRanger Drift & Mass Violation Intercepted (err=0.22 rad, mass=11.8)",
+      "status": "supported",
+      "evidence": 0.94,
+      "rho": 0.92,
+      "psi": 0.93,
+      "pressure": 0.12,
+      "detail": "SolEdgeLuminaSovereignGate quarantined Cycle 0 (SOVEREIGN_RANGER_DRIFT_OR_MASS_QUARANTINE), FaultMatrixRanger verified 33-case fault rollback containment (PKT_FLT_78369E9B), and dispatched RangerMission 'L12_WIDEWORD_PDM_PATROL_001'.",
+      "source": "sol_continuum.SolEdgeLuminaSovereignGate",
+      "phase_id": "P1_PARLIAMENT_PROPOSE",
+      "group_id": "LRG01",
+      "evidence_refs": [
+        "sha256:ac5543b013c435eafaa544ca9e032172805532e3ca433f160bfe977f35351417",
+        "PKT_FLT_78369E9B"
+      ]
+    },
+    {
+      "id": "LR03",
+      "label": "Bounded Frontier Calibration & PhaseRanger Patrol (\u0394\u03c6=-0.035 rad, mass=15.6 >= 14.0)",
+      "status": "supported",
+      "evidence": 0.98,
+      "rho": 0.96,
+      "psi": 0.97,
+      "pressure": 0.06,
+      "detail": "FrontierClosedLoopController applied bounded nudge (-0.0350 rad, \u0394\u03b3=+0.0050). PhaseRanger, WideWordProgramRanger & MicroISARanger verified active_delta=0.34, cross_talk=0.019, mass=15.6, and 32/64-bit WideWord oracle parity (sha256_33bdea0a8b12).",
+      "source": "coding_library.sovereign_domain.rangers.PhaseRanger",
+      "phase_id": "P2_RANGER_FIELD_PATROL",
+      "group_id": "LRG02",
+      "evidence_refs": [
+        "PKT_PHASE_OBS_2114656984576_174644",
+        "PKT_WWP_467BBCD7",
+        "PKT_ISA_42162873",
+        "sha256_33bdea0a8b12"
+      ]
+    },
+    {
+      "id": "LR04",
+      "label": "PromotionCourt & FinalizationRanger 25-Gate Verification (observe)",
+      "status": "supported",
+      "evidence": 0.97,
+      "rho": 0.95,
+      "psi": 0.96,
+      "pressure": 0.07,
+      "detail": "CourtRanger verified PromotionCourt gate 'drift_gate_lane_0' (passed=True), EntangledFeedbackRanger verified 3-manifold 2PC commit, and FinalizationRanger verified all 25 invariants.",
+      "source": "coding_library.sovereign_domain.PromotionCourt",
+      "phase_id": "P2_RANGER_FIELD_PATROL",
+      "group_id": "LRG02",
+      "evidence_refs": [
+        "PKT_COURT_OBS_2114657372976_174644",
+        "PKT_EFB_E2C9C2CE",
+        "PKT_FIN_RNG_1792172804967"
+      ]
+    },
+    {
+      "id": "LR05",
+      "label": "Lumina Coding Library Vault Staging & Rule 7 Lesson Law (sol_wideword_32bit_pdm_calibrator)",
+      "status": "supported",
+      "evidence": 0.97,
+      "rho": 0.95,
+      "psi": 0.96,
+      "pressure": 0.07,
+      "detail": "LuminaLibraryAgent staged 'sol_wideword_32bit_pdm_calibrator' as AWAITING_OBSERVATORY_REVIEW linked to 'exp_lumina_f57ffc28849b' and recorded 'LESSON_L12_WIDEWORD_PDM_PATROL_001'.",
+      "source": "coding_library.LuminaLibraryAgent",
+      "phase_id": "P3_OBSERVATORY_VAULT",
+      "group_id": "LRG03",
+      "evidence_refs": [
+        "experiment:exp_lumina_f57ffc28849b",
+        "LESSON_L12_WIDEWORD_PDM_PATROL_001"
+      ]
+    },
+    {
+      "id": "LR06",
+      "label": "SOL Change Observatory Archive & Sovereign Gate ELIGIBLE (awaiting_review)",
+      "status": "supported",
+      "evidence": 0.98,
+      "rho": 0.97,
+      "psi": 0.97,
+      "pressure": 0.05,
+      "detail": "SolEdgeLuminaSovereignGate verified all 7 Sovereignty Rules (ELIGIBLE) and archived zero-warning schema-1.0 experiment in SOL Change Observatory.",
+      "source": "sol_continuum.ChangeObservatoryBridge",
+      "phase_id": "P3_OBSERVATORY_VAULT",
+      "group_id": "LRG03",
+      "evidence_refs": [
+        "sha256:2ee653bd073173507c24857206262d8a9b7ab984b5a7f487e8f77780169319a6",
+        "adapter:sol-lens-proof-packet/1.0"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "LRE01",
+      "from": "LR01",
+      "to": "LR02",
+      "status": "supported",
+      "kind": "constraint",
+      "weight": 0.95,
+      "active": true
+    },
+    {
+      "id": "LRE02",
+      "from": "LR02",
+      "to": "LR03",
+      "status": "supported",
+      "kind": "feedback",
+      "weight": 0.98,
+      "active": true
+    },
+    {
+      "id": "LRE03",
+      "from": "LR03",
+      "to": "LR04",
+      "status": "supported",
+      "kind": "evidence",
+      "weight": 0.97,
+      "active": true
+    },
+    {
+      "id": "LRE04",
+      "from": "LR04",
+      "to": "LR05",
+      "status": "supported",
+      "kind": "flow",
+      "weight": 0.96,
+      "active": true
+    },
+    {
+      "id": "LRE05",
+      "from": "LR05",
+      "to": "LR06",
+      "status": "supported",
+      "kind": "dependency",
+      "weight": 0.98,
+      "active": true
+    }
+  ],
+  "groups": [
+    {
+      "id": "LRG01",
+      "label": "Parliament Proposal & Cycle 0 Drift Quarantine",
+      "logon_ids": [
+        "LR01",
+        "LR02"
+      ],
+      "phase": "P1_PARLIAMENT_PROPOSE"
+    },
+    {
+      "id": "LRG02",
+      "label": "Ranger Corps Field Patrol & PromotionCourt Gate",
+      "logon_ids": [
+        "LR03",
+        "LR04"
+      ],
+      "phase": "P2_RANGER_FIELD_PATROL"
+    },
+    {
+      "id": "LRG03",
+      "label": "Lumina Library Staging & SOL Change Observatory Archive",
+      "logon_ids": [
+        "LR05",
+        "LR06"
+      ],
+      "phase": "P3_OBSERVATORY_VAULT"
+    }
+  ],
+  "metrics": {
+    "evidence": 0.9666666666666667,
+    "coherence": 0.95705,
+    "contradiction": 0.0,
+    "continuity": 1.0,
+    "authority": 0.9916666666666667,
+    "faithfulness": 0.9566666666666667
+  },
+  "verdict": "PROMOTE",
+  "evaluation": {
+    "engine": "SOL Engine",
+    "scoring_profile": "sol-court-v1",
+    "metrics": {
+      "evidence": 0.9666666666666667,
+      "coherence": 0.95705,
+      "contradiction": 0.0,
+      "continuity": 1.0,
+      "authority": 0.9916666666666667,
+      "faithfulness": 0.9566666666666667
+    },
+    "verdict": "PROMOTE",
+    "claimed_evaluation_match": true
+  },
+  "claimed_evaluation": {
+    "metrics": {
+      "evidence": 0.9666666666666667,
+      "coherence": 0.95705,
+      "contradiction": 0.0,
+      "continuity": 1.0,
+      "authority": 0.9916666666666667,
+      "faithfulness": 0.9566666666666667
+    },
+    "verdict": "PROMOTE"
+  }
+}

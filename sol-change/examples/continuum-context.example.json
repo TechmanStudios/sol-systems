@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "input": "SYNTHETIC EXAMPLE: the exact input supplied to both workflow versions goes here.",
+  "conditions": {
+    "dataset": "synthetic-source-packet/1",
+    "seed": 7,
+    "environment": "synthetic-example",
+    "evaluation_rubric": "example-rubric/1"
+  },
+  "evaluator_version": "example-evaluator/1",
+  "workflow_version": "example-workflow/1",
+  "executed_at": "2026-10-15T14:00:00Z",
+  "data_type": "synthetic"
+}
