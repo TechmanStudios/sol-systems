@@ -1,17 +1,17 @@
 {
   "benchmark_name": "VECTOR_11_AUTOMATED_THEOREM_PROVING_BENCHMARK",
-  "timestamp": "2026-09-29 16:18:23",
-  "total_conjectures": 7,
-  "theorems_proved": 5,
-  "conjectures_refuted": 2,
+  "timestamp": "2026-10-23 07:12:02",
+  "total_conjectures": 11,
+  "theorems_proved": 8,
+  "conjectures_refuted": 3,
   "false_positive_rate": 0.0,
   "false_negative_rate": 0.0,
-  "mean_hegelian_consensus_proved": 0.9988,
+  "mean_hegelian_consensus_proved": 0.9991,
   "mean_dialectical_causal_gain_bits": 0.05,
-  "mean_kernel_nodes": 8.2,
-  "corpus_theorems_count": 5,
+  "mean_kernel_nodes": 7.2,
+  "corpus_theorems_count": 8,
   "monograph_path": "C:\\sol-systems\\conJecture\\FORMAL_THEOREMS_CORPUS.md",
-  "total_runtime_seconds": 16.66,
+  "total_runtime_seconds": 7.66,
   "certificates": [
     {
       "conjecture_id": "conj_demorgan_nand",
@@ -37,7 +37,7 @@
           "passed": true,
           "details": {
             "accuracy": 1.0,
-            "delta_ei": 0.3774,
+            "delta_ei": 0.3598,
             "max_condition_number": 1.0
           }
         },
@@ -60,7 +60,7 @@
           "details": {
             "kernel_node_count": 10,
             "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.3774
+            "kernel_delta_ei": 0.3598
           }
         },
         {
@@ -69,7 +69,7 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": true,
           "details": {
-            "consensus_order": 0.9989,
+            "consensus_order": 0.999,
             "dialectic_causal_gain": 0.05,
             "verdict": "SYNTHESIS_PROVED"
           }
@@ -78,8 +78,9 @@
       "minimal_causal_kernel_nodes": 10,
       "causal_emergence_gain": 0.05,
       "counter_example_witness": null,
-      "hegelian_consensus_order": 0.9989,
-      "proof_duration_ms": 2122.17,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.999,
+      "proof_duration_ms": 947.14,
       "is_crystallized": true
     },
     {
@@ -106,7 +107,7 @@
           "passed": true,
           "details": {
             "accuracy": 1.0,
-            "delta_ei": 0.3774,
+            "delta_ei": 0.377,
             "max_condition_number": 1.0
           }
         },
@@ -129,7 +130,7 @@
           "details": {
             "kernel_node_count": 7,
             "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.3774
+            "kernel_delta_ei": 0.377
           }
         },
         {
@@ -138,7 +139,7 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": true,
           "details": {
-            "consensus_order": 0.9989,
+            "consensus_order": 0.9993,
             "dialectic_causal_gain": 0.05,
             "verdict": "SYNTHESIS_PROVED"
           }
@@ -147,8 +148,9 @@
       "minimal_causal_kernel_nodes": 7,
       "causal_emergence_gain": 0.05,
       "counter_example_witness": null,
-      "hegelian_consensus_order": 0.9989,
-      "proof_duration_ms": 2698.73,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9993,
+      "proof_duration_ms": 787.05,
       "is_crystallized": true
     },
     {
@@ -175,7 +177,7 @@
           "passed": true,
           "details": {
             "accuracy": 1.0,
-            "delta_ei": -2.0,
+            "delta_ei": -0.0005,
             "max_condition_number": 1.0
           }
         },
@@ -198,7 +200,7 @@
           "details": {
             "kernel_node_count": 6,
             "compression_ratio": 0.0,
-            "kernel_delta_ei": -2.0
+            "kernel_delta_ei": -0.0005
           }
         },
         {
@@ -216,8 +218,9 @@
       "minimal_causal_kernel_nodes": 6,
       "causal_emergence_gain": 0.05,
       "counter_example_witness": null,
+      "counterexample_witness": null,
       "hegelian_consensus_order": 0.999,
-      "proof_duration_ms": 2097.54,
+      "proof_duration_ms": 548.06,
       "is_crystallized": true
     },
     {
@@ -244,7 +247,7 @@
           "passed": true,
           "details": {
             "accuracy": 1.0,
-            "delta_ei": 0.3774,
+            "delta_ei": 0.377,
             "max_condition_number": 1.0
           }
         },
@@ -265,9 +268,9 @@
           "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
           "passed": true,
           "details": {
-            "kernel_node_count": 11,
+            "kernel_node_count": 7,
             "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.3774
+            "kernel_delta_ei": 0.377
           }
         },
         {
@@ -276,17 +279,18 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": true,
           "details": {
-            "consensus_order": 0.9983,
+            "consensus_order": 0.9991,
             "dialectic_causal_gain": 0.05,
             "verdict": "SYNTHESIS_PROVED"
           }
         }
       ],
-      "minimal_causal_kernel_nodes": 11,
+      "minimal_causal_kernel_nodes": 7,
       "causal_emergence_gain": 0.05,
       "counter_example_witness": null,
-      "hegelian_consensus_order": 0.9983,
-      "proof_duration_ms": 4693.27,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9991,
+      "proof_duration_ms": 849.9,
       "is_crystallized": true
     },
     {
@@ -313,7 +317,7 @@
           "passed": true,
           "details": {
             "accuracy": 1.0,
-            "delta_ei": 0.3774,
+            "delta_ei": 0.377,
             "max_condition_number": 1.0
           }
         },
@@ -336,7 +340,7 @@
           "details": {
             "kernel_node_count": 7,
             "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.3774
+            "kernel_delta_ei": 0.377
           }
         },
         {
@@ -345,7 +349,7 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": true,
           "details": {
-            "consensus_order": 0.9989,
+            "consensus_order": 0.999,
             "dialectic_causal_gain": 0.05,
             "verdict": "SYNTHESIS_PROVED"
           }
@@ -354,8 +358,9 @@
       "minimal_causal_kernel_nodes": 7,
       "causal_emergence_gain": 0.05,
       "counter_example_witness": null,
-      "hegelian_consensus_order": 0.9989,
-      "proof_duration_ms": 2847.84,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.999,
+      "proof_duration_ms": 840.25,
       "is_crystallized": true
     },
     {
@@ -382,7 +387,7 @@
           "passed": false,
           "details": {
             "accuracy": 0.75,
-            "delta_ei": -2.0,
+            "delta_ei": -0.0004,
             "max_condition_number": 1.0
           }
         },
@@ -403,9 +408,9 @@
           "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
           "passed": false,
           "details": {
-            "kernel_node_count": 7,
+            "kernel_node_count": 4,
             "compression_ratio": 0.0,
-            "kernel_delta_ei": -2.0
+            "kernel_delta_ei": -0.0004
           }
         },
         {
@@ -414,13 +419,13 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": false,
           "details": {
-            "consensus_order": 0.2837,
+            "consensus_order": 0.3197,
             "dialectic_causal_gain": 0.0,
             "verdict": "THESIS_REFUTED"
           }
         }
       ],
-      "minimal_causal_kernel_nodes": 7,
+      "minimal_causal_kernel_nodes": 4,
       "causal_emergence_gain": 0.0,
       "counter_example_witness": {
         "input_vector": {
@@ -433,11 +438,25 @@
         "observed_output": {
           "Y": 0
         },
-        "margin_error": 0.9974,
+        "margin_error": 0.9975,
         "attack_type": "DISCRETE_WITNESS"
       },
-      "hegelian_consensus_order": 0.2837,
-      "proof_duration_ms": 983.17,
+      "counterexample_witness": {
+        "input_vector": {
+          "A": 1.0,
+          "B": 1.0
+        },
+        "expected_output": {
+          "Y": 1
+        },
+        "observed_output": {
+          "Y": 0
+        },
+        "margin_error": 0.9975,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "hegelian_consensus_order": 0.3197,
+      "proof_duration_ms": 159.54,
       "is_crystallized": false
     },
     {
@@ -464,7 +483,7 @@
           "passed": false,
           "details": {
             "accuracy": 0.75,
-            "delta_ei": -1.6226,
+            "delta_ei": 0.377,
             "max_condition_number": 1.0
           }
         },
@@ -487,7 +506,7 @@
           "details": {
             "kernel_node_count": 8,
             "compression_ratio": 0.0,
-            "kernel_delta_ei": -1.6226
+            "kernel_delta_ei": 0.377
           }
         },
         {
@@ -496,7 +515,7 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": false,
           "details": {
-            "consensus_order": 0.2888,
+            "consensus_order": 0.2969,
             "dialectic_causal_gain": 0.0,
             "verdict": "THESIS_REFUTED"
           }
@@ -519,8 +538,331 @@
         "margin_error": 0.9974,
         "attack_type": "DISCRETE_WITNESS"
       },
-      "hegelian_consensus_order": 0.2888,
-      "proof_duration_ms": 1218.05,
+      "counterexample_witness": {
+        "input_vector": {
+          "A": 1.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "expected_output": {
+          "Y": 1
+        },
+        "observed_output": {
+          "Y": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "hegelian_consensus_order": 0.2969,
+      "proof_duration_ms": 522.08,
+      "is_crystallized": false
+    },
+    {
+      "conjecture_id": "conj_mitotic_hawking_conservation",
+      "title": "Mitotic Dual-Path Hawking Mass Conservation",
+      "latex_formula": "\\text{Tr}(\\rho_{A} + \\rho_{B}) = \\text{Tr}(\\rho_{\\text{in}}) - \\Delta E_{\\text{Hawking}}",
+      "domain": "RIEMANNIAN_GEOMETRY",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9991,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9991,
+      "proof_duration_ms": 813.35,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_coprime_stwm_prefix_carry",
+      "title": "Coprime STWM Prefix Carry Orthogonality",
+      "latex_formula": "C_{\\text{out}} = G \\lor (P \\land C_{\\text{in}}) \\;\\wedge\\; \\langle \\Psi_p \\mid \\Psi_q \\rangle = \\delta_{p,q}",
+      "domain": "WAVEGUIDE_FABRIC",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9991,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9991,
+      "proof_duration_ms": 844.98,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_governed_compiler_pass_idempotence",
+      "title": "Governed Compiler Pass Admission & Replay Idempotence",
+      "latex_formula": "\\text{Replay}(\\text{Admit}(\\Pi, x)) = \\text{Admit}(\\Pi, x) \\implies H_{\\text{trace}}(x^{(1)}) = H_{\\text{trace}}(x^{(0)})",
+      "domain": "META_PLASTICITY",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9989,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9989,
+      "proof_duration_ms": 809.79,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_false_resonant_wall_linear_pdm",
+      "title": "Hypothetical Resonant Wall Linear PDM Carry Preservation",
+      "latex_formula": "\\text{Carry}_{\\text{PDM}}(\\text{RESONANT\\_WALL}, x) \\stackrel{?}{=} \\text{Carry}_{\\text{PDM}}(\\text{FREE}, x)",
+      "domain": "WAVEGUIDE_FABRIC",
+      "verdict": "DISPROVED_COUNTEREXAMPLE",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 0.9544,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": false,
+          "details": {
+            "accuracy": 0.75,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": false,
+          "details": {
+            "verdict": "REFUTED",
+            "counter_examples_found": 1,
+            "max_tolerated_strain": 0.0
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": false,
+          "details": {
+            "kernel_node_count": 8,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": false,
+          "details": {
+            "consensus_order": 0.2617,
+            "dialectic_causal_gain": 0.0,
+            "verdict": "THESIS_REFUTED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 8,
+      "causal_emergence_gain": 0.0,
+      "counter_example_witness": {
+        "input_vector": {
+          "G": 1.0,
+          "P": 1.0,
+          "CIN": 1.0
+        },
+        "expected_output": {
+          "COUT": 1
+        },
+        "observed_output": {
+          "COUT": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "counterexample_witness": {
+        "input_vector": {
+          "G": 1.0,
+          "P": 1.0,
+          "CIN": 1.0
+        },
+        "expected_output": {
+          "COUT": 1
+        },
+        "observed_output": {
+          "COUT": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "hegelian_consensus_order": 0.2617,
+      "proof_duration_ms": 535.27,
       "is_crystallized": false
     }
   ]

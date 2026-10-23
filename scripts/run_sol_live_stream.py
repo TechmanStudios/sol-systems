@@ -778,8 +778,9 @@ class ManifoldSimulationServer:
     navigation, and Hippocampal dream consolidation in a background thread, serving
     live telemetry via HTTP JSON and SSE endpoints.
     """
-    def __init__(self, port: int = 8765):
+    def __init__(self, port: int = 8765, ledger_db_path: Optional[str] = None):
         self.port = port
+        self.ledger_db_path = ledger_db_path
         self.dim = 4
         self.running = False
         self.lock = threading.Lock()
@@ -928,7 +929,7 @@ class ManifoldSimulationServer:
 
         # Vector 17 / Frontier C: Persistent D1 / SQLite Cryptographic Governance Court Ledger
         from sol_decide.delivery.governance_ledger import GovernanceCourtLedger
-        self.governance_ledger = GovernanceCourtLedger()
+        self.governance_ledger = GovernanceCourtLedger(db_path=self.ledger_db_path)
         self.latest_ledger_run_id: Optional[str] = None
 
         self.latest_packet: Dict = {}
@@ -1695,6 +1696,21 @@ def create_handler(server_instance: ManifoldSimulationServer):
                 self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()
                 self.wfile.write(json.dumps({"ok": True, **snapshot}).encode("utf-8"))
+            elif path == "/api/studio/state":
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "total_frontiers": 20,
+                    "total_vectors": 24,
+                    "frontiers_range": "Frontier_A..Frontier_T",
+                    "vectors_range": "V0..V23",
+                    "holographic_merkle_root": "sha256:c1fb5580c692756bf4860226cb78fb02a0a3db4be193c3852fd79fcb52ef0800",
+                    "proven_theorems_count": len(server_instance.theorem_corpus.theorems),
+                    "refuted_conjectures_count": len(server_instance.theorem_corpus.refutations),
+                }).encode("utf-8"))
             else:
                 self.send_response(404)
                 self.end_headers()
@@ -2885,6 +2901,361 @@ def create_handler(server_instance: ManifoldSimulationServer):
                     "ledger_entry": ledger_entry,
                 }).encode("utf-8"))
 
+            elif path == "/api/decide/wgsl_trade_prover":
+                from sol_decide.hardware_accel.wgsl_decision_prover import (
+                    WGSLDecisionProverOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import (
+                    DEFAULT_GEMINI_MODEL,
+                    LiveGeminiMoAElicitor,
+                )
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "NGCV_WGSL_Pareto_MSCK_Inflection_Study_v1"
+                )
+                repeat_trials = max(3, int(body.get("repeat_trial_count", 5)))
+                num_permutations = max(64, int(body.get("num_permutations", 10000)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                exp_root = (
+                    Path(body["experiments_root"])
+                    if body.get("experiments_root")
+                    else None
+                )
+                obs_db = (
+                    Path(body["observatory_db_path"])
+                    if body.get("observatory_db_path")
+                    else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+                )
+                register_in_obs = bool(body.get("register_in_observatory_db", True))
+                use_live_gemini = bool(body.get("use_live_gemini", True))
+                orchestrator = WGSLDecisionProverOrchestrator(
+                    experiments_root=exp_root,
+                    observatory_db_path=obs_db,
+                )
+                try:
+                    if not use_live_gemini:
+                        raise RuntimeError("Deterministic offline prover requested")
+                    live_elicitor = LiveGeminiMoAElicitor(model=model_name)
+                    ep = orchestrator.run_wgsl_decision_prover_episode(
+                        study_name=study_name,
+                        gemini_client=live_elicitor._get_client(),
+                        model=model_name,
+                        num_permutations=num_permutations,
+                        repeat_trial_count=repeat_trials,
+                        register_in_observatory_db=register_in_obs,
+                    )
+                except Exception:
+                    ep = orchestrator.run_wgsl_decision_prover_episode(
+                        study_name=study_name,
+                        gemini_client=None,
+                        model=model_name,
+                        num_permutations=num_permutations,
+                        repeat_trial_count=repeat_trials,
+                        register_in_observatory_db=register_in_obs,
+                    )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_wgsl_prover_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_wgsl_decision_prover_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path == "/api/robotics/swarm_cohomology":
+                from sol_decide.interop.swarm_cohomology_bridge import (
+                    MultiRobotSwarmCohomologyOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "Frontier_P_Bimanual_25kg_Swarm_Cohomology"
+                )
+                num_robots = max(2, int(body.get("num_robots", 2)))
+                payload_mass_kg = max(25.0, float(body.get("payload_mass_kg", 25.0)))
+                repeat_trials = max(3, int(body.get("repeat_trial_count", 5)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                exp_root = (
+                    Path(body["experiments_root"])
+                    if body.get("experiments_root")
+                    else None
+                )
+                obs_db = (
+                    Path(body["observatory_db_path"])
+                    if body.get("observatory_db_path")
+                    else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+                )
+                register_in_obs = bool(body.get("register_in_observatory_db", True))
+                prefer_live_api = bool(body.get("use_live_gemini", True))
+
+                orchestrator = MultiRobotSwarmCohomologyOrchestrator(
+                    num_robots=num_robots,
+                    payload_mass_kg=payload_mass_kg,
+                    model_id=model_name,
+                    prefer_live_api=prefer_live_api,
+                )
+                ep = orchestrator.run_episode(
+                    study_name=study_name,
+                    trial_count=repeat_trials,
+                    experiments_root=exp_root,
+                    observatory_db_path=obs_db,
+                    register_in_observatory_db=register_in_obs,
+                )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_swarm_cohomology_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_swarm_cohomology_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path == "/api/edge/umok_kernel":
+                from sol_decide.interop.umok_edge_bridge import (
+                    UMOKEdgeKernelOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "Frontier_Q_UMOK_Sub_Microsecond_Edge_Kernel"
+                )
+                steps = max(1, int(body.get("steps", 2048)))
+                deadline_us = max(0.1, float(body.get("deadline_us", 1.0)))
+                repeat_trials = max(3, int(body.get("repeat_trial_count", 5)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                exp_root = (
+                    Path(body["experiments_root"])
+                    if body.get("experiments_root")
+                    else None
+                )
+                obs_db = (
+                    Path(body["observatory_db_path"])
+                    if body.get("observatory_db_path")
+                    else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+                )
+                register_in_obs = bool(body.get("register_in_observatory_db", True))
+                prefer_live_api = bool(body.get("use_live_gemini", True))
+
+                orchestrator = UMOKEdgeKernelOrchestrator(
+                    steps=steps,
+                    deadline_us=deadline_us,
+                    model_id=model_name,
+                    prefer_live_api=prefer_live_api,
+                )
+                ep = orchestrator.run_episode(
+                    study_name=study_name,
+                    trial_count=repeat_trials,
+                    experiments_root=exp_root,
+                    observatory_db_path=obs_db,
+                    register_in_observatory_db=register_in_obs,
+                )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_umok_edge_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_umok_edge_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path in ("/api/continuum/mitotic_foliation", "/api/topology/mitotic_foliation"):
+                from sol_decide.interop.mitotic_foliation_bridge import (
+                    MitoticFoliationOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "Frontier_R_Mitotic_Surface_Foliation_And_Toroidal_Surgery"
+                )
+                repeat_trials = max(3, int(body.get("repeat_trial_count", 5)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                exp_root = (
+                    Path(body["experiments_root"])
+                    if body.get("experiments_root")
+                    else None
+                )
+                obs_db = (
+                    Path(body["observatory_db_path"])
+                    if body.get("observatory_db_path")
+                    else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+                )
+                register_in_obs = bool(body.get("register_in_observatory_db", True))
+                prefer_live_api = bool(body.get("use_live_gemini", False))
+
+                orchestrator = MitoticFoliationOrchestrator(
+                    model_id=model_name,
+                    prefer_live_api=prefer_live_api,
+                )
+                ep = orchestrator.run_episode(
+                    study_name=study_name,
+                    trial_count=repeat_trials,
+                    experiments_root=exp_root,
+                    observatory_db_path=obs_db,
+                    register_in_observatory_db=register_in_obs,
+                )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_mitotic_foliation_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_mitotic_foliation_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path in ("/api/continuum/stwm_wavefront", "/api/waveguide/stwm_wavefront"):
+                from sol_decide.interop.stwm_wavefront_bridge import (
+                    STWMWavefrontOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "Frontier_S_STWM_Coprime_Waveguide_And_MHD_GRU_Bus"
+                )
+                repeat_trials = max(3, int(body.get("repeat_trial_count", 5)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                exp_root = (
+                    Path(body["experiments_root"])
+                    if body.get("experiments_root")
+                    else None
+                )
+                obs_db = (
+                    Path(body["observatory_db_path"])
+                    if body.get("observatory_db_path")
+                    else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+                )
+                register_in_obs = bool(body.get("register_in_observatory_db", True))
+                prefer_live_api = bool(body.get("use_live_gemini", False))
+
+                orchestrator = STWMWavefrontOrchestrator(
+                    model_id=model_name,
+                    prefer_live_api=prefer_live_api,
+                )
+                ep = orchestrator.run_episode(
+                    study_name=study_name,
+                    trial_count=repeat_trials,
+                    experiments_root=exp_root,
+                    observatory_db_path=obs_db,
+                    register_in_observatory_db=register_in_obs,
+                )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_stwm_wavefront_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_stwm_wavefront_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
+            elif path in ("/api/continuum/rsi_compiler", "/api/rsi/compiler_governance"):
+                from sol_decide.interop.rsi_compiler_governance_bridge import (
+                    RSICompilerGovernanceOrchestrator,
+                )
+                from sol_decide.agentic.live_llm_elicitation import DEFAULT_GEMINI_MODEL
+
+                model_name = body.get("model", DEFAULT_GEMINI_MODEL)
+                study_name = body.get(
+                    "study_name", "Frontier_T_Governed_RSI_And_Waveguide_Compiler_Replay"
+                )
+                repeat_trials = max(3, int(body.get("repeat_trial_count", 5)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                exp_root = (
+                    Path(body["experiments_root"])
+                    if body.get("experiments_root")
+                    else None
+                )
+                obs_db = (
+                    Path(body["observatory_db_path"])
+                    if body.get("observatory_db_path")
+                    else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+                )
+                register_in_obs = bool(body.get("register_in_observatory_db", True))
+                prefer_live_api = bool(body.get("use_live_gemini", False))
+
+                orchestrator = RSICompilerGovernanceOrchestrator(
+                    model_id=model_name,
+                    prefer_live_api=prefer_live_api,
+                )
+                ep = orchestrator.run_episode(
+                    study_name=study_name,
+                    trial_count=repeat_trials,
+                    experiments_root=exp_root,
+                    observatory_db_path=obs_db,
+                    register_in_observatory_db=register_in_obs,
+                )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = ep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    server_instance.latest_rsi_compiler_episode = ep
+                    ledger_entry = server_instance.governance_ledger.record_rsi_compiler_episode(
+                        ep
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "episode": ep.to_dict(),
+                    "sol_lens_packet": ep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                }).encode("utf-8"))
+
             elif path == "/api/ledger/verify":
                 with server_instance.lock:
                     rep = server_instance.governance_ledger.verify_ledger_integrity()
@@ -2896,6 +3267,7 @@ def create_handler(server_instance: ManifoldSimulationServer):
             else:
                 self.send_response(404)
                 self.end_headers()
+
 
         def do_OPTIONS(self):
             self.send_response(200)

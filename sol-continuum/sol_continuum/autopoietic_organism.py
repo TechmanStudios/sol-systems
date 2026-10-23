@@ -51,11 +51,20 @@ from typing import Any
 import numpy as np
 from scipy import stats as scipy_stats
 
+from contextlib import contextmanager
+
 _META_LEARNER_LOCK = threading.Lock()
+_TELEMETRY_BIND_LOCK = threading.Lock()
+_TELEMETRY_BIND_DEPTH = 0
+_SAVED_TELEMETRY_MODULE: Any = None
+_HAS_SAVED_TELEMETRY: bool = False
 
 _THIS_FILE = Path(__file__).resolve()
 _SOL_CONTINUUM_ROOT = _THIS_FILE.parents[1]
-_SOL_SYSTEMS_ROOT = _SOL_CONTINUUM_ROOT.parent
+_SOL_SYSTEMS_ROOT = next(
+    (p for p in _THIS_FILE.parents if (p / "sol" / "tools" / "sol-core").exists()),
+    _SOL_CONTINUUM_ROOT.parent,
+)
 _SOL_ROOT = _SOL_SYSTEMS_ROOT / "sol"
 _SOL_TOOLS_ROOT = _SOL_ROOT / "tools"
 _FRONTIER_OS_ROOT = _SOL_SYSTEMS_ROOT / "Frontier_OS"
@@ -85,6 +94,36 @@ def _load_file_module(alias: str, path: Path) -> Any:
     sys.modules[alias] = mod
     spec.loader.exec_module(mod)
     return mod
+
+
+_sol_core_telemetry = _load_file_module(
+    "_sol_core_telemetry",
+    _SOL_TOOLS_ROOT / "sol-core" / "telemetry.py",
+)
+
+
+@contextmanager
+def _bind_sol_core_telemetry():
+    """Binds `sol/tools/sol-core/telemetry.py` into `sys.modules["telemetry"]` with thread-safe refcounting."""
+    global _TELEMETRY_BIND_DEPTH, _SAVED_TELEMETRY_MODULE, _HAS_SAVED_TELEMETRY
+    with _TELEMETRY_BIND_LOCK:
+        if _TELEMETRY_BIND_DEPTH == 0:
+            _HAS_SAVED_TELEMETRY = "telemetry" in sys.modules
+            _SAVED_TELEMETRY_MODULE = sys.modules.get("telemetry")
+        _TELEMETRY_BIND_DEPTH += 1
+        sys.modules["telemetry"] = _sol_core_telemetry
+    try:
+        yield
+    finally:
+        with _TELEMETRY_BIND_LOCK:
+            _TELEMETRY_BIND_DEPTH -= 1
+            if _TELEMETRY_BIND_DEPTH == 0:
+                if _HAS_SAVED_TELEMETRY and _SAVED_TELEMETRY_MODULE is not None:
+                    sys.modules["telemetry"] = _SAVED_TELEMETRY_MODULE
+                else:
+                    sys.modules.pop("telemetry", None)
+                _SAVED_TELEMETRY_MODULE = None
+                _HAS_SAVED_TELEMETRY = False
 
 
 # 1. Autonomous Epistemic Intake imports
@@ -246,67 +285,68 @@ class FrontierNAutopoieticHarmonizer:
         Pillar 1: Scans `CLAIM_LEDGER.md` and `proof_packets/` using `sol-cortex/gap_detector.py`,
         verifies sacred core immutability via `sol-orchestrator`, and runs `stage_smoke`.
         """
-        core_ok, core_sha256 = verify_core_graph_immutability(core_graph_path)
-        raw_gaps = sol_gap_detector.scan_knowledge()
-        ranked_gaps = sol_gap_detector.rank_gaps(raw_gaps)
+        with _bind_sol_core_telemetry():
+            core_ok, core_sha256 = verify_core_graph_immutability(core_graph_path)
+            raw_gaps = sol_gap_detector.scan_knowledge()
+            ranked_gaps = sol_gap_detector.rank_gaps(raw_gaps)
 
-        by_type: dict[str, int] = {}
-        priority_1_count = 0
-        for g in ranked_gaps:
-            by_type[g.gap_type] = by_type.get(g.gap_type, 0) + 1
-            if g.priority == 1:
-                priority_1_count += 1
+            by_type: dict[str, int] = {}
+            priority_1_count = 0
+            for g in ranked_gaps:
+                by_type[g.gap_type] = by_type.get(g.gap_type, 0) + 1
+                if g.priority == 1:
+                    priority_1_count += 1
 
-        def _serialize_gap(idx: int, gap_obj: Any) -> dict[str, Any]:
-            d = asdict(gap_obj)
-            claim_suffix = f":{d['claim_id']}" if d.get("claim_id") else ""
-            d["gap_id"] = str(d.get("gap_id") or f"GAP-{idx + 1:03d}{claim_suffix}")
-            d["suggested_template"] = str(
-                d.get("suggested_template")
-                or ("threshold_detection" if d.get("gap_type") == "open_question" else "parameter_sweep")
+            def _serialize_gap(idx: int, gap_obj: Any) -> dict[str, Any]:
+                d = asdict(gap_obj)
+                claim_suffix = f":{d['claim_id']}" if d.get("claim_id") else ""
+                d["gap_id"] = str(d.get("gap_id") or f"GAP-{idx + 1:03d}{claim_suffix}")
+                d["suggested_template"] = str(
+                    d.get("suggested_template")
+                    or ("threshold_detection" if d.get("gap_type") == "open_question" else "parameter_sweep")
+                )
+                d["suggested_protocol"] = str(
+                    d.get("suggested_protocol")
+                    or ("damping_transition_fine" if episode_mode == "continuum_discovery" else "single_inject_baseline")
+                )
+                return d
+
+            # Select deterministic gap aligned with episode mode
+            if ranked_gaps:
+                target_idx = 0 if episode_mode == "continuum_discovery" else min(1, len(ranked_gaps) - 1)
+                selected = _serialize_gap(target_idx, ranked_gaps[target_idx])
+            else:
+                selected = {
+                    "gap_id": "GAP-001",
+                    "gap_type": "open_question",
+                    "priority": 1,
+                    "claim_id": "C14",
+                    "description": "What is the exact functional form of the phase-transition threshold in damping?",
+                    "suggested_template": "threshold_detection",
+                    "suggested_protocol": "damping_transition_fine",
+                    "rationale": "Fallback epistemic gap target.",
+                }
+
+            smoke_cfg = sol_orchestrator.PipelineConfig(
+                dry_run=True,
+                verbose=False,
             )
-            d["suggested_protocol"] = str(
-                d.get("suggested_protocol")
-                or ("damping_transition_fine" if episode_mode == "continuum_discovery" else "single_inject_baseline")
-            )
-            return d
+            smoke_metrics = sol_orchestrator.stage_smoke(smoke_cfg)
+            stage_contract: DelegationContract = build_stage_contract("cortex", run_id=run_id)
 
-        # Select deterministic gap aligned with episode mode
-        if ranked_gaps:
-            target_idx = 0 if episode_mode == "continuum_discovery" else min(1, len(ranked_gaps) - 1)
-            selected = _serialize_gap(target_idx, ranked_gaps[target_idx])
-        else:
-            selected = {
-                "gap_id": "GAP-001",
-                "gap_type": "open_question",
-                "priority": 1,
-                "claim_id": "C14",
-                "description": "What is the exact functional form of the phase-transition threshold in damping?",
-                "suggested_template": "threshold_detection",
-                "suggested_protocol": "damping_transition_fine",
-                "rationale": "Fallback epistemic gap target.",
+            return {
+                "core_immutability_verified": bool(core_ok),
+                "core_graph_sha256": core_sha256,
+                "expected_core_graph_sha256": EXPECTED_CORE_GRAPH_SHA256,
+                "total_gaps_detected": len(ranked_gaps),
+                "priority_1_gaps": priority_1_count,
+                "gaps_by_type": by_type,
+                "selected_gap": selected,
+                "top_ranked_gaps": [_serialize_gap(idx, g) for idx, g in enumerate(ranked_gaps[:5])],
+                "smoke_stage_passed": bool(smoke_metrics.get("engine_ok", False) and core_ok),
+                "smoke_stage_metrics": dict(smoke_metrics),
+                "stage_contract": stage_contract.to_dict(),
             }
-
-        smoke_cfg = sol_orchestrator.PipelineConfig(
-            dry_run=True,
-            verbose=False,
-        )
-        smoke_metrics = sol_orchestrator.stage_smoke(smoke_cfg)
-        stage_contract: DelegationContract = build_stage_contract("cortex", run_id=run_id)
-
-        return {
-            "core_immutability_verified": bool(core_ok),
-            "core_graph_sha256": core_sha256,
-            "expected_core_graph_sha256": EXPECTED_CORE_GRAPH_SHA256,
-            "total_gaps_detected": len(ranked_gaps),
-            "priority_1_gaps": priority_1_count,
-            "gaps_by_type": by_type,
-            "selected_gap": selected,
-            "top_ranked_gaps": [_serialize_gap(idx, g) for idx, g in enumerate(ranked_gaps[:5])],
-            "smoke_stage_passed": bool(smoke_metrics.get("engine_ok", False) and core_ok),
-            "smoke_stage_metrics": dict(smoke_metrics),
-            "stage_contract": stage_contract.to_dict(),
-        }
 
     def run_bimodal_dream_consolidation(
         self,
@@ -373,31 +413,32 @@ class FrontierNAutopoieticHarmonizer:
         }
         isolated_mem_graph.write_text(json.dumps(seed_memory, indent=2), encoding="utf-8")
 
-        overlay = MemoryOverlay(memory_graph_path=isolated_mem_graph)
-        overlay_summary = overlay.summary()
+        with _bind_sol_core_telemetry():
+            overlay = MemoryOverlay(memory_graph_path=isolated_mem_graph)
+            overlay_summary = overlay.summary()
 
-        # Replay 3 compressed dream reps on the memory-augmented SOLEngine
-        reps = 3
-        compressed_steps = 25
-        signatures: list[dict[str, Any]] = []
-        rep_metrics: list[dict[str, Any]] = []
-        sig_keys: list[str] = []
-        for rep_idx in range(reps):
-            eng = overlay.create_engine(
-                dt=0.12,
-                c_press=0.10,
-                damping=0.20,
-                rng_seed=42 + rep_idx,
-            )
-            eng.inject("grail", 50.0)
-            if episode_mode == "lumina_sovereign":
-                eng.inject("anchor", 30.0)
-            for _ in range(compressed_steps):
-                eng.step()
-            sig = _basin_signature(eng, top_k=5)
-            signatures.append(sig)
-            rep_metrics.append(eng.compute_metrics())
-            sig_keys.append(_signature_key(sig))
+            # Replay 3 compressed dream reps on the memory-augmented SOLEngine
+            reps = 3
+            compressed_steps = 25
+            signatures: list[dict[str, Any]] = []
+            rep_metrics: list[dict[str, Any]] = []
+            sig_keys: list[str] = []
+            for rep_idx in range(reps):
+                eng = overlay.create_engine(
+                    dt=0.12,
+                    c_press=0.10,
+                    damping=0.20,
+                    rng_seed=42 + rep_idx,
+                )
+                eng.inject("grail", 50.0)
+                if episode_mode == "lumina_sovereign":
+                    eng.inject("anchor", 30.0)
+                for _ in range(compressed_steps):
+                    eng.step()
+                sig = _basin_signature(eng, top_k=5)
+                signatures.append(sig)
+                rep_metrics.append(eng.compute_metrics())
+                sig_keys.append(_signature_key(sig))
 
         from collections import Counter
 
@@ -740,19 +781,20 @@ class FrontierNAutopoieticHarmonizer:
         work_dir.mkdir(parents=True, exist_ok=True)
 
         # 1. Run SOL-Evolve ABTest against golden checkpoint snapshot
-        ab_tester = ABTest(
-            candidate_name=candidate_name,
-            protocol_names=["single_inject_baseline"],
-            tolerance={
-                "entropy": 0.25,
-                "totalFlux": 0.25,
-                "mass": 0.05,
-                "activeCount": 0.25,
-                "maxRho": 0.25,
-            },
-        )
-        ab_result = ab_tester.run()
-        candidate_obj: Candidate = load_candidate(candidate_name)
+        with _bind_sol_core_telemetry():
+            ab_tester = ABTest(
+                candidate_name=candidate_name,
+                protocol_names=["single_inject_baseline"],
+                tolerance={
+                    "entropy": 0.25,
+                    "totalFlux": 0.25,
+                    "mass": 0.05,
+                    "activeCount": 0.25,
+                    "maxRho": 0.25,
+                },
+            )
+            ab_result = ab_tester.run()
+            candidate_obj: Candidate = load_candidate(candidate_name)
 
         # 2. Welch's two-sample t-test & Cohen's d across 6 normalized quality dimensions
         def _quality_vector(m: dict[str, float], fallback_base: float) -> np.ndarray:
@@ -1121,29 +1163,30 @@ class FrontierNAutopoieticHarmonizer:
         candidate_name: str,
         core_graph_path: Path | None,
     ) -> FrontierNAutopoieticReport:
-        epistemic = self.run_epistemic_gap_intake(
-            run_id=run_id,
-            episode_mode=episode_mode,
-            core_graph_path=core_graph_path,
-        )
-        bimodal = self.run_bimodal_dream_consolidation(
-            work_dir=work_dir / "bimodal_dream",
-            episode_mode=episode_mode,
-            circuit=circuit,
-            circuit_spec_name=circuit_spec_name,
-        )
-        bilateral = self.run_bilateral_entangler_control(
-            episode_mode=episode_mode,
-        )
-        governance = self.run_statistical_evolution_governance(
-            work_dir=work_dir / "evolution_governance",
-            run_id=run_id,
-            episode_mode=episode_mode,
-            cycle0_metrics=cycle0_metrics,
-            cycle1_metrics=cycle1_metrics,
-            candidate_name=candidate_name,
-            selected_gap=epistemic.get("selected_gap"),
-        )
+        with _bind_sol_core_telemetry():
+            epistemic = self.run_epistemic_gap_intake(
+                run_id=run_id,
+                episode_mode=episode_mode,
+                core_graph_path=core_graph_path,
+            )
+            bimodal = self.run_bimodal_dream_consolidation(
+                work_dir=work_dir / "bimodal_dream",
+                episode_mode=episode_mode,
+                circuit=circuit,
+                circuit_spec_name=circuit_spec_name,
+            )
+            bilateral = self.run_bilateral_entangler_control(
+                episode_mode=episode_mode,
+            )
+            governance = self.run_statistical_evolution_governance(
+                work_dir=work_dir / "evolution_governance",
+                run_id=run_id,
+                episode_mode=episode_mode,
+                cycle0_metrics=cycle0_metrics,
+                cycle1_metrics=cycle1_metrics,
+                candidate_name=candidate_name,
+                selected_gap=epistemic.get("selected_gap"),
+            )
 
         overall_ok = bool(
             epistemic["core_immutability_verified"]

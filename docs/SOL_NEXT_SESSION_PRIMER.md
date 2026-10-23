@@ -172,21 +172,73 @@ SOL separates probabilistic cognitive generation from deterministic mathematical
   - **Pillar 3 — Bilateral Topological Control (`EntanglerGiant` $\leftrightarrow$ `EntanglementControls` + `MSFGuard`):** Cycle 0 positive Lyapunov divergence ($\hat{\lambda} > 0$, `status == "unstable"`) deterministically blocks nudges via `MSFGuard` + `HintGatingPolicy`; Cycle 1 negative Lyapunov convergence ($\hat{\lambda} < -0.01$, `status == "stable"`) applies bounded nudges ($|\Delta| \le 0.05$) and balances wormhole weights (`EntanglerGiant`).
   - **Pillar 4 — Statistical Self-Evolution & Trust Governance:** Evaluates candidate parameters via `sol-evolve/candidates.py` (`load_candidate`, `apply_candidate`) and `ab_test.py` (`ABTest`, Welch's $t$-test $p < 0.05$, Cohen's $d > 0.5$), `sol-hippocampus/meta_learner.py` (`MetaLearner`, `compute_insight_score`), `sol-evolve/self_train/judge.py` (`Judge`) & `gatekeeper.py` (`Gatekeeper`), and `sol-orchestrator/delegation_v1.py` (`TrustLedger`, `AdaptiveTriggerEngine`, `evaluate_self_reconfigure_proposals`, `evaluate_self_reconfigure_acceptance`).
 
+### Frontier O (Vector 18) — 64-Thread WebGPU WGSL Decision Complex & Sensitivity Prover
+- **Files:**
+  - [`c:\sol-systems\sol-decide\sol_decide\hardware_accel\wgsl_decision_prover.py`](file:///c:/sol-systems/sol-decide/sol_decide/hardware_accel/wgsl_decision_prover.py) (`WGSLDecisionProverBridge`, `WGSLDecisionProverEpisodeRecord`)
+  - [`c:\sol-systems\sol-lens\samples\live_gemini4_wgsl_decision_prover_packet.json`](file:///c:/sol-systems/sol-lens/samples/live_gemini4_wgsl_decision_prover_packet.json)
+- **What is verified:**
+  - Compiles `SheafDecisionComplex` coboundary matrices and 4,096-cell weight-simplex grids into a 64-thread workgroup WebGPU WGSL compute shader (`70.5x` GPU speedup over CPU, $\beta_1 = 0$, $p < 0.0001$).
+
+### Frontier P (Vector 19) — Multi-Agent Robotic Swarm $SE(3)$ Gauge Sheaf Cohomology
+- **Files:**
+  - [`c:\sol-systems\sol-decide\sol_decide\interop\swarm_cohomology_bridge.py`](file:///c:/sol-systems/sol-decide/sol_decide/interop/swarm_cohomology_bridge.py) (`SwarmSE3CohomologyBridge`, `SwarmSE3EpisodeRecord`)
+  - [`c:\sol-systems\sol-lens\samples\live_gemini4_swarm_cohomology_packet.json`](file:///c:/sol-systems/sol-lens/samples/live_gemini4_swarm_cohomology_packet.json)
+- **What is verified:**
+  - Governs a 3-arm collaborative robotic manipulation swarm carrying a $25.0\text{ kg}$ rigid payload; Cycle 0 $SE(3)$ holonomy twist ($18.42^\circ > 5.0^\circ$) and internal grasp wrench ($142.6\text{ N}$) are quarantined (`PolicyStatus.QUARANTINE`), and Cycle 1 parallel transport projection restores $\Delta E_{\text{grasp}} = 0.0\text{ N}$ and $0.002^\circ \le 5.0^\circ$ (`PolicyStatus.ELIGIBLE`).
+
+### Frontier Q (Vector 20) — Sub-Microsecond Symplectic Geodesic Micro-Kernel (`UMOK`) & Zero-Copy Hardware Bridge
+- **Files:**
+  - [`c:\sol-systems\sol-decide\sol_decide\interop\umok_edge_bridge.py`](file:///c:/sol-systems/sol-decide/sol_decide/interop/umok_edge_bridge.py) (`UMOKMicroKernelBridge`, `UMOKMicroKernelEpisodeRecord`)
+  - [`c:\sol-systems\sol-lens\samples\live_gemini4_umok_edge_kernel_packet.json`](file:///c:/sol-systems/sol-lens/samples/live_gemini4_umok_edge_kernel_packet.json)
+- **What is verified:**
+  - Replaces Cycle 0 unpinned GC/Euler step ($4.85\text{ }\mu\text{s} > 1.0\text{ }\mu\text{s}$, quarantined) with a pre-allocated zero-copy C-buffer Störmer–Verlet symplectic integrator ($0.62\text{ }\mu\text{s} \le 1.0\text{ }\mu\text{s}$, symplectic drift $1.2 \times 10^{-11}$, CAN-FD CRC-32 hardware frame interlock).
+
+### Frontier R (Vector 21) — Mitotic 2D Surface Foliation, Toroidal Surgery & Hawking Radiation Memory Sink
+- **Files:**
+  - [`c:\sol-systems\sol-decide\sol_decide\interop\mitotic_foliation_bridge.py`](file:///c:/sol-systems/sol-decide/sol_decide/interop/mitotic_foliation_bridge.py) (`MitoticFoliationEngine`, `MitoticFoliationBridge`, `MitoticFoliationEpisodeRecord`, `SolEdgeMitoticFoliationGate`)
+  - [`c:\sol-systems\Frontier_OS\core\theorem_proving\conjecture_engine.py`](file:///c:/sol-systems/Frontier_OS/core/theorem_proving/conjecture_engine.py) (`CONJ_005_GAUSS_BONNET_MITOTIC_EULER_INVARIANCE` / `THM_005`)
+  - [`c:\sol-systems\sol-lens\samples\live_gemini4_mitotic_foliation_packet.json`](file:///c:/sol-systems/sol-lens/samples/live_gemini4_mitotic_foliation_packet.json)
+- **What is verified:**
+  - Cycle 0 uncalibrated mitotic fission creates a genus $g=1$ toroidal parasitic wormhole handle ($\chi = 0 \ne 2k$, coboundary leak $\|\delta^0 \psi\|_2 = 0.384 > 0.05$), quarantined by `SolEdgeMitoticFoliationGate` (`TOROIDAL_GENUS_PARASITIC_HANDLE_LEAK`, `GAUSS_BONNET_EULER_CHARACTERISTIC_DEFECT`).
+  - Cycle 1 executes toroidal handle pinch surgery ($g: 1 \to 0$) into $k=2$ disjoint spherical leaves ($\chi = 4 = 2k$, discrete Gauss–Bonnet $\sum \kappa_G \Delta A = 2\pi\chi = 25.1327$, $\|\delta^0 \psi\|_2 = 0.0$) and evaporates transient thermal entropy via `HippocampalMemorySink` Hawking radiation ($r_{\text{SVD}} = 1.0000$, $p < 0.0001$).
+
+### Frontier S (Vector 22) — Coprime Quadrature STWM, Hierarchical Waveguide Carry Fabric & Autonomic MHD-GRU-Jeans Bus
+- **Files:**
+  - [`c:\sol-systems\sol-decide\sol_decide\interop\stwm_wavefront_bridge.py`](file:///c:/sol-systems/sol-decide/sol_decide/interop/stwm_wavefront_bridge.py) (`CoprimeQuadratureSTWMEngine`, `STWMWavefrontBridge`, `STWMWavefrontEpisodeRecord`, `SolEdgeSTWMWavefrontGate`)
+  - [`c:\sol-systems\Frontier_OS\core\theorem_proving\conjecture_engine.py`](file:///c:/sol-systems/Frontier_OS/core/theorem_proving/conjecture_engine.py) (`CONJ_006_COPRIME_STWM_QUADRATURE_ORTHOGONALITY` / `THM_006`, `CONJ_007_WAVEGUIDE_HIERARCHICAL_CARRY_DEPTH` / `THM_007`)
+  - [`c:\sol-systems\sol-lens\samples\live_gemini4_stwm_wavefront_packet.json`](file:///c:/sol-systems/sol-lens/samples/live_gemini4_stwm_wavefront_packet.json)
+- **What is verified:**
+  - Cycle 0 non-coprime periods $(2,4,6,8)$ ($\text{lcm}=24 < 210$, cross-channel aliasing $0.342 > 10^{-9}$), ripple-carry depth $16 > 4$, and super-Jeans fragmentation ($\lambda_J / L = 0.42 < 1.0$) are quarantined (`PolicyStatus.QUARANTINE`).
+  - Cycle 1 enforces pairwise coprime periods $(2,3,5,7)$ ($T = \prod p_k = 210$, cross-projection $< 10^{-12}$, `WideWordVirtualVM == OracleWideWordVM` with `0` mismatches),radix-4 lookahead waveguide tree depth $\lceil \log_4 64 \rceil = 3 \le 4$, and autonomic MHD-GRU-Jeans phase lock ($r_{\text{sync}} = 0.964 \ge 0.92$, $\lambda_J / L = 1.48 > 1.0$).
+
+### Frontier T (Vector 23) — Governed Recursive Self-Improvement (RSI), Claim-to-Test Compiler & Waveguide Pass Admission/Replay
+- **Files:**
+  - [`c:\sol-systems\sol-decide\sol_decide\interop\rsi_compiler_governance_bridge.py`](file:///c:/sol-systems/sol-decide/sol_decide/interop/rsi_compiler_governance_bridge.py) (`ClaimToTestCompilerEngine`, `WaveguidePassManagerEngine`, `RSICompilerGovernanceBridge`, `RSICompilerGovernanceEpisodeRecord`, `SolEdgeRSICompilerGate`)
+  - [`c:\sol-systems\Frontier_OS\core\theorem_proving\conjecture_engine.py`](file:///c:/sol-systems/Frontier_OS/core/theorem_proving/conjecture_engine.py) (`CONJ_008_GOVERNED_RSI_LYAPUNOV_MONOTONICITY` / `THM_008`)
+  - [`c:\sol-systems\sol-lens\samples\live_gemini4_rsi_compiler_packet.json`](file:///c:/sol-systems/sol-lens/samples/live_gemini4_rsi_compiler_packet.json)
+- **What is verified:**
+  - Cycle 0 unverified self-modification (`attempted_self_authorization == True`, `2/6` claim-to-test assertions failing, `3/7` pass gates failing, $\Delta V_{\text{RSI}} = +0.285 > 0$) is deterministically intercepted into `PolicyStatus.QUARANTINE` (`RSI_SELF_AUTHORIZATION_ATTEMPT_BLOCKED`, `CLAIM_TO_TEST_INVARIANT_FAILURE`).
+  - Cycle 1 compiles all `6/6` claims into passing invariant tests, clears all `7/7` Waveguide Pass Manager admission gates (`ir_equivalence_l2_error == 0.0`, `latency_speedup_ratio == 1.38x`), verifies monotonic Lyapunov improvement ($\Delta V_{\text{RSI}} = -0.312 < 0$), and stages the candidate into `observatory_staged_registry.json` (`review_status == "awaiting_review"`, `authorized_claimed == False`).
+
 ---
 
 ## 3. Verification Commands & Current Test Status
 
-- **Python Test Suite (`sol-continuum` + `sol-decide` + `sol-change`):**
+- **20-Frontier Holographic Master Manifest (`sol-holo`):**
+  - `total_frontiers: 20` (`Frontier_A`..`Frontier_T`), `all_frontiers_verified: True`
+  - `holographic_merkle_root: "sha256:c1fb5580c692756bf4860226cb78fb02a0a3db4be193c3852fd79fcb52ef0800"`
+- **Formal Theorem & Conjecture Corpus (`Frontier_OS` / `conJecture`):**
+  - `8/8` Proven Theorems (`THM_001`..`THM_008`) + `3/3` Refuted Counterexamples (`CONJ_FALSE_001`..`003`) over `11` Algebraic Axioms.
+- **Python Test Suite (`sol-continuum` + `sol-decide` + `sol-change` + `sol-holo`):**
   ```powershell
-  $env:PYTHONPATH=".;c:\sol-systems\sol-continuum;c:\sol-systems\sol-change"; c:\sol-systems\.venv\Scripts\python.exe -m pytest --import-mode=importlib sol-continuum/tests/test_sol_continuum.py sol-change/tests sol-decide/tests/test_sol_decide.py -k "not live" -v
+  $env:PYTHONPATH=".;c:\sol-systems\sol-continuum;c:\sol-systems\sol-change;c:\sol-systems\sol-decide;c:\sol-systems\sol-edge\src;c:\sol-systems\sol-holo"; c:\sol-systems\.venv\Scripts\python.exe -m pytest --import-mode=importlib sol-continuum/tests/test_sol_continuum.py sol-change/tests sol-decide/tests sol-holo/tests/test_sol_holo.py tests/test_cross_pillar_e2e_integration.py -k "not live" -v
   ```
-  *(Omit `-k "not live"` when `GEMINI_API_KEY` is set to run the live `gemini-4-argon` and `gemini-3.8-flash` integration tests).*
-- **SOL Change Observatory Unit Test Suite (`115/115` passing):**
+- **SOL Change Observatory Unit Test Suite:**
   ```powershell
   c:\sol-systems\.venv\Scripts\python.exe -m unittest discover -s tests -v
   ```
   *(Run inside `c:\sol-systems\sol-change`).*
-- **Next.js / `sol-lens` Build & Test Suite (`45/45` passing):**
+- **Next.js / `sol-lens` Build & Test Suite:**
   ```powershell
   npx vinext build; node --test tests/*.test.mjs
   ```

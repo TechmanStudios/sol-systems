@@ -77,7 +77,7 @@ jobs:
         env:
           PYTHONUTF8: "1"
         run: |
-          python -m pytest --import-mode=importlib tests sol/tests/test_circuit_metric_evaluation.py sol-continuum/tests/test_sol_continuum.py sol-change/tests sol-holo/tests/test_sol_holo.py -k "not live" -q --junitxml=integration-results.xml
+          python -m pytest --import-mode=importlib tests sol/tests/test_circuit_metric_evaluation.py sol-continuum/tests/test_sol_continuum.py sol-change/tests sol-decide/tests sol-holo/tests/test_sol_holo.py -k "not live" -q --junitxml=integration-results.xml
 
       - name: Upload JUnit report
         if: always()

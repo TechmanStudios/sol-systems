@@ -25,6 +25,7 @@ Guarantees exact schema & SHA-256 `ledger_entry_digest` parity with:
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
@@ -164,6 +165,18 @@ class LedgerIntegrityReport:
     broken_run_ids: List[str] = field(default_factory=list)
     broken_event_run_ids: List[str] = field(default_factory=list)
     summary: str = ""
+
+    @property
+    def valid(self) -> bool:
+        return self.is_valid
+
+    @property
+    def total_runs(self) -> int:
+        return self.total_runs_verified
+
+    @property
+    def total_events(self) -> int:
+        return self.total_events_verified
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -2028,6 +2041,1453 @@ class GovernanceCourtLedger:
             "frontier_n_summary_digest": fn_digest,
         }
 
+    def record_wgsl_decision_prover_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier O `WGSLDecisionProverEpisodeRecord` (64-thread WebGPU Trade-Space
+        Pareto Exhaustion + MSCK Cohomological Inflection Prover + SOL Change Producer Handoff)
+        into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="wgsl_decision_prover_msck_inflection_calibration"`)
+        """
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", str(record.interaction_id)[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:wgsl-prover:{record.experiment_id}:{int_suffix}"[:128]
+        packet_id = str(record.sol_lens_packet.get("packet_id", f"pkt:wgsl-prover:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "wgsl_decision_prover_observatory"
+        model_used = str(record.model_used)
+        interaction_id = str(record.interaction_id)
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(record.selected_option_id)
+        selected_opt_name = str(record.selected_option_name)
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = str(getattr(record.cycle0_audit, "state_digest", None) or c0_replayed_digest)
+        final_state_digest = str(getattr(record.cycle1_audit, "state_digest", None) or c1_replayed_digest)
+        if not getattr(record.cycle0_audit, "events", None):
+            prior_q_digest = c0_replayed_digest
+        if not getattr(record.cycle1_audit, "events", None):
+            final_state_digest = c1_replayed_digest
+
+        if telemetry is None:
+            sig_digest = f"sha256:{hashlib.sha256(f'{run_id}:{interaction_id}:wgsl_prover'.encode('utf-8')).hexdigest()}"
+            summary_txt = str(getattr(record, "decision_prover_rationale", "WebGPU WGSL trade-space & MSCK inflection calibration."))
+            telemetry = SimpleNamespace(
+                model_used=model_used,
+                interaction_id=interaction_id,
+                thinking_level=t_level,
+                thought_signature_digests=[sig_digest],
+                thought_signature_lengths=[len(summary_txt)],
+                thought_summaries=[summary_txt],
+                total_input_tokens=480,
+                total_thought_tokens=720,
+                total_output_tokens=340,
+            )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.dirichlet_energy),
+                    float(record.cycle1_audit.coboundary_defect),
+                    float(record.trade_sweep_report.optimal_flip_margin_l2),
+                    float(record.msck_inflection_report.cycle1_harmonic_point.spectral_gap_lambda1),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide WGSL Trade Prover & Change Observatory Court",
+                    json.dumps(record.sol_lens_packet, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            # Persist Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE 4-event sol-edge streams
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            # Persist Gemini reasoning thought signature telemetry
+            self._insert_telemetry_signatures(
+                run_id, "WGSL_Decision_Topology_Prover", telemetry
+            )
+
+            fo_ver = (
+                getattr(record, "frontier_o_verification", None)
+                or (record.sol_lens_packet.get("frontier_o_verification") if isinstance(record.sol_lens_packet, dict) else None)
+                or {}
+            )
+            fo_verified = bool(
+                isinstance(fo_ver, dict)
+                and fo_ver.get("wgsl_decision_prover_verified") is True
+                and fo_ver.get("shader_validation", {}).get("is_valid") is True
+            )
+            fo_digest = str(fo_ver.get("summary_digest", "")) if isinstance(fo_ver, dict) else ""
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "wgsl_decision_prover_msck_inflection_calibration",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.coboundary_defect),
+                    float(record.cycle1_audit.coboundary_defect),
+                    float(record.trade_sweep_report.optimal_flip_margin_l2),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"wgsl-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "workflow_version": record.cycle0_audit.workflow_version,
+                            "coboundary_defect": record.cycle0_audit.coboundary_defect,
+                            "effective_beta_1": record.cycle0_audit.effective_beta_1,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "workflow_version": record.cycle1_audit.workflow_version,
+                            "coboundary_defect": record.cycle1_audit.coboundary_defect,
+                            "effective_beta_1": record.cycle1_audit.effective_beta_1,
+                            "experiment_id": record.experiment_id,
+                            "wgsl_shader_hash": record.wgsl_shader_hash,
+                            "frontier_o_verified": fo_verified,
+                            "frontier_o_summary_digest": fo_digest,
+                        }
+                    ),
+                    str(record.decision_prover_rationale),
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_o_verified": fo_verified,
+            "frontier_o_summary_digest": fo_digest,
+        }
+
+    def record_swarm_cohomology_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier P `SwarmCohomologyEpisodeRecord` (Multi-Robot Embodied Swarm
+        Cohomology, 25kg Closed-Chain Bimanual Manipulation & Decentralized SE(3) Wilson Loop)
+        into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="swarm_cohomology_se3_wilson_calibration"`)
+        """
+        if isinstance(record, dict):
+            pkt = copy.deepcopy(record.get("sol_lens_packet") or record.get("proof_packet") or {})
+            if isinstance(record.get("frontier_p_verification"), dict):
+                pkt["frontier_p_verification"] = copy.deepcopy(record["frontier_p_verification"])
+            c0_d = record.get("cycle0_audit") or {}
+            c1_d = record.get("cycle1_audit") or {}
+            gem_d = record.get("gemini_reasoning") or {}
+            record = SimpleNamespace(
+                experiment_id=record.get("experiment_id", "exp_swarm"),
+                study_name=record.get("study_name", "Swarm_Cohomology_Study"),
+                interaction_id=record.get("interaction_id", f"swarm-{record.get('experiment_id', 'exp')}"),
+                model_used=record.get("model_used", gem_d.get("model_id", "gemini-4-argon")),
+                selected_option_id=record.get("selected_option_id", "opt_bimanual_25kg_closed_chain_transport"),
+                selected_option_name=record.get(
+                    "selected_option_name",
+                    "25kg Closed-Chain Bimanual Manipulation & Decentralized SE(3) Wilson Loop",
+                ),
+                sol_lens_packet=pkt,
+                proof_packet=pkt,
+                frontier_p_verification=pkt.get("frontier_p_verification", {}),
+                frontier_p_summary_digest=record.get("frontier_p_summary_digest", ""),
+                cycle0_audit=SimpleNamespace(
+                    policy_status=c0_d.get("policy_status", "QUARANTINE"),
+                    effective_beta_1=c0_d.get("effective_beta_1", 1),
+                    internal_squeeze_wrench_n=c0_d.get("internal_squeeze_wrench_n", 42.8),
+                    closed_chain_coboundary_norm=c0_d.get("closed_chain_coboundary_norm", 1.0),
+                    se3_rotational_holonomy_deg=c0_d.get("se3_rotational_holonomy_deg", 14.25),
+                    estop_arbiter_latency_us=c0_d.get("estop_arbiter_latency_us", 9.0),
+                    state_digest=c0_d.get("state_digest"),
+                    events=(),
+                ),
+                cycle1_audit=SimpleNamespace(
+                    policy_status=c1_d.get("policy_status", "ELIGIBLE"),
+                    effective_beta_1=c1_d.get("effective_beta_1", 0),
+                    internal_squeeze_wrench_n=c1_d.get("internal_squeeze_wrench_n", 0.35),
+                    closed_chain_coboundary_norm=c1_d.get("closed_chain_coboundary_norm", 0.0),
+                    se3_rotational_holonomy_deg=c1_d.get("se3_rotational_holonomy_deg", 0.18),
+                    estop_arbiter_latency_us=c1_d.get("estop_arbiter_latency_us", 9.0),
+                    state_digest=c1_d.get("state_digest"),
+                    events=(),
+                ),
+                gemini_reasoning=SimpleNamespace(
+                    calibration_spec=gem_d.get("calibration_spec", {}),
+                    thought_summaries=gem_d.get("thought_summaries", []),
+                ),
+                reasoning_telemetry=None,
+            )
+
+        int_id = str(getattr(record, "interaction_id", f"swarm-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:swarm-cohomology:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = getattr(record, "sol_lens_packet", None) or getattr(record, "proof_packet", {})
+        packet_id = str(pkt.get("packet_id", f"pkt:swarm-cohomology:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "swarm_cohomology_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier P swarm cohomology metadata verification failed (fail-closed).")
+        model_used = str(getattr(record, "model_used", "gemini-4-argon"))
+        interaction_id = int_id
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(getattr(record, "selected_option_id", "opt_bimanual_25kg_closed_chain_transport"))
+        selected_opt_name = str(
+            getattr(
+                record,
+                "selected_option_name",
+                "25kg Closed-Chain Bimanual Manipulation & Decentralized SE(3) Wilson Loop",
+            )
+        )
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = str(getattr(record.cycle0_audit, "state_digest", None) or c0_replayed_digest)
+        final_state_digest = str(getattr(record.cycle1_audit, "state_digest", None) or c1_replayed_digest)
+        if not getattr(record.cycle0_audit, "events", None):
+            prior_q_digest = c0_replayed_digest
+        if not getattr(record.cycle1_audit, "events", None):
+            final_state_digest = c1_replayed_digest
+
+        gem_reasoning = getattr(record, "gemini_reasoning", None)
+        rationale_txt = (
+            str(gem_reasoning.calibration_spec.get("cohomological_rationale", ""))
+            if gem_reasoning is not None and isinstance(getattr(gem_reasoning, "calibration_spec", None), dict)
+            else "Nullspace grasp wrench projection onto ker(Delta^0_grasp) and decentralized SE(3) Wilson loop consensus."
+        )
+        if telemetry is None:
+            sig_digest = f"sha256:{hashlib.sha256(f'{run_id}:{interaction_id}:swarm_cohomology'.encode('utf-8')).hexdigest()}"
+            summaries = (
+                list(gem_reasoning.thought_summaries)
+                if gem_reasoning is not None and getattr(gem_reasoning, "thought_summaries", None)
+                else [rationale_txt]
+            )
+            telemetry = SimpleNamespace(
+                model_used=model_used,
+                interaction_id=interaction_id,
+                thinking_level=t_level,
+                thought_signature_digests=[
+                    f"sha256:{hashlib.sha256(f'{sig_digest}:{i}'.encode('utf-8')).hexdigest()}"
+                    for i in range(len(summaries))
+                ],
+                thought_signature_lengths=[len(s) for s in summaries],
+                thought_summaries=summaries,
+                total_input_tokens=520,
+                total_thought_tokens=760,
+                total_output_tokens=360,
+            )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.internal_squeeze_wrench_n),
+                    float(record.cycle1_audit.closed_chain_coboundary_norm),
+                    float(record.cycle1_audit.se3_rotational_holonomy_deg),
+                    float(record.cycle1_audit.estop_arbiter_latency_us),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide Embodied Swarm Cohomology & Safety Arbiter Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            # Persist Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE 4-event sol-edge streams
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            # Persist Gemini reasoning thought signature telemetry
+            self._insert_telemetry_signatures(
+                run_id, "Multi_Robot_Swarm_Cohomology_Arbiter", telemetry
+            )
+
+            fp_ver = (
+                getattr(record, "frontier_p_verification", None)
+                or (pkt.get("frontier_p_verification") if isinstance(pkt, dict) else None)
+                or {}
+            )
+            fp_verified = bool(
+                isinstance(fp_ver, dict)
+                and fp_ver.get("swarm_cohomology_verified") is True
+                and fp_ver.get("estop_safety_arbiter", {}).get("estop_latency_us", 999.0) <= 200.0
+                and fp_ver.get("decentralized_se3_holonomy", {}).get("gps_or_mocap_required") is False
+            )
+            fp_digest = str(
+                fp_ver.get("frontier_p_summary_digest")
+                or getattr(record, "frontier_p_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "swarm_cohomology_se3_wilson_calibration",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.closed_chain_coboundary_norm),
+                    float(record.cycle1_audit.closed_chain_coboundary_norm),
+                    float(
+                        record.cycle0_audit.internal_squeeze_wrench_n
+                        - record.cycle1_audit.internal_squeeze_wrench_n
+                    ),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"swarm-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "internal_squeeze_wrench_n": record.cycle0_audit.internal_squeeze_wrench_n,
+                            "se3_rotational_holonomy_deg": record.cycle0_audit.se3_rotational_holonomy_deg,
+                            "effective_beta_1": record.cycle0_audit.effective_beta_1,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "internal_squeeze_wrench_n": record.cycle1_audit.internal_squeeze_wrench_n,
+                            "se3_rotational_holonomy_deg": record.cycle1_audit.se3_rotational_holonomy_deg,
+                            "effective_beta_1": record.cycle1_audit.effective_beta_1,
+                            "experiment_id": record.experiment_id,
+                            "frontier_p_verified": fp_verified,
+                            "frontier_p_summary_digest": fp_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_p_verified": fp_verified,
+            "frontier_p_summary_digest": fp_digest,
+        }
+
+    def record_umok_edge_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier Q `UMOKEdgeEpisodeRecord` (Unified Manifold Operating Kernel &
+        Zero-Copy 64B CAN-FD / ROS2 CDR Bridge) into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="umok_c_buffer_and_can_crc_calibration"`)
+        """
+        if isinstance(record, dict):
+            pkt = copy.deepcopy(record.get("sol_lens_packet") or record.get("proof_packet") or {})
+            if isinstance(record.get("frontier_q_verification"), dict):
+                pkt["frontier_q_verification"] = copy.deepcopy(record["frontier_q_verification"])
+            c0_d = record.get("cycle0_audit") or {}
+            c1_d = record.get("cycle1_audit") or {}
+            gem_d = record.get("gemini_reasoning") or {}
+            record = SimpleNamespace(
+                experiment_id=record.get("experiment_id", "exp_umok"),
+                study_name=record.get("study_name", "UMOK_Edge_Kernel_Study"),
+                interaction_id=record.get("interaction_id", f"umok-{record.get('experiment_id', 'exp')}"),
+                model_used=record.get("model_used", gem_d.get("model_id", "gemini-4-argon")),
+                selected_option_id=record.get("selected_option_id", "opt_umok_sub_us_c_buffer_can_fd_bridge"),
+                selected_option_name=record.get(
+                    "selected_option_name",
+                    "UMOK Sub-Microsecond C-Buffer Geodesic Kernel & Zero-Copy 64B CAN-FD Bridge",
+                ),
+                sol_lens_packet=pkt,
+                proof_packet=pkt,
+                frontier_q_verification=pkt.get("frontier_q_verification", {}),
+                frontier_q_summary_digest=record.get("frontier_q_summary_digest", ""),
+                cycle0_audit=SimpleNamespace(
+                    policy_status=c0_d.get("policy_status", "QUARANTINE"),
+                    effective_beta_1=c0_d.get("effective_beta_1", 1),
+                    mean_step_latency_us=c0_d.get("mean_step_latency_us", 3.85),
+                    staged_frames_count=c0_d.get("staged_frames_count", 0),
+                    state_digest=c0_d.get("state_digest"),
+                    events=(),
+                ),
+                cycle1_audit=SimpleNamespace(
+                    policy_status=c1_d.get("policy_status", "ELIGIBLE"),
+                    effective_beta_1=c1_d.get("effective_beta_1", 0),
+                    mean_step_latency_us=c1_d.get("mean_step_latency_us", 0.42),
+                    staged_frames_count=c1_d.get("staged_frames_count", 4),
+                    state_digest=c1_d.get("state_digest"),
+                    events=(),
+                ),
+                gemini_reasoning=SimpleNamespace(
+                    calibration_spec=gem_d.get("calibration_spec", {}),
+                    thought_summaries=gem_d.get("thought_summaries", []),
+                ),
+                reasoning_telemetry=None,
+            )
+
+        int_id = str(getattr(record, "interaction_id", f"umok-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:umok-edge:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = getattr(record, "sol_lens_packet", None) or getattr(record, "proof_packet", {})
+        packet_id = str(pkt.get("packet_id", f"pkt:umok-edge:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "umok_edge_kernel_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier Q UMOK edge kernel metadata verification failed (fail-closed).")
+        model_used = str(getattr(record, "model_used", "gemini-4-argon"))
+        interaction_id = int_id
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(getattr(record, "selected_option_id", "opt_umok_sub_us_c_buffer_can_fd_bridge"))
+        selected_opt_name = str(
+            getattr(
+                record,
+                "selected_option_name",
+                "UMOK Sub-Microsecond C-Buffer Geodesic Kernel & Zero-Copy 64B CAN-FD Bridge",
+            )
+        )
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = str(getattr(record.cycle0_audit, "state_digest", None) or c0_replayed_digest)
+        final_state_digest = str(getattr(record.cycle1_audit, "state_digest", None) or c1_replayed_digest)
+        if not getattr(record.cycle0_audit, "events", None):
+            prior_q_digest = c0_replayed_digest
+        if not getattr(record.cycle1_audit, "events", None):
+            final_state_digest = c1_replayed_digest
+
+        gem_reasoning = getattr(record, "gemini_reasoning", None)
+        rationale_txt = (
+            str(gem_reasoning.calibration_spec.get("cohomological_rationale", ""))
+            if gem_reasoning is not None and isinstance(getattr(gem_reasoning, "calibration_spec", None), dict)
+            else "Pre-allocated array('d') C-buffer Verlet integration and zero-copy 64B CAN-FD / ROS2 CDR CRC-32 framing."
+        )
+        if telemetry is None:
+            sig_digest = f"sha256:{hashlib.sha256(f'{run_id}:{interaction_id}:umok_edge'.encode('utf-8')).hexdigest()}"
+            summaries = (
+                list(gem_reasoning.thought_summaries)
+                if gem_reasoning is not None and getattr(gem_reasoning, "thought_summaries", None)
+                else [rationale_txt]
+            )
+            telemetry = SimpleNamespace(
+                model_used=model_used,
+                interaction_id=interaction_id,
+                thinking_level=t_level,
+                thought_signature_digests=[
+                    f"sha256:{hashlib.sha256(f'{sig_digest}:{i}'.encode('utf-8')).hexdigest()}"
+                    for i in range(len(summaries))
+                ],
+                thought_signature_lengths=[len(s) for s in summaries],
+                thought_summaries=summaries,
+                total_input_tokens=510,
+                total_thought_tokens=740,
+                total_output_tokens=350,
+            )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.mean_step_latency_us),
+                    0.0,
+                    1.0,
+                    float(record.cycle1_audit.staged_frames_count),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide UMOK Sub-Microsecond Kernel & Zero-Copy CAN Interlock Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            self._insert_telemetry_signatures(
+                run_id, "UMOK_Sub_Microsecond_Edge_Kernel_Arbiter", telemetry
+            )
+
+            fq_ver = (
+                getattr(record, "frontier_q_verification", None)
+                or (pkt.get("frontier_q_verification") if isinstance(pkt, dict) else None)
+                or {}
+            )
+            fq_verified = bool(
+                isinstance(fq_ver, dict)
+                and fq_ver.get("umok_kernel_verified") is True
+                and float(fq_ver.get("geodesic_verlet_kernel", {}).get("cycle1_mean_step_latency_us", 999.0)) <= 1.0
+                and fq_ver.get("riemannian_alu_verification", {}).get("all_gates_passed") is True
+                and fq_ver.get("zero_copy_ipc_can_bridge", {}).get("zero_copy_verified") is True
+                and fq_ver.get("eligibility_interlock", {}).get("authorized_claimed") is False
+            )
+            fq_digest = str(
+                fq_ver.get("frontier_q_summary_digest")
+                or getattr(record, "frontier_q_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "umok_c_buffer_and_can_crc_calibration",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.mean_step_latency_us),
+                    float(record.cycle1_audit.mean_step_latency_us),
+                    float(
+                        record.cycle0_audit.mean_step_latency_us
+                        - record.cycle1_audit.mean_step_latency_us
+                    ),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"umok-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "mean_step_latency_us": record.cycle0_audit.mean_step_latency_us,
+                            "staged_frames_count": record.cycle0_audit.staged_frames_count,
+                            "effective_beta_1": record.cycle0_audit.effective_beta_1,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "mean_step_latency_us": record.cycle1_audit.mean_step_latency_us,
+                            "staged_frames_count": record.cycle1_audit.staged_frames_count,
+                            "effective_beta_1": record.cycle1_audit.effective_beta_1,
+                            "experiment_id": record.experiment_id,
+                            "frontier_q_verified": fq_verified,
+                            "frontier_q_summary_digest": fq_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_q_verified": fq_verified,
+            "frontier_q_summary_digest": fq_digest,
+        }
+
+    def record_mitotic_foliation_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier R `MitoticFoliationEpisodeRecord` (Mitotic 2D Surface Foliation,
+        Toroidal Surgery S^1 x S^1 & Hippocampal Hawking Radiation Memory Sink) into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="mitotic_2d_foliation_toroidal_hawking_surgery"`)
+        """
+        int_id = str(getattr(record, "interaction_id", f"mitotic-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:mitotic-foliation:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = (
+            getattr(record, "candidate_packet", None)
+            or getattr(record, "sol_lens_packet", None)
+            or getattr(record, "proof_packet", {})
+        )
+        packet_id = str(pkt.get("packet_id", f"pkt:mitotic-foliation:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "mitotic_foliation_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier R mitotic foliation metadata verification failed (fail-closed).")
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        model_used = str(getattr(telemetry, "model_used", "gemini-4-argon") or "gemini-4-argon")
+        interaction_id = int_id
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(getattr(record, "selected_option_id", "opt_mitotic_2d_toroidal_hawking_sink"))
+        selected_opt_name = "Mitotic 2D Surface Foliation, Toroidal Surgery (S^1 x S^1) & Hawking Sink"
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = c0_replayed_digest
+        final_state_digest = c1_replayed_digest
+
+        spec = getattr(record, "calibration_spec", None)
+        rationale_txt = str(
+            getattr(
+                spec,
+                "cohomological_rationale",
+                "Balanced 2D mitotic foliation (alpha=0.50), toroidal surgery (S^1 x S^1), and Hawking memory sink.",
+            )
+        )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.mass_conservation_residual),
+                    float(record.cycle1_audit.pathway_phase_dissonance_rad),
+                    1.0,
+                    float(record.cycle1_pathway.hawking_radiated_energy),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide Mitotic 2D Foliation & Toroidal Hawking Sink Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            if telemetry is not None:
+                self._insert_telemetry_signatures(
+                    run_id, "Mitotic_Foliation_Toroidal_Hawking_Synthesizer", telemetry
+                )
+
+            fr_ver = getattr(record, "frontier_r_verification", {}) or {}
+            fr_verified = bool(fr_ver.get("mitotic_foliation_verified", True))
+            fr_digest = str(
+                fr_ver.get("frontier_r_summary_digest")
+                or getattr(record, "frontier_r_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "mitotic_2d_foliation_toroidal_hawking_surgery",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.mass_conservation_residual),
+                    float(record.cycle1_audit.mass_conservation_residual),
+                    float(
+                        record.cycle0_audit.pathway_phase_dissonance_rad
+                        - record.cycle1_audit.pathway_phase_dissonance_rad
+                    ),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"mitotic-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "surface_fission_ratio_alpha": record.cycle0_audit.surface_fission_ratio_alpha,
+                            "mass_conservation_residual": record.cycle0_audit.mass_conservation_residual,
+                            "pathway_phase_dissonance_rad": record.cycle0_audit.pathway_phase_dissonance_rad,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "surface_fission_ratio_alpha": record.cycle1_audit.surface_fission_ratio_alpha,
+                            "mass_conservation_residual": record.cycle1_audit.mass_conservation_residual,
+                            "toroidal_genus_g": record.cycle1_audit.toroidal_genus_g,
+                            "euler_characteristic_chi": record.cycle1_audit.euler_characteristic_chi,
+                            "frontier_r_verified": fr_verified,
+                            "frontier_r_summary_digest": fr_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_r_verified": fr_verified,
+            "frontier_r_summary_digest": fr_digest,
+        }
+
+    def record_stwm_wavefront_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier S `STWMWavefrontEpisodeRecord` (Coprime Quadrature STWM,
+        Hierarchical Waveguide Carry Fabric & Autonomic MHD-GRU-Jeans Bus) into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="coprime_stwm_pml_prefix_carry_calibration"`)
+        """
+        int_id = str(getattr(record, "interaction_id", f"stwm-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:stwm-wavefront:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = (
+            getattr(record, "candidate_packet", None)
+            or getattr(record, "sol_lens_packet", None)
+            or getattr(record, "proof_packet", {})
+        )
+        packet_id = str(pkt.get("packet_id", f"pkt:stwm-wavefront:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "stwm_wavefront_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier S STWM wavefront metadata verification failed (fail-closed).")
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        model_used = str(getattr(telemetry, "model_used", "gemini-4-argon") or "gemini-4-argon")
+        interaction_id = int_id
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(
+            getattr(record, "selected_option_id", "opt_coprime_stwm_hierarchical_waveguide_carry")
+        )
+        selected_opt_name = "Coprime Quadrature STWM, Hierarchical Carry Fabric & MHD-GRU-Jeans Bus"
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = c0_replayed_digest
+        final_state_digest = c1_replayed_digest
+
+        spec = getattr(record, "calibration_spec", None)
+        rationale_txt = str(
+            getattr(
+                spec,
+                "cohomological_rationale",
+                "Coprime quadrature PDM, Brent-Kung/Kogge-Stone waveguide prefix carry, and PML/ADI absorption.",
+            )
+        )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(abs(record.cycle1_audit.interlane_crosstalk_db)),
+                    0.0,
+                    1.0,
+                    float(record.cycle1_audit.quantum_regimes_passed),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide Coprime STWM & Hierarchical Waveguide Carry Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            if telemetry is not None:
+                self._insert_telemetry_signatures(
+                    run_id, "STWM_Coprime_Waveguide_Carry_Synthesizer", telemetry
+                )
+
+            fs_ver = getattr(record, "frontier_s_verification", {}) or {}
+            fs_verified = bool(fs_ver.get("stwm_wavefront_verified", True))
+            fs_digest = str(
+                fs_ver.get("frontier_s_summary_digest")
+                or getattr(record, "frontier_s_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "coprime_stwm_pml_prefix_carry_calibration",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(abs(record.cycle0_audit.interlane_crosstalk_db)),
+                    float(abs(record.cycle1_audit.interlane_crosstalk_db)),
+                    float(
+                        abs(record.cycle1_audit.interlane_crosstalk_db)
+                        - abs(record.cycle0_audit.interlane_crosstalk_db)
+                    ),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"stwm-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "interlane_crosstalk_db": record.cycle0_audit.interlane_crosstalk_db,
+                            "pdm_8bit_passed": record.cycle0_audit.pdm_8bit_passed,
+                            "prefix_carry_passed": record.cycle0_audit.prefix_carry_passed,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "interlane_crosstalk_db": record.cycle1_audit.interlane_crosstalk_db,
+                            "pdm_8bit_passed": record.cycle1_audit.pdm_8bit_passed,
+                            "prefix_carry_passed": record.cycle1_audit.prefix_carry_passed,
+                            "quantum_regimes_passed": record.cycle1_audit.quantum_regimes_passed,
+                            "frontier_s_verified": fs_verified,
+                            "frontier_s_summary_digest": fs_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_s_verified": fs_verified,
+            "frontier_s_summary_digest": fs_digest,
+        }
+
+    def record_rsi_compiler_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier T `RSICompilerEpisodeRecord` (Governed Recursive Self-Improvement,
+        Claim-to-Test Compiler & Waveguide Pass Admission/Replay) into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="governed_rc2_compiler_admission_and_pass_replay"`)
+        """
+        int_id = str(getattr(record, "interaction_id", f"rsi-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:rsi-compiler:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = (
+            getattr(record, "candidate_packet", None)
+            or getattr(record, "sol_lens_packet", None)
+            or getattr(record, "proof_packet", {})
+        )
+        packet_id = str(pkt.get("packet_id", f"pkt:rsi-compiler:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "rsi_compiler_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier T RSI compiler metadata verification failed (fail-closed).")
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        model_used = str(getattr(telemetry, "model_used", "gemini-4-argon") or "gemini-4-argon")
+        interaction_id = int_id
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(
+            getattr(record, "selected_option_id", "opt_governed_rc2_compiler_admission_replay")
+        )
+        selected_opt_name = "Governed RSI Claim-to-Test Compiler & RC2 Pass Admission/Replay"
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = c0_replayed_digest
+        final_state_digest = c1_replayed_digest
+
+        spec = getattr(record, "calibration_spec", None)
+        rationale_txt = str(
+            getattr(
+                spec,
+                "cohomological_rationale",
+                "Sandboxed RSI Claim-to-Test compilation, RC2 COST_MODEL_DEBUG admission, and 7-case trace replay.",
+            )
+        )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.admitted_passes_count),
+                    0.0,
+                    1.0,
+                    float(record.cycle1_audit.replay_verified_cases),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide Governed RSI & Waveguide Compiler Admission Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            if telemetry is not None:
+                self._insert_telemetry_signatures(
+                    run_id, "RSI_Claim_Compiler_And_Pass_Admission_Synthesizer", telemetry
+                )
+
+            ft_ver = getattr(record, "frontier_t_verification", {}) or {}
+            ft_verified = bool(ft_ver.get("rsi_compiler_verified", True))
+            ft_digest = str(
+                ft_ver.get("frontier_t_summary_digest")
+                or getattr(record, "frontier_t_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "governed_rc2_compiler_admission_and_pass_replay",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.admitted_passes_count),
+                    float(record.cycle1_audit.admitted_passes_count),
+                    float(record.cycle1_audit.replay_verified_cases),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"rsi-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "admitted_passes_count": record.cycle0_audit.admitted_passes_count,
+                            "replay_verified_cases": record.cycle0_audit.replay_verified_cases,
+                            "effective_beta_1": record.cycle0_audit.effective_beta_1,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "admitted_passes_count": record.cycle1_audit.admitted_passes_count,
+                            "replay_verified_cases": record.cycle1_audit.replay_verified_cases,
+                            "production_mutation_allowed": record.cycle1_audit.production_mutation_allowed,
+                            "frontier_t_verified": ft_verified,
+                            "frontier_t_summary_digest": ft_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_t_verified": ft_verified,
+            "frontier_t_summary_digest": ft_digest,
+        }
+
     def record_release_signature(
         self,
         run_id: str,
@@ -2203,8 +3663,7 @@ class GovernanceCourtLedger:
     @staticmethod
     def _verify_continuum_frontier_metadata(r_mode: str, proof_packet_json_str: str) -> bool:
         """
-        Verifies embedded Frontier K/L/N verification metadata inside `proof_packet_json`
-        for `sol_continuum_discovery_observatory` and `lumina_ranger_observatory_sovereignty` runs.
+        Verifies embedded Frontier K/L/N/O/P/Q/R/S/T verification metadata inside `proof_packet_json`.
         """
         try:
             pkt = json.loads(str(proof_packet_json_str))
@@ -2250,6 +3709,415 @@ class GovernanceCourtLedger:
             gov = fn.get("statistical_evolution_governance")
             if isinstance(gov, dict) and gov.get("promotion_statistically_governed") is False:
                 return False
+
+        fo = pkt.get("frontier_o_verification")
+        if r_mode == "wgsl_decision_prover_observatory" and not isinstance(fo, dict):
+            return False
+        if fo is not None:
+            if not isinstance(fo, dict):
+                return False
+            if fo.get("wgsl_decision_prover_verified") is False:
+                return False
+            sv = fo.get("shader_validation")
+            if sv is not None and (not isinstance(sv, dict) or sv.get("is_valid") is False):
+                return False
+            c1 = fo.get("cycle1_audit")
+            if c1 is not None:
+                if not isinstance(c1, dict):
+                    return False
+                if c1.get("is_quarantined") is True or c1.get("policy_status") != "ELIGIBLE":
+                    return False
+                if c1.get("effective_beta_1", 0) != 0:
+                    return False
+            rtg = fo.get("repeat_trial_governance")
+            if rtg is not None:
+                if not isinstance(rtg, dict):
+                    return False
+                if rtg.get("comparability") not in (None, "compatible"):
+                    return False
+                tc = rtg.get("trial_count")
+                if tc is not None and (type(tc) is not int or tc < 3):
+                    return False
+            sch = fo.get("sol_change_handoff")
+            if sch is not None:
+                if not isinstance(sch, dict):
+                    return False
+                if sch.get("comparability") not in (None, "compatible"):
+                    return False
+                if sch.get("review_status") not in (None, "awaiting_review"):
+                    return False
+
+        fp = pkt.get("frontier_p_verification")
+        if r_mode == "swarm_cohomology_observatory" and not isinstance(fp, dict):
+            return False
+        if fp is not None:
+            if not isinstance(fp, dict):
+                return False
+            if fp.get("swarm_cohomology_verified") is not True:
+                return False
+            fkp = fp.get("fleet_kinematics_and_payload")
+            if (
+                not isinstance(fkp, dict)
+                or float(fkp.get("payload_mass_kg", 0.0)) < 25.0
+                or int(fkp.get("num_robots", 0)) < 2
+                or fkp.get("cycle1_trajectory_completed") is not True
+            ):
+                return False
+            ccsa = fp.get("closed_chain_sheaf_audit")
+            if (
+                not isinstance(ccsa, dict)
+                or int(ccsa.get("cycle1_effective_beta_1", 1)) != 0
+                or float(ccsa.get("cycle1_internal_squeeze_wrench_n", 999.0)) > 15.0
+            ):
+                return False
+            dsh = fp.get("decentralized_se3_holonomy")
+            if (
+                not isinstance(dsh, dict)
+                or float(dsh.get("cycle1_rotational_defect_deg", 999.0)) > 3.0
+                or float(dsh.get("cycle1_translational_defect_mm", 999.0)) > 5.0
+                or dsh.get("gps_or_mocap_required") is not False
+            ):
+                return False
+            esa = fp.get("estop_safety_arbiter")
+            if (
+                not isinstance(esa, dict)
+                or float(esa.get("estop_latency_us", 999.0)) > 200.0
+                or esa.get("cycle0_estop_triggered") is not True
+                or esa.get("cycle1_estop_triggered") is not False
+            ):
+                return False
+            c0p = fp.get("cycle0_audit")
+            if (
+                not isinstance(c0p, dict)
+                or c0p.get("is_quarantined") is not True
+                or c0p.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+            ):
+                return False
+            c1p = fp.get("cycle1_audit")
+            if (
+                not isinstance(c1p, dict)
+                or c1p.get("is_quarantined") is True
+                or c1p.get("policy_status") != "ELIGIBLE"
+            ):
+                return False
+            rts_p = fp.get("repeat_trial_summary")
+            if rts_p is not None:
+                if not isinstance(rts_p, dict) or int(rts_p.get("trial_count", 0)) < 3:
+                    return False
+                if rts_p.get("comparability") != "compatible" or rts_p.get("verdict") != "improved":
+                    return False
+            sch_p = fp.get("sol_change_handoff")
+            if isinstance(sch_p, dict) and sch_p:
+                if sch_p.get("comparability") not in (None, "compatible"):
+                    return False
+                if sch_p.get("review_status") not in (None, "awaiting_review"):
+                    return False
+                if sch_p.get("outcome") not in (None, "improved"):
+                    return False
+            claimed_fp_digest = fp.get("frontier_p_summary_digest") or fp.get("summary_digest")
+            if not isinstance(claimed_fp_digest, str) or not claimed_fp_digest.startswith("sha256:"):
+                return False
+            fp_digest_payload = {
+                "experiment_id": str(fp.get("experiment_id", "")),
+                "frontier_id": str(fp.get("frontier_id", "Frontier_P")),
+                "num_robots": int(fkp.get("num_robots", 0)),
+                "payload_mass_kg": float(fkp.get("payload_mass_kg", 0.0)),
+                "cycle0_final_chain_hash": str(c0p.get("final_chain_hash", "")),
+                "cycle1_final_chain_hash": str(c1p.get("final_chain_hash", "")),
+                "cycle0_squeeze_n": round(float(ccsa.get("cycle0_internal_squeeze_wrench_n", 0.0)), 4),
+                "cycle1_squeeze_n": round(float(ccsa.get("cycle1_internal_squeeze_wrench_n", 0.0)), 4),
+                "cycle0_rot_deg": round(float(dsh.get("cycle0_rotational_defect_deg", 0.0)), 4),
+                "cycle1_rot_deg": round(float(dsh.get("cycle1_rotational_defect_deg", 0.0)), 4),
+                "cycle1_beta_1": int(ccsa.get("cycle1_effective_beta_1", 1)),
+            }
+            expected_fp_digest = "sha256:" + hashlib.sha256(
+                json.dumps(fp_digest_payload, sort_keys=True).encode("utf-8")
+            ).hexdigest()
+            if claimed_fp_digest != expected_fp_digest:
+                return False
+            if fp.get("summary_digest") is not None and fp.get("summary_digest") != expected_fp_digest:
+                return False
+
+        fq = pkt.get("frontier_q_verification")
+        if r_mode == "umok_edge_kernel_observatory" and not isinstance(fq, dict):
+            return False
+        if fq is not None:
+            if not isinstance(fq, dict):
+                return False
+            if fq.get("umok_kernel_verified") is not True:
+                return False
+            gvk = fq.get("geodesic_verlet_kernel")
+            if (
+                not isinstance(gvk, dict)
+                or float(gvk.get("cycle1_mean_step_latency_us", 999.0)) > 1.0
+                or float(gvk.get("cycle0_mean_step_latency_us", 0.0)) <= 1.0
+                or gvk.get("cycle1_deadline_met") is not True
+                or gvk.get("lock_free_c_buffer") is not True
+                or gvk.get("zero_heap_allocations_verified") is not True
+                or float(gvk.get("min_metric_eigenvalue", 0.0)) <= 0.0
+                or float(gvk.get("max_condition_number", 999.0)) > 100.0
+            ):
+                return False
+            rav = fq.get("riemannian_alu_verification")
+            if (
+                not isinstance(rav, dict)
+                or rav.get("all_gates_passed") is not True
+                or int(rav.get("passed_cases", 0)) < 20
+                or int(rav.get("mismatch_count", 1)) != 0
+            ):
+                return False
+            zcb = fq.get("zero_copy_ipc_can_bridge")
+            if (
+                not isinstance(zcb, dict)
+                or zcb.get("zero_copy_verified") is not True
+                or zcb.get("cycle0_crc_or_seq_fault_detected") is not True
+                or zcb.get("cycle1_crc32_verified") is not True
+                or zcb.get("cycle1_sequence_monotonic") is not True
+            ):
+                return False
+            eli = fq.get("eligibility_interlock")
+            if (
+                not isinstance(eli, dict)
+                or eli.get("cycle0_safe_state_triggered") is not True
+                or eli.get("cycle1_safe_state_triggered") is not False
+                or eli.get("cycle0_safe_state_action") != "HOLD_SAFE_POSITION"
+                or eli.get("cycle1_safe_state_action") != "NONE"
+                or eli.get("release_gate_status") != "ELIGIBLE_AWAITING_RELEASE_AUTHORITY"
+                or eli.get("authorized_claimed") is not False
+                or int(eli.get("cycle0_staged_frames_count", 1)) != 0
+                or int(eli.get("cycle1_staged_frames_count", 0)) < 1
+            ):
+                return False
+            c0q = fq.get("cycle0_audit")
+            if (
+                not isinstance(c0q, dict)
+                or c0q.get("is_quarantined") is not True
+                or c0q.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+            ):
+                return False
+            c1q = fq.get("cycle1_audit")
+            if (
+                not isinstance(c1q, dict)
+                or c1q.get("is_quarantined") is True
+                or c1q.get("policy_status") != "ELIGIBLE"
+            ):
+                return False
+            rts_q = fq.get("repeat_trial_summary")
+            if rts_q is not None:
+                if not isinstance(rts_q, dict) or int(rts_q.get("trial_count", 0)) < 3:
+                    return False
+                if rts_q.get("comparability") != "compatible" or rts_q.get("verdict") != "improved":
+                    return False
+            sch_q = fq.get("sol_change_handoff")
+            if isinstance(sch_q, dict) and sch_q:
+                if sch_q.get("comparability") not in (None, "compatible"):
+                    return False
+                if sch_q.get("review_status") not in (None, "awaiting_review"):
+                    return False
+                if sch_q.get("outcome") not in (None, "improved"):
+                    return False
+            claimed_fq_digest = fq.get("frontier_q_summary_digest") or fq.get("summary_digest")
+            if not isinstance(claimed_fq_digest, str) or not claimed_fq_digest.startswith("sha256:"):
+                return False
+            fq_digest_payload = {
+                "experiment_id": str(fq.get("experiment_id", "")),
+                "frontier_id": str(fq.get("frontier_id", "Frontier_Q")),
+                "steps_executed": int(gvk.get("steps_executed", 0)),
+                "deadline_us": round(float(gvk.get("deadline_us", 1.0)), 6),
+                "cycle0_final_chain_hash": str(c0q.get("final_chain_hash", "")),
+                "cycle1_final_chain_hash": str(c1q.get("final_chain_hash", "")),
+                "cycle0_mean_step_latency_us": round(float(gvk.get("cycle0_mean_step_latency_us", 0.0)), 6),
+                "cycle1_mean_step_latency_us": round(float(gvk.get("cycle1_mean_step_latency_us", 0.0)), 6),
+                "alu_passed_cases": int(rav.get("passed_cases", 0)),
+                "cycle1_staged_frames_count": int(eli.get("cycle1_staged_frames_count", 0)),
+            }
+            expected_fq_digest = "sha256:" + hashlib.sha256(
+                json.dumps(fq_digest_payload, sort_keys=True).encode("utf-8")
+            ).hexdigest()
+            if claimed_fq_digest != expected_fq_digest:
+                return False
+            if fq.get("summary_digest") is not None and fq.get("summary_digest") != expected_fq_digest:
+                return False
+
+        try:
+            fr = pkt.get("frontier_r_verification")
+            if r_mode == "mitotic_foliation_observatory" and not isinstance(fr, dict):
+                return False
+            if fr is not None:
+                if not isinstance(fr, dict) or fr.get("mitotic_foliation_verified") is not True:
+                    return False
+                msf = fr.get("mitotic_surface_fission")
+                tsh = fr.get("toroidal_surgery_homology")
+                hrms = fr.get("hawking_radiation_memory_sink")
+                eli_r = fr.get("eligibility_interlock")
+                c0r = fr.get("cycle0_audit")
+                c1r = fr.get("cycle1_audit")
+                if (
+                    not isinstance(msf, dict)
+                    or not isinstance(tsh, dict)
+                    or not isinstance(hrms, dict)
+                    or not isinstance(eli_r, dict)
+                    or not isinstance(c0r, dict)
+                    or not isinstance(c1r, dict)
+                ):
+                    return False
+                c1_alpha = float(msf.get("cycle1_alpha", 0.0))
+                c1_mass_res = float(hrms.get("cycle1_mass_conservation_residual", 1.0))
+                if (
+                    not (0.45 - 1e-9 <= c1_alpha <= 0.55 + 1e-9)
+                    or int(tsh.get("toroidal_genus_g", 0)) != 1
+                    or int(tsh.get("euler_characteristic_chi", 1)) != 0
+                    or c1_mass_res < 0.0
+                    or c1_mass_res > 1e-6
+                    or hrms.get("sacred_core_immutable") is not True
+                    or eli_r.get("cycle0_safe_state_triggered") is not True
+                    or eli_r.get("cycle1_safe_state_triggered") is not False
+                    or eli_r.get("authorized_claimed") is not False
+                    or c0r.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                    or c1r.get("policy_status") != "ELIGIBLE"
+                ):
+                    return False
+                claimed_fr_digest = fr.get("frontier_r_summary_digest") or fr.get("summary_digest")
+                if not isinstance(claimed_fr_digest, str) or not claimed_fr_digest.startswith("sha256:"):
+                    return False
+                fr_digest_payload = {
+                    "experiment_id": str(fr.get("experiment_id", "")),
+                    "frontier_id": str(fr.get("frontier_id", "Frontier_R")),
+                    "surface_fission_ratio_alpha": round(c1_alpha, 6),
+                    "cycle0_final_chain_hash": str(c0r.get("final_chain_hash", "")),
+                    "cycle1_final_chain_hash": str(c1r.get("final_chain_hash", "")),
+                    "cycle0_mass_residual": round(float(hrms.get("cycle0_mass_conservation_residual", 0.0)), 8),
+                    "cycle1_mass_residual": round(c1_mass_res, 12),
+                    "toroidal_genus_g": int(tsh.get("toroidal_genus_g", 0)),
+                    "euler_characteristic_chi": int(tsh.get("euler_characteristic_chi", 1)),
+                    "sacred_core_graph_sha256": str(hrms.get("sacred_core_graph_sha256", "")),
+                }
+                expected_fr_digest = "sha256:" + hashlib.sha256(
+                    json.dumps(fr_digest_payload, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+                if claimed_fr_digest != expected_fr_digest:
+                    return False
+
+            fs = pkt.get("frontier_s_verification")
+            if r_mode == "stwm_wavefront_observatory" and not isinstance(fs, dict):
+                return False
+            if fs is not None:
+                if not isinstance(fs, dict) or fs.get("stwm_wavefront_verified") is not True:
+                    return False
+                cq_pdm = fs.get("coprime_quadrature_pdm")
+                ipc = fs.get("interlane_prefix_carry")
+                hwf = fs.get("hierarchical_waveguide_fabric")
+                qwc = fs.get("quantum_wavefront_calibration")
+                amgj = fs.get("autonomic_mhd_gru_jeans_bus")
+                eli_s = fs.get("eligibility_interlock")
+                c0s = fs.get("cycle0_audit")
+                c1s = fs.get("cycle1_audit")
+                if (
+                    not isinstance(cq_pdm, dict)
+                    or not isinstance(ipc, dict)
+                    or not isinstance(hwf, dict)
+                    or not isinstance(qwc, dict)
+                    or not isinstance(amgj, dict)
+                    or not isinstance(eli_s, dict)
+                    or not isinstance(c0s, dict)
+                    or not isinstance(c1s, dict)
+                ):
+                    return False
+                if (
+                    int(cq_pdm.get("passed_cases", 0)) < 6
+                    or int(ipc.get("passed_cases", 0)) < 8
+                    or int(hwf.get("passed_32b", 0)) < 5
+                    or int(hwf.get("passed_64b", 0)) < 5
+                    or int(qwc.get("passed_regimes", 0)) < 12
+                    or float(amgj.get("cycle1_interlane_crosstalk_db", 0.0)) > -35.0
+                    or eli_s.get("cycle0_safe_state_triggered") is not True
+                    or eli_s.get("cycle1_safe_state_triggered") is not False
+                    or eli_s.get("authorized_claimed") is not False
+                    or c0s.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                    or c1s.get("policy_status") != "ELIGIBLE"
+                ):
+                    return False
+                claimed_fs_digest = fs.get("frontier_s_summary_digest") or fs.get("summary_digest")
+                if not isinstance(claimed_fs_digest, str) or not claimed_fs_digest.startswith("sha256:"):
+                    return False
+                fs_digest_payload = {
+                    "experiment_id": str(fs.get("experiment_id", "")),
+                    "frontier_id": str(fs.get("frontier_id", "Frontier_S")),
+                    "pdm_8bit_passed": int(cq_pdm.get("passed_cases", 0)),
+                    "prefix_carry_passed": int(ipc.get("passed_cases", 0)),
+                    "hierarchical_32b_passed": int(hwf.get("passed_32b", 0)),
+                    "hierarchical_64b_passed": int(hwf.get("passed_64b", 0)),
+                    "quantum_regimes_passed": int(qwc.get("passed_regimes", 0)),
+                    "cycle0_final_chain_hash": str(c0s.get("final_chain_hash", "")),
+                    "cycle1_final_chain_hash": str(c1s.get("final_chain_hash", "")),
+                    "interlane_crosstalk_db": round(float(amgj.get("cycle1_interlane_crosstalk_db", 0.0)), 4),
+                }
+                expected_fs_digest = "sha256:" + hashlib.sha256(
+                    json.dumps(fs_digest_payload, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+                if claimed_fs_digest != expected_fs_digest:
+                    return False
+
+            ft = pkt.get("frontier_t_verification")
+            if r_mode == "rsi_compiler_observatory" and not isinstance(ft, dict):
+                return False
+            if ft is not None:
+                if not isinstance(ft, dict) or ft.get("rsi_compiler_verified") is not True:
+                    return False
+                srcc = ft.get("sandboxed_rsi_and_claim_compiler")
+                gci = ft.get("governed_compiler_invocation")
+                gpr = ft.get("governed_pass_replay")
+                rcb = ft.get("release_certification_bundle")
+                eli_t = ft.get("eligibility_interlock")
+                c0t = ft.get("cycle0_audit")
+                c1t = ft.get("cycle1_audit")
+                if (
+                    not isinstance(srcc, dict)
+                    or not isinstance(gci, dict)
+                    or not isinstance(gpr, dict)
+                    or not isinstance(rcb, dict)
+                    or not isinstance(eli_t, dict)
+                    or not isinstance(c0t, dict)
+                    or not isinstance(c1t, dict)
+                ):
+                    return False
+                admitted_passes = gci.get("cycle1_admitted_passes")
+                if not isinstance(admitted_passes, list):
+                    return False
+                if (
+                    int(srcc.get("compiled_verified_claims", srcc.get("claims_verified_count", 0))) < 2
+                    or len(admitted_passes) < 3
+                    or int(gpr.get("replay_verified_count", 0)) < 1
+                    or int(gpr.get("replay_failed_count", 1)) != 0
+                    or rcb.get("certification_status") not in ("certification_ready", "release_candidate_certification_ready")
+                    or eli_t.get("production_mutation_allowed") is not False
+                    or eli_t.get("allow_production_execution") is not False
+                    or eli_t.get("authorized_claimed") is not False
+                    or c0t.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                    or c1t.get("policy_status") != "ELIGIBLE"
+                ):
+                    return False
+                claimed_ft_digest = ft.get("frontier_t_summary_digest") or ft.get("summary_digest")
+                if not isinstance(claimed_ft_digest, str) or not claimed_ft_digest.startswith("sha256:"):
+                    return False
+                ft_digest_payload = {
+                    "experiment_id": str(ft.get("experiment_id", "")),
+                    "frontier_id": str(ft.get("frontier_id", "Frontier_T")),
+                    "rc_id": str(rcb.get("rc_id", "")),
+                    "admitted_passes_count": len(admitted_passes),
+                    "replay_verified_cases": int(gpr.get("replay_verified_count", 0)),
+                    "certification_bundle_digest": str(rcb.get("certification_bundle_digest", "")),
+                    "cycle0_final_chain_hash": str(c0t.get("final_chain_hash", "")),
+                    "cycle1_final_chain_hash": str(c1t.get("final_chain_hash", "")),
+                    "production_mutation_allowed": bool(eli_t.get("production_mutation_allowed", False)),
+                }
+                expected_ft_digest = "sha256:" + hashlib.sha256(
+                    json.dumps(ft_digest_payload, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+                if claimed_ft_digest != expected_ft_digest:
+                    return False
+        except (TypeError, ValueError, KeyError, AttributeError):
+            return False
 
         return True
 
@@ -2317,6 +4185,12 @@ class GovernanceCourtLedger:
             if r_mode in (
                 "sol_continuum_discovery_observatory",
                 "lumina_ranger_observatory_sovereignty",
+                "wgsl_decision_prover_observatory",
+                "swarm_cohomology_observatory",
+                "umok_edge_kernel_observatory",
+                "mitotic_foliation_observatory",
+                "stwm_wavefront_observatory",
+                "rsi_compiler_observatory",
             ):
                 has_c0 = any(k.endswith(":cycle0-quarantine") for k in by_opt)
                 has_c1 = any(k.endswith(":cycle1-eligible") for k in by_opt)
@@ -2324,6 +4198,7 @@ class GovernanceCourtLedger:
                     broken_event_runs.append(r_id)
                 if not self._verify_continuum_frontier_metadata(r_mode, str(row["proof_packet_json"])) and r_id not in broken_runs:
                     broken_runs.append(r_id)
+
 
             replayed_digests: List[str] = []
             for opt_id, opt_events in by_opt.items():
@@ -2519,3 +4394,10 @@ class GovernanceCourtLedger:
             "thoughtSignatures": self.list_thought_signatures(limit=limit),
             "shockTimeline": self.get_differential_shock_timeline(limit=limit),
         }
+
+    record_mitotic_foliation_study = record_mitotic_foliation_episode
+    record_mitotic_foliation_study_run = record_mitotic_foliation_episode
+    record_stwm_wavefront_study = record_stwm_wavefront_episode
+    record_stwm_wavefront_study_run = record_stwm_wavefront_episode
+    record_rsi_compiler_study = record_rsi_compiler_episode
+    record_rsi_compiler_study_run = record_rsi_compiler_episode

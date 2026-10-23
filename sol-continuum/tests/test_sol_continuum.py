@@ -1069,3 +1069,43 @@ def test_frontier_n_autopoietic_organism_unification_and_edge_cases() -> None:
         assert l_entry["run_id"] in tampered_integrity.broken_run_ids
         ledger.close()
 
+        # Edge case 7: Direct pillar invocations succeed and restore sys.modules["telemetry"]
+        # even when Frontier_OS/Exciton-MoA/telemetry.py is bound in sys.modules["telemetry"]
+        import sys
+        from sol_continuum.autopoietic_organism import _exciton_telemetry
+
+        prev_tel = sys.modules.get("telemetry")
+        try:
+            sys.modules["telemetry"] = _exciton_telemetry
+            assert not hasattr(sys.modules["telemetry"], "trace_span")
+
+            direct_epistemic = harmonizer.run_epistemic_gap_intake(
+                run_id="direct-tel-check-01",
+                episode_mode="continuum_discovery",
+            )
+            assert direct_epistemic["smoke_stage_passed"] is True
+            assert sys.modules.get("telemetry") is _exciton_telemetry
+
+            direct_bimodal = harmonizer.run_bimodal_dream_consolidation(
+                work_dir=tmp_path / "direct_bimodal_tel",
+                episode_mode="continuum_discovery",
+            )
+            assert direct_bimodal["bimodal_synapse_verified"] is True
+            assert sys.modules.get("telemetry") is _exciton_telemetry
+
+            direct_gov = harmonizer.run_statistical_evolution_governance(
+                work_dir=tmp_path / "direct_gov_tel",
+                run_id="direct-tel-check-01",
+                episode_mode="continuum_discovery",
+                cycle0_metrics={"evidence": 0.42, "coherence": 0.44, "contradiction": 0.56, "continuity": 0.41},
+                cycle1_metrics={"evidence": 0.91, "coherence": 0.93, "contradiction": 0.04, "continuity": 0.90},
+                selected_gap=direct_epistemic["selected_gap"],
+            )
+            assert direct_gov["promotion_statistically_governed"] is True
+            assert sys.modules.get("telemetry") is _exciton_telemetry
+        finally:
+            if prev_tel is not None:
+                sys.modules["telemetry"] = prev_tel
+            else:
+                sys.modules.pop("telemetry", None)
+

@@ -21,7 +21,7 @@ from scripts.run_sol_live_stream import ManifoldSimulationServer, create_handler
 def live_server():
     """Spins up a local ManifoldSimulationServer on an ephemeral test port."""
     port = 8799
-    sim = ManifoldSimulationServer(port=port)
+    sim = ManifoldSimulationServer(port=port, ledger_db_path=":memory:")
     sim.start()
     httpd = HTTPServer(("127.0.0.1", port), create_handler(sim))
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
@@ -34,6 +34,7 @@ def live_server():
 
     httpd.shutdown()
     sim.stop()
+    sim.governance_ledger.close()
 
 
 def test_health_endpoint(live_server):
@@ -626,11 +627,324 @@ def test_gauge_sheaf_live_endpoints(live_server):
         assert "yang_mills_action" in pkt["gauge_sheaf"]
 
 
+def test_wgsl_trade_prover_and_ledger_verify_endpoints(live_server, tmp_path):
+    """Validates POST /api/decide/wgsl_trade_prover and POST /api/ledger/verify in isolated temp paths."""
+    exp_root = tmp_path / "wgsl_experiments"
+    obs_db = tmp_path / "observatory.sqlite3"
+    body = json.dumps({
+        "study_name": "LiveStream_WGSL_Trade_Prover_Integration_v1",
+        "repeat_trial_count": 3,
+        "num_permutations": 10000,
+        "pin_live_packet": False,
+        "use_live_gemini": False,
+        "experiments_root": str(exp_root),
+        "observatory_db_path": str(obs_db),
+        "register_in_observatory_db": True,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        f"{live_server}/api/decide/wgsl_trade_prover",
+        data=body,
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req) as resp:
+        assert resp.status == 200
+        data = json.loads(resp.read().decode("utf-8"))
+        assert data["ok"] is True
+
+        ep = data["episode"]
+        assert ep["study_name"] == "LiveStream_WGSL_Trade_Prover_Integration_v1"
+        assert ep["cycle0_audit"]["policy_status"] == "QUARANTINE"
+        assert ep["cycle1_audit"]["policy_status"] == "ELIGIBLE"
+        assert ep["observatory_comparability"] == "compatible"
+        assert ep["observatory_outcome"] == "improved"
+        assert ep["observatory_review_status"] == "awaiting_review"
+        assert ep["observatory_warnings"] == []
+        assert ep["frontier_o_verification"]["wgsl_decision_prover_verified"] is True
+        assert Path(ep["experiment_bundle_dir"]).is_dir()
+        assert obs_db.is_file()
+
+        pkt = data["sol_lens_packet"]
+        assert pkt["schema"] == "techman.sol-lens.proof-packet/v0.2"
+        assert pkt["verdict"] == "PROMOTE"
+        assert pkt["frontier_o_verification"]["wgsl_decision_prover_verified"] is True
+
+        ledger_entry = data["ledger_entry"]
+        assert ledger_entry["run_mode"] == "wgsl_decision_prover_observatory"
+        assert ledger_entry["frontier_o_verified"] is True
+        assert ledger_entry["edge_event_count"] == 8
+
+    # Verify GovernanceCourtLedger cryptographic integrity via /api/ledger/verify
+    req_ver = urllib.request.Request(
+        f"{live_server}/api/ledger/verify",
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req_ver) as resp:
+        assert resp.status == 200
+        ver_data = json.loads(resp.read().decode("utf-8"))
+        assert ver_data["ok"] is True
+        assert ver_data["integrity"]["isValid"] is True
+        assert ver_data["integrity"]["totalRunsVerified"] >= 1
+        assert ver_data["integrity"]["totalEventsVerified"] >= 8
+
+    # Verify /api/ledger/snapshot exposes the Frontier O run and repair record
+    req_snap = urllib.request.Request(f"{live_server}/api/ledger/snapshot")
+    with urllib.request.urlopen(req_snap) as resp:
+        assert resp.status == 200
+        snap_data = json.loads(resp.read().decode("utf-8"))
+        assert snap_data["ok"] is True
+        assert any(
+            r.get("runMode") == "wgsl_decision_prover_observatory"
+            and r.get("studyName") == "LiveStream_WGSL_Trade_Prover_Integration_v1"
+            for r in snap_data.get("runs", [])
+        )
+        assert any(
+            r.get("repairKind") == "wgsl_decision_prover_msck_inflection_calibration"
+            and r.get("postStalk", {}).get("frontier_o_verified") is True
+            for r in snap_data.get("repairs", [])
+        )
 
 
+def test_swarm_cohomology_live_stream_endpoint(live_server, tmp_path):
+    """
+    Verifies Frontier P (Vector 18) `/api/robotics/swarm_cohomology` live stream endpoint:
+    - Executes 12-DOF 25.0 kg bimanual closed-chain grasp + decentralized SE(3) Wilson loop calibration
+    - Exports SOL Change Observatory bundle (`compatible` / `improved` / `awaiting_review`)
+    - Records 8-event `sol-edge` chain into `GovernanceCourtLedger` (`swarm_cohomology_observatory`)
+    - Verifies `/api/ledger/verify` and `/api/ledger/snapshot`
+    """
+    exp_root = tmp_path / "swarm_experiments"
+    obs_db = tmp_path / "swarm_observatory.sqlite3"
+    body = json.dumps({
+        "study_name": "LiveStream_Swarm_Cohomology_Integration_v1",
+        "num_robots": 2,
+        "payload_mass_kg": 25.0,
+        "repeat_trial_count": 3,
+        "use_live_gemini": False,
+        "experiments_root": str(exp_root),
+        "observatory_db_path": str(obs_db),
+        "register_in_observatory_db": True,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        f"{live_server}/api/robotics/swarm_cohomology",
+        data=body,
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req) as resp:
+        assert resp.status == 200
+        data = json.loads(resp.read().decode("utf-8"))
+        assert data["ok"] is True
+
+        ep = data["episode"]
+        assert ep["study_name"] == "LiveStream_Swarm_Cohomology_Integration_v1"
+        assert ep["cycle0_audit"]["policy_status"] == "QUARANTINE"
+        assert ep["cycle1_audit"]["policy_status"] == "ELIGIBLE"
+        assert ep["sol_change_handoff"]["comparability"] == "compatible"
+        assert ep["sol_change_handoff"]["outcome"] == "improved"
+        assert ep["sol_change_handoff"]["review_status"] == "awaiting_review"
+        assert ep["sol_change_handoff"]["warnings"] == []
+        assert ep["frontier_p_verification"]["swarm_cohomology_verified"] is True
+        assert obs_db.is_file()
+
+        pkt = data["sol_lens_packet"]
+        assert pkt["schema"] == "techman.sol-lens.proof-packet/v0.2"
+        assert pkt["verdict"] == "PROMOTE"
+        assert pkt["frontier_p_verification"]["swarm_cohomology_verified"] is True
+
+        ledger_entry = data["ledger_entry"]
+        assert ledger_entry["run_mode"] == "swarm_cohomology_observatory"
+        assert ledger_entry["frontier_p_verified"] is True
+        assert ledger_entry["edge_event_count"] == 8
+
+    # Verify GovernanceCourtLedger cryptographic integrity via /api/ledger/verify
+    req_ver = urllib.request.Request(
+        f"{live_server}/api/ledger/verify",
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req_ver) as resp:
+        assert resp.status == 200
+        ver_data = json.loads(resp.read().decode("utf-8"))
+        assert ver_data["ok"] is True
+        assert ver_data["integrity"]["isValid"] is True
+        assert ver_data["integrity"]["totalRunsVerified"] >= 1
+        assert ver_data["integrity"]["totalEventsVerified"] >= 8
+
+    # Verify /api/ledger/snapshot exposes the Frontier P run and repair record
+    req_snap = urllib.request.Request(f"{live_server}/api/ledger/snapshot")
+    with urllib.request.urlopen(req_snap) as resp:
+        assert resp.status == 200
+        snap_data = json.loads(resp.read().decode("utf-8"))
+        assert snap_data["ok"] is True
+        assert any(
+            r.get("runMode") == "swarm_cohomology_observatory"
+            and r.get("studyName") == "LiveStream_Swarm_Cohomology_Integration_v1"
+            for r in snap_data.get("runs", [])
+        )
+        assert any(
+            r.get("repairKind") == "swarm_cohomology_se3_wilson_calibration"
+            and r.get("postStalk", {}).get("frontier_p_verified") is True
+            for r in snap_data.get("repairs", [])
+        )
 
 
+def test_umok_edge_kernel_live_stream_endpoint(live_server, tmp_path):
+    """
+    Verifies Frontier Q (Vector 20) `/api/edge/umok_kernel` live stream endpoint:
+    - Executes sub-microsecond 5-gate UMOK kernel step + zero-copy ROS2 SHM / CAN-FD CRC-16 bridge
+    - Enforces default-deny `UMOKEdgeEligibilityInterlock` (`HOLD_SAFE_POSITION` -> `ELIGIBLE_AWAITING_RELEASE_AUTHORITY`, `authorized_claimed=False`)
+    - Exports SOL Change Observatory bundle (`compatible` / `improved` / `awaiting_review`)
+    - Records 8-event `sol-edge` chain into `GovernanceCourtLedger` (`umok_edge_observatory`)
+    - Verifies `/api/ledger/verify` and `/api/ledger/snapshot`
+    """
+    exp_root = tmp_path / "umok_experiments"
+    obs_db = tmp_path / "umok_observatory.sqlite3"
+    body = json.dumps({
+        "study_name": "LiveStream_UMOK_Edge_Kernel_Integration_v1",
+        "num_actuators": 4,
+        "repeat_trial_count": 3,
+        "use_live_gemini": False,
+        "experiments_root": str(exp_root),
+        "observatory_db_path": str(obs_db),
+        "register_in_observatory_db": True,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        f"{live_server}/api/edge/umok_kernel",
+        data=body,
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req) as resp:
+        assert resp.status == 200
+        data = json.loads(resp.read().decode("utf-8"))
+        assert data["ok"] is True
+
+        ep = data["episode"]
+        assert ep["study_name"] == "LiveStream_UMOK_Edge_Kernel_Integration_v1"
+        assert ep["cycle0_audit"]["policy_status"] == "QUARANTINE"
+        assert ep["cycle1_audit"]["policy_status"] == "ELIGIBLE"
+        assert ep["cycle0_audit"]["safe_state_triggered"] is True
+        assert ep["cycle1_audit"]["safe_state_triggered"] is False
+        assert ep["cycle0_audit"]["staged_frames_count"] == 0
+        assert ep["cycle1_audit"]["staged_frames_count"] == 4
+        assert ep["cycle1_audit"]["authorized_claimed"] is False
+        assert ep["sol_change_handoff"]["comparability"] == "compatible"
+        assert ep["sol_change_handoff"]["outcome"] == "improved"
+        assert ep["sol_change_handoff"]["review_status"] == "awaiting_review"
+        assert ep["sol_change_handoff"]["warnings"] == []
+        assert ep["frontier_q_verification"]["umok_kernel_verified"] is True
+        assert obs_db.is_file()
+
+        pkt = data["sol_lens_packet"]
+        assert pkt["schema"] == "techman.sol-lens.proof-packet/v0.2"
+        assert pkt["verdict"] == "PROMOTE"
+        assert pkt["frontier_q_verification"]["umok_kernel_verified"] is True
+        assert pkt["frontier_q_verification"]["eligibility_interlock"]["authorized_claimed"] is False
+
+        ledger_entry = data["ledger_entry"]
+        assert ledger_entry["run_mode"] == "umok_edge_kernel_observatory"
+        assert ledger_entry["frontier_q_verified"] is True
+        assert ledger_entry["edge_event_count"] == 8
+
+    # Verify GovernanceCourtLedger cryptographic integrity via /api/ledger/verify
+    req_ver = urllib.request.Request(
+        f"{live_server}/api/ledger/verify",
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req_ver) as resp:
+        assert resp.status == 200
+        ver_data = json.loads(resp.read().decode("utf-8"))
+        assert ver_data["ok"] is True
+        assert ver_data["integrity"]["isValid"] is True
+        assert ver_data["integrity"]["totalRunsVerified"] >= 1
+        assert ver_data["integrity"]["totalEventsVerified"] >= 8
+
+    # Verify /api/ledger/snapshot exposes the Frontier Q run and repair record
+    req_snap = urllib.request.Request(f"{live_server}/api/ledger/snapshot")
+    with urllib.request.urlopen(req_snap) as resp:
+        assert resp.status == 200
+        snap_data = json.loads(resp.read().decode("utf-8"))
+        assert snap_data["ok"] is True
+        assert any(
+            r.get("runMode") == "umok_edge_kernel_observatory"
+            and r.get("studyName") == "LiveStream_UMOK_Edge_Kernel_Integration_v1"
+            for r in snap_data.get("runs", [])
+        )
+        assert any(
+            r.get("repairKind") == "umok_c_buffer_and_can_crc_calibration"
+            and r.get("postStalk", {}).get("frontier_q_verified") is True
+            for r in snap_data.get("repairs", [])
+        )
 
 
+def test_mitotic_foliation_stwm_and_rsi_compiler_live_stream_endpoints(live_server, tmp_path):
+    """
+    Verifies Frontiers R, S, and T live stream endpoints:
+    - POST /api/continuum/mitotic_foliation (Frontier R / Vector 21)
+    - POST /api/continuum/stwm_wavefront (Frontier S / Vector 22)
+    - POST /api/continuum/rsi_compiler (Frontier T / Vector 23)
+    """
+    for endpoint, study_name, ver_key, flag_key, run_mode in [
+        (
+            "/api/continuum/mitotic_foliation",
+            "LiveStream_Mitotic_Foliation_Integration_v1",
+            "frontier_r_verification",
+            "mitotic_foliation_verified",
+            "mitotic_foliation_observatory",
+        ),
+        (
+            "/api/continuum/stwm_wavefront",
+            "LiveStream_STWM_Wavefront_Integration_v1",
+            "frontier_s_verification",
+            "stwm_wavefront_verified",
+            "stwm_wavefront_observatory",
+        ),
+        (
+            "/api/continuum/rsi_compiler",
+            "LiveStream_RSI_Compiler_Integration_v1",
+            "frontier_t_verification",
+            "rsi_compiler_verified",
+            "rsi_compiler_observatory",
+        ),
+    ]:
+        exp_root = tmp_path / f"{run_mode}_exp"
+        obs_db = tmp_path / f"{run_mode}_obs.sqlite3"
+        body = json.dumps({
+            "study_name": study_name,
+            "repeat_trial_count": 3,
+            "use_live_gemini": False,
+            "experiments_root": str(exp_root),
+            "observatory_db_path": str(obs_db),
+            "register_in_observatory_db": True,
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            f"{live_server}{endpoint}",
+            data=body,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req) as resp:
+            assert resp.status == 200
+            data = json.loads(resp.read().decode("utf-8"))
+            assert data["ok"] is True
+            ep = data["episode"]
+            assert ep["study_name"] == study_name
+            assert ep["cycle0_audit"]["policy_status"] == "QUARANTINE"
+            assert ep["cycle1_audit"]["policy_status"] == "ELIGIBLE"
+            assert ep["sol_change_handoff"]["comparability"] == "compatible"
+            assert ep["sol_change_handoff"]["outcome"] == "improved"
+            assert ep[ver_key][flag_key] is True
+            assert data["ledger_entry"]["run_mode"] == run_mode
+            assert data["ledger_entry"]["edge_event_count"] == 8
+
+    req_ver = urllib.request.Request(
+        f"{live_server}/api/ledger/verify",
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req_ver) as resp:
+        assert resp.status == 200
+        ver_data = json.loads(resp.read().decode("utf-8"))
+        assert ver_data["ok"] is True
+        assert ver_data["integrity"]["isValid"] is True
 
 

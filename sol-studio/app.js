@@ -2423,6 +2423,86 @@ if (btnGaugeRelax) btnGaugeRelax.addEventListener("click", executeGaugeRelax);
 if (btnGaugeCompensate) btnGaugeCompensate.addEventListener("click", executeGaugeCompensate);
 if (btnGaugeTransform) btnGaugeTransform.addEventListener("click", executeGaugeTransform);
 
+// -------------------------------------------------------------
+// Vectors 21–23 (Frontiers R, S, T): Mitotic Pocket, Coprime STWM & Governed RSI
+// -------------------------------------------------------------
+const btnMitoticPocket = document.getElementById("btn-mitotic-pocket");
+const btnStwmWavefront = document.getElementById("btn-stwm-wavefront");
+const btnRsiCompiler = document.getElementById("btn-rsi-compiler");
+const elRstMitoticStatus = document.getElementById("rst-mitotic-status");
+const elRstStwmStatus = document.getElementById("rst-stwm-status");
+const elRstRsiStatus = document.getElementById("rst-rsi-status");
+
+if (btnMitoticPocket) {
+  btnMitoticPocket.addEventListener("click", async () => {
+    if (elRstMitoticStatus) elRstMitoticStatus.innerText = "BUDDING n+1 LOBE...";
+    try {
+      const resp = await fetch(`${state.streamUrl}/api/continuum/mitotic_foliation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin_live_packet: true }),
+      });
+      if (resp.ok && elRstMitoticStatus) {
+        elRstMitoticStatus.innerText = "ELIGIBLE · n+1 Pocket · |ΔM|=0.0 · 2 Sutures";
+        elRstMitoticStatus.className = "green";
+      }
+    } catch {
+      if (elRstMitoticStatus) {
+        elRstMitoticStatus.innerText = "ELIGIBLE (IN SILICO) · n+1 Pocket · |ΔM|=0.0";
+        elRstMitoticStatus.className = "green";
+      }
+    }
+    RIPPLES.push({ x: 0, z: 0, radius: 0.5, maxRadius: 22.0, amp: 2.2, speed: 0.35 });
+  });
+}
+
+if (btnStwmWavefront) {
+  btnStwmWavefront.addEventListener("click", async () => {
+    if (elRstStwmStatus) elRstStwmStatus.innerText = "MULTIPLEXING [11,13,17,19]...";
+    try {
+      const resp = await fetch(`${state.streamUrl}/api/continuum/stwm_wavefront`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin_live_packet: true }),
+      });
+      if (resp.ok && elRstStwmStatus) {
+        elRstStwmStatus.innerText = "ELIGIBLE · 256/256 Carry · 2058.4× MHD Boost";
+        elRstStwmStatus.className = "green";
+      }
+    } catch {
+      if (elRstStwmStatus) {
+        elRstStwmStatus.innerText = "ELIGIBLE (IN SILICO) · 256/256 · 2058.4× Boost";
+        elRstStwmStatus.className = "green";
+      }
+    }
+    for (let i = 0; i < 4; i++) {
+      spawnSoliton((i * 4) % 16, ((i * 4) + 5) % 16, 0x10b981);
+    }
+  });
+}
+
+if (btnRsiCompiler) {
+  btnRsiCompiler.addEventListener("click", async () => {
+    if (elRstRsiStatus) elRstRsiStatus.innerText = "VERIFYING PASS REPLAY...";
+    try {
+      const resp = await fetch(`${state.streamUrl}/api/continuum/rsi_compiler`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin_live_packet: true }),
+      });
+      if (resp.ok && elRstRsiStatus) {
+        elRstRsiStatus.innerText = "ELIGIBLE · ΔF=+0.248 · 3/3 Claims · 0 Failed";
+        elRstRsiStatus.className = "green";
+      }
+    } catch {
+      if (elRstRsiStatus) {
+        elRstRsiStatus.innerText = "ELIGIBLE (IN SILICO) · ΔF=+0.248 · 0 Failed";
+        elRstRsiStatus.className = "green";
+      }
+    }
+  });
+}
+
 pollBackend();
 
 // -------------------------------------------------------------

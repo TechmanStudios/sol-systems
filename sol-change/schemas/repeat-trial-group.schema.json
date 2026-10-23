@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOL Change repeat-trial group v1.0",
+  "description": "Multi-trial paired baseline vs. candidate run group (K >= 3) sharing an identical frozen input and evaluator version for statistical confidence interval and effect-size analysis.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "group_id",
+    "created_at",
+    "shared_input",
+    "evaluator_version",
+    "trial_count",
+    "trials"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "kind": { "const": "sol-change/repeat-trial-group" },
+    "group_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "study_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "shared_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "digest"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "digest": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "dataset_version": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 10000 }
+      }
+    },
+    "evaluator_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "baseline_workflow_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "candidate_workflow_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "trial_count": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 1000
+    },
+    "trials": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["trial_index", "seed", "baseline_run", "candidate_run"],
+        "properties": {
+          "trial_index": { "type": "integer", "minimum": 0 },
+          "seed": { "type": "integer" },
+          "baseline_run": { "type": "object" },
+          "candidate_run": { "type": "object" },
+          "wgsl_metrics": { "type": "object" },
+          "swarm_metrics": { "type": "object" },
+          "umok_metrics": { "type": "object" },
+          "mitotic_metrics": { "type": "object" },
+          "stwm_metrics": { "type": "object" },
+          "rsi_compiler_metrics": { "type": "object" }
+        }
+      }
+    },
+    "statistical_summary": {
+      "type": "object"
+    }
+  }
+}
