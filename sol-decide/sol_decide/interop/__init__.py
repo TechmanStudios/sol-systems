@@ -2,6 +2,21 @@
 SOL-Decide Interoperability Package
 """
 
+from pathlib import Path
+import sys
+
+_SOL_SYSTEMS_ROOT = Path(__file__).resolve().parents[3]
+for _p in (
+    _SOL_SYSTEMS_ROOT,
+    _SOL_SYSTEMS_ROOT / "sol-change",
+    _SOL_SYSTEMS_ROOT / "sol-decide",
+    _SOL_SYSTEMS_ROOT / "sol-edge" / "src",
+    _SOL_SYSTEMS_ROOT / "sol-edge",
+):
+    _ps = str(_p)
+    if _p.exists() and _ps not in sys.path:
+        sys.path.insert(0, _ps)
+
 from .sysml_kerml import SysMLKerMLParser, SysMLBlockAST
 from .daosoft_bridge import DAOSoftBridge
 from .sysml_cosimulation import (
@@ -56,6 +71,69 @@ from .sol_continuum_bridge import (
     SolEdgeContinuumDiscoveryGate,
     SolEdgeLuminaSovereignGate,
 )
+from .sol_change_producer import (
+    SolChangeHandoffManifest,
+    build_measured_sol_change_run,
+    build_observatory_context_sidecar,
+    export_decision_prover_observatory_bundle,
+    run_wgsl_prover_repeat_trial_suite,
+    run_swarm_cohomology_repeat_trial_suite,
+    run_umok_edge_repeat_trial_suite,
+    run_mitotic_foliation_repeat_trial_suite,
+    run_stwm_wavefront_repeat_trial_suite,
+    run_rsi_compiler_repeat_trial_suite,
+)
+from .swarm_cohomology_bridge import (
+    SwarmCohomologyCalibrationSpec,
+    SwarmCohomologyReasoningTelemetry,
+    SwarmCohomologyCycleAuditResult,
+    SolEdgeSwarmCohomologyGate,
+    SwarmCohomologyEpisodeRecord,
+    MultiRobotSwarmCohomologyOrchestrator,
+)
+from .umok_edge_bridge import (
+    Gemini4UMOKCalibrationReasoner,
+    SolEdgeUMOKKernelGate,
+    UMOKEdgeCalibrationSpec,
+    UMOKEdgeCycleAuditResult,
+    UMOKEdgeEpisodeRecord,
+    UMOKEdgeKernelOrchestrator,
+    UMOKEdgeReasoningTelemetry,
+    run_frontier_q_umok_edge_study,
+)
+from .mitotic_foliation_bridge import (
+    Gemini4MitoticFoliationReasoner,
+    MitoticFoliationCalibrationSpec,
+    MitoticFoliationCycleAuditResult,
+    MitoticFoliationEpisodeRecord,
+    MitoticFoliationOrchestrator,
+    MitoticFoliationReasoningTelemetry,
+    MitoticPathwayReport,
+    SolEdgeMitoticFoliationGate,
+    run_frontier_r_mitotic_foliation_study,
+)
+from .stwm_wavefront_bridge import (
+    Gemini4STWMWavefrontReasoner,
+    SolEdgeSTWMWavefrontGate,
+    STWMWavefrontAuditReport,
+    STWMWavefrontCalibrationSpec,
+    STWMWavefrontCycleAuditResult,
+    STWMWavefrontEpisodeRecord,
+    STWMWavefrontOrchestrator,
+    STWMWavefrontReasoningTelemetry,
+    run_frontier_s_stwm_wavefront_study,
+)
+from .rsi_compiler_governance_bridge import (
+    Gemini4RSICompilerReasoner,
+    RSICompilerCycleAuditResult,
+    RSICompilerEpisodeRecord,
+    RSICompilerGovernanceAuditReport,
+    RSICompilerGovernanceOrchestrator,
+    RSICompilerGovernanceSpec,
+    RSICompilerReasoningTelemetry,
+    SolEdgeRSICompilerGate,
+    run_frontier_t_rsi_compiler_study,
+)
 
 __all__ = [
     "SysMLKerMLParser",
@@ -103,7 +181,60 @@ __all__ = [
     "SolContinuumDiscoveryOrchestrator",
     "SolEdgeContinuumDiscoveryGate",
     "SolEdgeLuminaSovereignGate",
+    "SolChangeHandoffManifest",
+    "build_measured_sol_change_run",
+    "build_observatory_context_sidecar",
+    "export_decision_prover_observatory_bundle",
+    "run_wgsl_prover_repeat_trial_suite",
+    "run_swarm_cohomology_repeat_trial_suite",
+    "run_umok_edge_repeat_trial_suite",
+    "run_mitotic_foliation_repeat_trial_suite",
+    "run_stwm_wavefront_repeat_trial_suite",
+    "run_rsi_compiler_repeat_trial_suite",
+    "SwarmCohomologyCalibrationSpec",
+    "SwarmCohomologyReasoningTelemetry",
+    "SwarmCohomologyCycleAuditResult",
+    "SolEdgeSwarmCohomologyGate",
+    "SwarmCohomologyEpisodeRecord",
+    "MultiRobotSwarmCohomologyOrchestrator",
+    "Gemini4UMOKCalibrationReasoner",
+    "SolEdgeUMOKKernelGate",
+    "UMOKEdgeCalibrationSpec",
+    "UMOKEdgeCycleAuditResult",
+    "UMOKEdgeEpisodeRecord",
+    "UMOKEdgeKernelOrchestrator",
+    "UMOKEdgeReasoningTelemetry",
+    "run_frontier_q_umok_edge_study",
+    "Gemini4MitoticFoliationReasoner",
+    "MitoticFoliationCalibrationSpec",
+    "MitoticFoliationCycleAuditResult",
+    "MitoticFoliationEpisodeRecord",
+    "MitoticFoliationOrchestrator",
+    "MitoticFoliationReasoningTelemetry",
+    "MitoticPathwayReport",
+    "SolEdgeMitoticFoliationGate",
+    "run_frontier_r_mitotic_foliation_study",
+    "Gemini4STWMWavefrontReasoner",
+    "SolEdgeSTWMWavefrontGate",
+    "STWMWavefrontAuditReport",
+    "STWMWavefrontCalibrationSpec",
+    "STWMWavefrontCycleAuditResult",
+    "STWMWavefrontEpisodeRecord",
+    "STWMWavefrontOrchestrator",
+    "STWMWavefrontReasoningTelemetry",
+    "run_frontier_s_stwm_wavefront_study",
+    "Gemini4RSICompilerReasoner",
+    "RSICompilerCycleAuditResult",
+    "RSICompilerEpisodeRecord",
+    "RSICompilerGovernanceAuditReport",
+    "RSICompilerGovernanceOrchestrator",
+    "RSICompilerGovernanceSpec",
+    "RSICompilerReasoningTelemetry",
+    "SolEdgeRSICompilerGate",
+    "run_frontier_t_rsi_compiler_study",
 ]
+
+
 
 
 

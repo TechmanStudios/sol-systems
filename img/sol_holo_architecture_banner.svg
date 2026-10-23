@@ -16,35 +16,35 @@
 </defs>
 <rect width="1180" height="560" rx="14" fill="url(#bgGrad)" stroke="#1e293b" stroke-width="2"/>
 <text x="590" y="38" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, Inter, sans-serif" font-size="20" font-weight="800" letter-spacing="0.8">SOL-HOLO: HOLOGRAPHIC AUTOPOIETIC CONTINUUM &amp; SOVEREIGN DIGITAL ORGANISM</text>
-<text x="590" y="62" text-anchor="middle" fill="#10b981" font-family="Consolas, monospace" font-size="12.5" font-weight="600">14/14 Frontiers Verified (A–N)  •  Merkle Root: sha256:44189469dc7a4f37a57a9f32bc8266a...  •  Sacred Core SHA-256: d0a80462d2b9389160502b097aca...</text>
+<text x="590" y="62" text-anchor="middle" fill="#10b981" font-family="Consolas, monospace" font-size="12.5" font-weight="600">20/20 Frontiers Verified (A–T)  •  Merkle Root: sha256:c1fb5580c692756bf4860226cb78fb0...  •  Sacred Core SHA-256: d0a80462d2b9389160502b097aca...</text>
 <rect x="30" y="84" width="265" height="190" rx="10" fill="#11182d" stroke="#22d3ee" stroke-width="2"/>
 <rect x="30" y="84" width="265" height="32" rx="10" fill="#22d3ee" fill-opacity="0.16"/>
 <text x="162.5" y="105" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">BULK LAYER I: TOPOLOGICAL &amp; GAUGE</text>
-<text x="42" y="138" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier A: Dialectical H¹ Hodge (β₁: 1 → 0)</text>
-<text x="42" y="165" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier B: SysML v2 Shock &amp; SO(3) Wilson Gate</text>
-<text x="42" y="192" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier D/E: 3D→4D→2D→U(N) Wormhole (α: 0→1)</text>
-<text x="42" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier G: Persistent Homology &amp; Ricci Surgery</text>
-<text x="42" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier H: NHSE &amp; PT-Symmetry GBZ Gauge</text>
+<text x="42" y="138" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier A/B: H¹ Hodge (β₁: 1 → 0) &amp; SO(3) Gate</text>
+<text x="42" y="165" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier D/E/F: 3D→4D→2D→U(N) Wormhole (α: 0→1)</text>
+<text x="42" y="192" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier G/H: Ricci Surgery &amp; NHSE PT-Symmetry</text>
+<text x="42" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier P: Swarm SE(3) Cohomology (25 kg Lift)</text>
+<text x="42" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier R: Mitotic 2D Foliation &amp; Toroidal Surgery</text>
 <line x1="162.5" y1="278" x2="162.5" y2="312" stroke="#22d3ee" stroke-width="2.2" stroke-dasharray="4,3"/>
 <polygon points="157.5,308 167.5,308 162.5,318" fill="#22d3ee"/>
 <rect x="315" y="84" width="265" height="190" rx="10" fill="#11182d" stroke="#a855f7" stroke-width="2"/>
 <rect x="315" y="84" width="265" height="32" rx="10" fill="#a855f7" fill-opacity="0.16"/>
 <text x="447.5" y="105" text-anchor="middle" fill="#a855f7" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">BULK LAYER II: CONTINUUM &amp; PROOFS</text>
 <text x="327" y="138" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier I: 5-Agent Continuum Discovery Guild</text>
-<text x="327" y="165" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier K: AutonomousConjecture &amp; ProofEngine</text>
-<text x="327" y="192" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Geodesic Circuit Synthesis (MAJORITY_3, FULL_ADDER)</text>
-<text x="327" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Metaplasticity Shields 1 &amp; 4 (κ ≤ 100 Healed)</text>
-<text x="327" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• WebGPU WGSL Kernel &amp; Causal Emergence (ΔEI = +0.57b)</text>
+<text x="327" y="165" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier K: 8 Proved Theorems &amp; 3 Counterexamples</text>
+<text x="327" y="192" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier O: 64-Thread WebGPU WGSL Decision Prover</text>
+<text x="327" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier T: Governed RSI Claim-to-Test &amp; Pass Compiler</text>
+<text x="327" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Metaplasticity Shields 1 &amp; 4 + Causal ΔEI = +0.57b</text>
 <line x1="447.5" y1="278" x2="447.5" y2="312" stroke="#a855f7" stroke-width="2.2" stroke-dasharray="4,3"/>
 <polygon points="442.5,308 452.5,308 447.5,318" fill="#a855f7"/>
 <rect x="600" y="84" width="265" height="190" rx="10" fill="#11182d" stroke="#f59e0b" stroke-width="2"/>
 <rect x="600" y="84" width="265" height="32" rx="10" fill="#f59e0b" fill-opacity="0.16"/>
-<text x="732.5" y="105" text-anchor="middle" fill="#f59e0b" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">BULK LAYER III: LUMINA WIDEWORD</text>
-<text x="612" y="138" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier J: 7 Hard Sovereignty Rules &amp; Lesson Law</text>
-<text x="612" y="165" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier L: 32b (4-Lane) &amp; 64b (8-Lane) WideWord VM</text>
-<text x="612" y="192" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Micro-ISA v1 → v0 Lowering (10/10 Backends)</text>
-<text x="612" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• 68/68 Fault Matrix Cases &amp; Exact State Rollback</text>
-<text x="612" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• 3-Manifold (M1,M2,M3) 2PC &amp; 8-Ranger Squadron</text>
+<text x="732.5" y="105" text-anchor="middle" fill="#f59e0b" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">BULK LAYER III: LUMINA, UMOK &amp; STWM</text>
+<text x="612" y="138" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier J/L: 32b &amp; 64b Sovereign WideWord VM</text>
+<text x="612" y="165" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• 68/68 Fault Matrix Cases &amp; 3-Manifold 2PC Commit</text>
+<text x="612" y="192" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier Q: Sub-1.0us Symplectic Geodesic Verlet</text>
+<text x="612" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier S: Coprime STWM &amp; MHD-GRU-Jeans Bus</text>
+<text x="612" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• SOL-Edge Eligibility Interlock (0.62us &lt;= 1.0us)</text>
 <line x1="732.5" y1="278" x2="732.5" y2="312" stroke="#f59e0b" stroke-width="2.2" stroke-dasharray="4,3"/>
 <polygon points="727.5,308 737.5,308 732.5,318" fill="#f59e0b"/>
 <rect x="885" y="84" width="265" height="190" rx="10" fill="#11182d" stroke="#10b981" stroke-width="2"/>
@@ -53,12 +53,12 @@
 <text x="897" y="138" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Frontier N Pillar 1: Epistemic Gap Intake (GAP-001/002)</text>
 <text x="897" y="165" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Pillar 2: Bimodal Hippocampal Dream Sink (r = 1.0000)</text>
 <text x="897" y="192" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Pillar 3: EntanglerGiant MSF Phase Lock (λ̂ = -0.418)</text>
-<text x="897" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Pillar 4: Welch t-Test (p = 0.00037, Cohen d = 3.99)</text>
-<text x="897" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Gatekeeper, MetaLearner &amp; TrustLedger Governance</text>
+<text x="897" y="219" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• Pillar 4: Welch t-Test (p &lt; 0.05, K &gt;= 3 Repeat Trials)</text>
+<text x="897" y="246" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">• 8-Run Cross-Chained Governance Court Merkle Ledger</text>
 <line x1="1017.5" y1="278" x2="1017.5" y2="312" stroke="#10b981" stroke-width="2.2" stroke-dasharray="4,3"/>
 <polygon points="1012.5,308 1022.5,308 1017.5,318" fill="#10b981"/>
 <rect x="30" y="322" width="1120" height="114" rx="12" fill="url(#boundGrad)" stroke="#22d3ee" stroke-width="2.2"/>
-<text x="590" y="346" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="13.5" font-weight="800" letter-spacing="0.5">HOLOGRAPHIC BOUNDARY PROJECTION (FRONTIERS C &amp; M — ZERO-TRUST CRYPTOGRAPHIC TRACE COURT)</text>
+<text x="590" y="346" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="13.5" font-weight="800" letter-spacing="0.5">HOLOGRAPHIC BOUNDARY PROJECTION (FRONTIERS C, M, O, P, Q, R, S, T — ZERO-TRUST CRYPTOGRAPHIC TRACE COURT)</text>
 <rect x="48" y="358" width="256" height="66" rx="8" fill="#0b1120" stroke="#22d3ee" stroke-width="1.4"/>
 <text x="176" y="378" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">sol-edge 8-Event Replay</text>
 <text x="176" y="397" text-anchor="middle" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Cycle 0 QUARANTINE → Cycle 1 ELIGIBLE</text>
@@ -73,63 +73,87 @@
 <text x="720" y="414" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">6/6 Criteria Improved • awaiting_review</text>
 <rect x="864" y="358" width="256" height="66" rx="8" fill="#0b1120" stroke="#10b981" stroke-width="1.4"/>
 <text x="992" y="378" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">Governance Court Ledger</text>
-<text x="992" y="397" text-anchor="middle" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Persistent SQLite/D1 Merkle Hash Chain</text>
-<text x="992" y="414" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">Tamper-Evident Frontier K/L/N Audit</text>
-<text x="590" y="462" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700" letter-spacing="0.6">14-FRONTIER HOLOGRAPHIC VERIFICATION MATRIX (ALL 14 FRONTIERS PROMOTE / VERIFIED)</text>
-<rect x="30.0" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="66.5" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier A</text>
-<text x="66.5" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="66.5" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="110.5" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="147.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier B</text>
-<text x="147.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="147.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="191.0" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="227.5" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier C</text>
-<text x="227.5" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="227.5" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="271.5" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="308.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier D</text>
-<text x="308.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="308.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="352.0" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="388.5" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier E</text>
-<text x="388.5" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="388.5" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="432.5" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="469.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier F</text>
-<text x="469.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="469.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="513.0" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="549.5" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier G</text>
-<text x="549.5" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="549.5" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="593.5" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="630.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier H</text>
-<text x="630.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="630.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="674.0" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="710.5" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier I</text>
-<text x="710.5" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="710.5" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="754.5" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="791.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier J</text>
-<text x="791.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="791.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="835.0" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="871.5" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier K</text>
-<text x="871.5" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="871.5" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="915.5" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="952.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier L</text>
-<text x="952.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="952.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="996.0" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="1032.5" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier M</text>
-<text x="1032.5" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="1032.5" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
-<rect x="1076.5" y="476" width="73" height="62" rx="8" fill="#09221e" stroke="#10b981" stroke-width="1.6"/>
-<text x="1113.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800">Frontier N</text>
-<text x="1113.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="10" font-weight="700">PROMOTE</text>
-<text x="1113.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="9">✓ VERIFIED</text>
+<text x="992" y="397" text-anchor="middle" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="10.5">Persistent 8-Run SQLite/D1 Merkle Chain</text>
+<text x="992" y="414" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">Tamper-Evident Frontier K/L/N/O/P/Q/R/S/T Audit</text>
+<text x="590" y="462" text-anchor="middle" fill="#f8fafc" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700" letter-spacing="0.6">20-FRONTIER HOLOGRAPHIC VERIFICATION MATRIX (ALL 20 FRONTIERS A–T PROMOTE / VERIFIED)</text>
+<rect x="30.0" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="56.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier A</text>
+<text x="56.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="56.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="86.2" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="112.2" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier B</text>
+<text x="112.2" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="112.2" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="142.4" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="168.4" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier C</text>
+<text x="168.4" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="168.4" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="198.6" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="224.6" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier D</text>
+<text x="224.6" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="224.6" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="254.8" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="280.8" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier E</text>
+<text x="280.8" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="280.8" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="311.0" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="337.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier F</text>
+<text x="337.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="337.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="367.2" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="393.2" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier G</text>
+<text x="393.2" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="393.2" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="423.4" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="449.4" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier H</text>
+<text x="449.4" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="449.4" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="479.6" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="505.6" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier I</text>
+<text x="505.6" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="505.6" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="535.8" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="561.8" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier J</text>
+<text x="561.8" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="561.8" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="592.0" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="618.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier K</text>
+<text x="618.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="618.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="648.2" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="674.2" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier L</text>
+<text x="674.2" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="674.2" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="704.4" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="730.4" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier M</text>
+<text x="730.4" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="730.4" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="760.6" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="786.6" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier N</text>
+<text x="786.6" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="786.6" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="816.8" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="842.8" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier O</text>
+<text x="842.8" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="842.8" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="873.0" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="899.0" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier P</text>
+<text x="899.0" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="899.0" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="929.2" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="955.2" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier Q</text>
+<text x="955.2" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="955.2" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="985.4" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="1011.4" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier R</text>
+<text x="1011.4" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="1011.4" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="1041.6" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="1067.6" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier S</text>
+<text x="1067.6" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="1067.6" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
+<rect x="1097.8" y="476" width="52" height="62" rx="7" fill="#09221e" stroke="#10b981" stroke-width="1.5"/>
+<text x="1123.8" y="499" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="9.5" font-weight="800">Frontier T</text>
+<text x="1123.8" y="517" text-anchor="middle" fill="#e2e8f0" font-family="Consolas, monospace" font-size="8.5" font-weight="700">PROMOTE</text>
+<text x="1123.8" y="531" text-anchor="middle" fill="#34d399" font-family="Segoe UI, sans-serif" font-size="8.0">✓ VERIFIED</text>
 </svg>

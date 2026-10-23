@@ -34,12 +34,15 @@ class TestAxiomLibrary:
 
     def test_axiom_library_completeness(self):
         axioms = build_axiom_library()
-        assert len(axioms) >= 6
+        assert len(axioms) == 11
         assert "AXIOM_DEMORGAN_AND" in axioms
         assert "AXIOM_XOR_INVOLUTION" in axioms
         assert "AXIOM_MAJORITY_SELF_DUAL" in axioms
         assert "AXIOM_RICCI_POSITIVE_DEFINITE" in axioms
         assert "AXIOM_OCCAM_CAUSAL_EMERGENCE" in axioms
+        assert "AXIOM_MITOTIC_MASS_CONTINUITY" in axioms
+        assert "AXIOM_COPRIME_QUADRATURE_ORTHOGONALITY" in axioms
+        assert "AXIOM_GOVERNED_PASS_REPLAY_IDEMPOTENCE" in axioms
 
         demorgan = axioms["AXIOM_DEMORGAN_AND"]
         assert demorgan.domain == MathematicalDomain.BOOLEAN_ALGEBRA
@@ -57,7 +60,7 @@ class TestConjectureEngine:
         engine = AutonomousConjectureEngine()
         catalog = engine.generate_conjecture_catalog()
 
-        assert len(catalog) >= 5
+        assert len(catalog) == 11
         for conj in catalog:
             assert conj.conjecture_id != ""
             assert conj.entropy_score > 0.0  # Guarantees non-triviality (not constant function)
@@ -69,8 +72,8 @@ class TestConjectureEngine:
         # Check sound vs flawed conjectures
         sound_conjs = [c for c in catalog if not c.is_deliberately_false]
         flawed_conjs = [c for c in catalog if c.is_deliberately_false]
-        assert len(sound_conjs) >= 4
-        assert len(flawed_conjs) >= 2
+        assert len(sound_conjs) == 8
+        assert len(flawed_conjs) == 3
 
 
 class TestAutomatedProofEngine:
@@ -105,6 +108,28 @@ class TestAutomatedProofEngine:
         assert cert.verdict == ProofVerdict.PROVED_THEOREM
         assert cert.is_crystallized is True
         assert cert.minimal_causal_kernel_nodes > 0
+
+    def test_prove_frontier_rst_conjectures_and_refute_resonant_wall(self):
+        engine = AutonomousConjectureEngine()
+        prover = AutomatedProofEngine()
+        catalog = {c.conjecture_id: c for c in engine.discover_conjectures()}
+
+        for cid in (
+            "conj_mitotic_hawking_conservation",
+            "conj_coprime_stwm_prefix_carry",
+            "conj_governed_compiler_pass_idempotence",
+        ):
+            cert = prover.prove_conjecture(catalog[cid], max_debate_rounds=6)
+            assert cert.verdict == ProofVerdict.PROVED_THEOREM
+            assert cert.is_crystallized is True
+            assert cert.counter_example_witness is None
+
+        flawed_cert = prover.prove_conjecture(
+            catalog["conj_false_resonant_wall_linear_pdm"], max_debate_rounds=6
+        )
+        assert flawed_cert.verdict == ProofVerdict.DISPROVED_COUNTEREXAMPLE
+        assert flawed_cert.is_crystallized is False
+        assert flawed_cert.counter_example_witness is not None
 
     def test_refute_flawed_xor_linear(self):
         engine = AutonomousConjectureEngine()

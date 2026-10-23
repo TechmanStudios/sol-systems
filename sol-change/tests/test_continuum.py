@@ -297,6 +297,11 @@ class ContinuumCLITests(unittest.TestCase):
             },
         }
 
+        cand_pkt["frontier_o_verification"] = {
+            "wgsl_decision_prover_verified": True,
+            "summary_digest": "sha256:fo-test-digest",
+        }
+
         base_file = self.root / "base_pkt.json"
         cand_file = self.root / "cand_pkt.json"
         base_file.write_text(json.dumps(base_pkt), encoding="utf-8")
@@ -322,6 +327,8 @@ class ContinuumCLITests(unittest.TestCase):
         self.assertTrue(f_summary["frontier_k_verified"])
         self.assertTrue(f_summary["frontier_l_verified"])
         self.assertTrue(f_summary["frontier_n_verified"])
+        self.assertTrue(f_summary["frontier_o_verified"])
+        self.assertEqual(f_summary["frontier_o_summary_digest"], "sha256:fo-test-digest")
         self.assertTrue(f_summary["frontier_n_core_immutability_verified"])
         self.assertTrue(f_summary["frontier_n_bimodal_dream_verified"])
         self.assertTrue(f_summary["frontier_n_bilateral_entangler_verified"])
@@ -340,6 +347,276 @@ class ContinuumCLITests(unittest.TestCase):
         parsed = json.loads(text)
         self.assertEqual(parsed["cycle_drift_breakdown"]["verdict_transition"], "QUARANTINE -> PROMOTE")
 
+    def test_packet_to_run_measured_execution_time_and_repeat_trials_cli(self):
+        from observatory.continuum import evaluate_repeat_trial_group, validate_repeat_trial_group
+        from observatory.domain import ValidationError
+
+        pkt = sample_packet()
+        default_run = packet_to_run(json.dumps(pkt), "candidate", "packet.json", complete_context())
+        by_cid_default = {m["criterion_id"]: m["value"] for m in default_run["measurements"]}
+        self.assertIsNone(by_cid_default["execution_time"])
+        self.assertIsNone(by_cid_default["cost"])
+        self.assertIsNone(by_cid_default["human_review"])
+
+        measured_run = packet_to_run(
+            json.dumps(pkt),
+            "candidate",
+            "packet.json",
+            complete_context(),
+            measured_execution_time_s=0.0185,
+            measured_cost_usd=None,
+        )
+        validate_run(measured_run)
+        by_cid_measured = {m["criterion_id"]: m["value"] for m in measured_run["measurements"]}
+        self.assertAlmostEqual(by_cid_measured["execution_time"], 0.0185, places=6)
+        self.assertIsNone(by_cid_measured["cost"])
+        self.assertIsNone(by_cid_measured["human_review"])
+
+        trials = []
+        ctx = complete_context()
+        ctx["conditions"] = {
+            **ctx.get("conditions", {}),
+            "input_id": "input:artemis-wgsl",
+            "input_digest": "sha256:abc123",
+        }
+        for idx in range(5):
+            b_pkt = copy.deepcopy(pkt)
+            b_pkt["packet_id"] = f"pkt-b-{idx}"
+            b_pkt["metrics"] = {
+                "evidence": 0.45 + 0.005 * idx,
+                "coherence": 0.50 + 0.004 * idx,
+                "contradiction": 0.40,
+                "continuity": 0.48,
+                "authority": 0.52,
+                "faithfulness": 0.46,
+            }
+            c_pkt = copy.deepcopy(pkt)
+            c_pkt["packet_id"] = f"pkt-c-{idx}"
+            c_pkt["metrics"] = {
+                "evidence": 0.92 + 0.004 * idx,
+                "coherence": 0.94 + 0.003 * idx,
+                "contradiction": 0.04,
+                "continuity": 0.91,
+                "authority": 0.95,
+                "faithfulness": 0.93,
+            }
+            b_run = packet_to_run(
+                json.dumps(b_pkt),
+                "baseline",
+                f"base_{idx}.json",
+                ctx,
+                measured_execution_time_s=0.018 + 0.001 * idx,
+            )
+            c_run = packet_to_run(
+                json.dumps(c_pkt),
+                "candidate",
+                f"cand_{idx}.json",
+                ctx,
+                measured_execution_time_s=0.002 + 0.0001 * idx,
+            )
+            trials.append({
+                "trial_index": idx,
+                "seed": 42 + idx,
+                "baseline_run": b_run,
+                "candidate_run": c_run,
+            })
+        group = {
+            "schema_version": "1.0",
+            "kind": "sol-change/repeat-trial-group",
+            "group_id": "rtg-test-01",
+            "study_name": "5-Trial WGSL Prover Repeat Group",
+            "created_at": "2026-10-22T12:00:00Z",
+            "shared_input": {
+                "id": "input:artemis-wgsl",
+                "digest": "sha256:abc123",
+                "description": ctx["input"],
+            },
+            "evaluator_version": ctx["evaluator_version"],
+            "trial_count": 5,
+            "trials": trials,
+        }
+        validate_repeat_trial_group(group)
+        report = evaluate_repeat_trial_group(group)
+        self.assertEqual(report["trial_count"], 5)
+        self.assertEqual(report["outcome"], "improved")
+        ev_metric = report["metrics"]["lens_evidence"]
+        self.assertGreater(ev_metric["cohens_d"], 10.0)
+        self.assertLess(ev_metric["p_value_two_sided"], 0.001)
+        self.assertLess(ev_metric["ci95_lower"], ev_metric["mean_delta"])
+        self.assertGreater(ev_metric["ci95_upper"], ev_metric["mean_delta"])
+
+        group_file = self.root / "repeat_trials.json"
+        eval_out = self.root / "repeat_eval.json"
+        group_file.write_text(json.dumps(group), encoding="utf-8")
+        code, text = self.invoke([
+            "evaluate-trials",
+            "--group", str(group_file),
+            "--output", str(eval_out),
+            "--format", "text",
+        ])
+        self.assertEqual(code, 0)
+        self.assertIn("rtg-test-01", text)
+        self.assertTrue(eval_out.is_file())
+
+        bad_group = copy.deepcopy(group)
+        bad_group["trial_count"] = 2
+        bad_group["trials"] = trials[:2]
+        with self.assertRaises(ValidationError):
+            validate_repeat_trial_group(bad_group)
+
+        dup_index_group = copy.deepcopy(group)
+        dup_index_group["trials"][1]["trial_index"] = 0
+        with self.assertRaises(ValidationError):
+            validate_repeat_trial_group(dup_index_group)
+
+        nan_wgsl_group = copy.deepcopy(group)
+        nan_wgsl_group["trials"][0]["wgsl_metrics"] = {"serial_cpu_latency_ms": float("nan")}
+        with self.assertRaises(ValidationError):
+            validate_repeat_trial_group(nan_wgsl_group)
+
+        bool_wgsl_group = copy.deepcopy(group)
+        bool_wgsl_group["trials"][0]["wgsl_metrics"] = {"serial_cpu_latency_ms": True}
+        with self.assertRaises(ValidationError):
+            validate_repeat_trial_group(bool_wgsl_group)
+
+        mismatched_wf_group = copy.deepcopy(group)
+        mismatched_wf_group["trials"][2]["candidate_run"]["workflow_version"] = "v9.9-mismatched"
+        with self.assertRaises(ValidationError):
+            validate_repeat_trial_group(mismatched_wf_group)
+
+        with self.assertRaises(ValidationError):
+            packet_to_run(
+                json.dumps(pkt),
+                "candidate",
+                "packet.json",
+                complete_context(),
+                measured_execution_time_s=-0.01,
+            )
+        with self.assertRaises(ValidationError):
+            packet_to_run(
+                json.dumps(pkt),
+                "candidate",
+                "packet.json",
+                complete_context(),
+                measured_cost_usd=float("nan"),
+            )
+
+    def test_frontier_rst_boundary_null_robustness_and_domain_trial_summaries(self):
+        from observatory.continuum import (
+            assess_continuum_observatory,
+            evaluate_repeat_trial_group,
+        )
+
+        ctx = complete_context()
+        base_pkt = sample_packet()
+        base_pkt["verdict"] = "QUARANTINE"
+        cand_pkt = sample_packet()
+        cand_pkt["frontier_r_verification"] = {
+            "mitotic_foliation_verified": True,
+            "frontier_r_summary_digest": "sha256:r055",
+            "mitotic_surface_fission": {
+                "cycle0_alpha": 0.88,
+                "cycle1_alpha": 0.55,
+            },
+            "toroidal_surgery_homology": {
+                "toroidal_genus_g": 1,
+                "euler_characteristic_chi": 0,
+            },
+            "hawking_radiation_memory_sink": {
+                "cycle1_mass_conservation_residual": 0.0,
+                "sacred_core_immutable": True,
+            },
+            "eligibility_interlock": {
+                "cycle0_safe_state_triggered": True,
+                "cycle1_safe_state_triggered": False,
+                "authorized_claimed": False,
+            },
+            "cycle1_audit": {
+                "policy_status": "ELIGIBLE",
+            },
+        }
+        exp_boundary = build_comparison(
+            packet_to_run(json.dumps(base_pkt), "baseline", "b.json", ctx),
+            packet_to_run(json.dumps(cand_pkt), "candidate", "c.json", ctx),
+            "Frontier R Boundary Test",
+            "cycle1_alpha=0.55 boundary",
+        )
+        assessment = assess_continuum_observatory(exp_boundary)
+        fvs = assessment["cycle_drift_breakdown"]["frontier_verification_summary"]
+        self.assertTrue(fvs["frontier_r_verified"])
+        self.assertTrue(fvs["frontier_r"]["verified"])
+
+        # Null sub-dictionary robustness check
+        null_cand_pkt = sample_packet()
+        null_cand_pkt["frontier_r_verification"] = {
+            "mitotic_foliation_verified": True,
+            "mitotic_surface_fission": None,
+            "toroidal_surgery_homology": None,
+            "hawking_radiation_memory_sink": None,
+            "eligibility_interlock": None,
+            "cycle1_audit": None,
+        }
+        null_cand_pkt["frontier_t_verification"] = {
+            "rsi_compiler_verified": True,
+            "governed_compiler_invocation": {"cycle1_admitted_passes": None},
+        }
+        exp_null = build_comparison(
+            packet_to_run(json.dumps(base_pkt), "baseline", "b.json", ctx),
+            packet_to_run(json.dumps(null_cand_pkt), "candidate", "c_null.json", ctx),
+            "Frontier R Null Subdict Test",
+            "Null subdicts should evaluate verified=False without raising",
+        )
+        assessment_null = assess_continuum_observatory(exp_null)
+        fvs_null = assessment_null["cycle_drift_breakdown"]["frontier_verification_summary"]
+        self.assertFalse(fvs_null["frontier_r_verified"])
+        self.assertFalse(fvs_null["frontier_t_verified"])
+
+        # Repeat-trial domain metric summaries for mitotic_metrics, stwm_metrics, rsi_compiler_metrics
+        trials = []
+        for idx in range(3):
+            b_run = packet_to_run(json.dumps(base_pkt), "baseline", f"b_{idx}.json", ctx)
+            c_run = packet_to_run(json.dumps(cand_pkt), "candidate", f"c_{idx}.json", ctx)
+            trials.append({
+                "trial_index": idx,
+                "seed": 100 + idx,
+                "baseline_run": b_run,
+                "candidate_run": c_run,
+                "mitotic_metrics": {
+                    "baseline_mass_conservation_residual": 0.14 + 0.01 * idx,
+                    "candidate_mass_conservation_residual": 0.0,
+                    "baseline_phase_dissonance_rad": 0.62 + 0.01 * idx,
+                    "candidate_phase_dissonance_rad": 0.006 + 0.001 * idx,
+                },
+                "stwm_metrics": {
+                    "baseline_interlane_crosstalk_db": -8.4 - 0.1 * idx,
+                    "candidate_interlane_crosstalk_db": -42.6 - 0.2 * idx,
+                },
+                "rsi_compiler_metrics": {
+                    "baseline_admitted_passes_count": 0,
+                    "candidate_admitted_passes_count": 3,
+                },
+            })
+        group = {
+            "schema_version": "1.0",
+            "kind": "sol-change/repeat-trial-group",
+            "group_id": "rtg-rst-domain-01",
+            "study_name": "Frontiers R/S/T Domain Repeat Group",
+            "created_at": "2026-10-23T15:00:00Z",
+            "shared_input": {
+                "id": "input:rst",
+                "digest": "sha256:rst123",
+                "description": ctx["input"],
+            },
+            "evaluator_version": ctx["evaluator_version"],
+            "trial_count": 3,
+            "trials": trials,
+        }
+        eval_rep = evaluate_repeat_trial_group(group)
+        self.assertEqual(eval_rep["mitotic_trial_summary"]["mass_conservation_residual"]["status"], "improved")
+        self.assertEqual(eval_rep["stwm_trial_summary"]["interlane_crosstalk_db"]["status"], "improved")
+        self.assertEqual(eval_rep["rsi_compiler_trial_summary"]["admitted_passes_count"]["status"], "improved")
+
 
 if __name__ == "__main__":
     unittest.main()
+

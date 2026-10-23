@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 540" width="100%" height="100%">
 <rect width="1180" height="540" rx="14" fill="#090e1c" stroke="#1e293b" stroke-width="2"/>
 <rect x="24" y="24" width="535" height="492" rx="12" fill="#11182d" stroke="#253252" stroke-width="1.6"/>
-<text x="291" y="54" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="15.5" font-weight="800">SOL Trace Court 6-Axis Radar Evaluation</text>
-<text x="291" y="74" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="11.5">Cycle 0 Baseline (QUARANTINE) vs. Cycle 1 Gemini 4 Argon (PROMOTE)</text>
+<text x="291" y="54" text-anchor="middle" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="15.5" font-weight="800">SOL Trace Court 6-Axis Radar (20 Frontiers A–T • 24 Vectors V0–V23)</text>
+<text x="291" y="74" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="11.5">Cycle 0 Baseline (QUARANTINE) vs. Cycle 1 Gemini 4 Argon (PROMOTE • R/S/T 0.972)</text>
 <polygon points="290.0,236.2 323.6,255.6 323.6,294.4 290.0,313.8 256.4,294.4 256.4,255.6" fill="none" stroke="#253252" stroke-width="1.2" stroke-dasharray="3,3"/>
 <text x="296.0" y="248.2" fill="#64748b" font-family="Consolas, monospace" font-size="10">0.25</text>
 <polygon points="290.0,197.5 357.1,236.2 357.1,313.8 290.0,352.5 222.9,313.8 222.9,236.3" fill="none" stroke="#253252" stroke-width="1.2" stroke-dasharray="3,3"/>
@@ -46,10 +46,10 @@
 <circle cx="161.6" cy="200.9" r="4" fill="#10b981"/>
 <rect x="48" y="446" width="486" height="54" rx="8" fill="#0b1020" stroke="#1e293b"/>
 <circle cx="72" cy="464" r="5" fill="#f43f5e"/><text x="84" y="468" fill="#e2e8f0" font-family="Segoe UI, sans-serif" font-size="11">Cycle 0 Baseline (QUARANTINE • Mean Coherence 0.37)</text>
-<circle cx="72" cy="486" r="5" fill="#22d3ee"/><text x="84" y="490" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Cycle 1 Continuum Guild (PROMOTE • 0.942) &amp; Lumina 8-Ranger (0.946)</text>
+<circle cx="72" cy="486" r="5" fill="#22d3ee"/><text x="84" y="490" fill="#22d3ee" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Cycle 1 20-Frontier Guild (PROMOTE • 0.942–0.972 across Frontiers A–T)</text>
 <rect x="582" y="24" width="574" height="492" rx="12" fill="#11182d" stroke="#253252" stroke-width="1.6"/>
-<text x="869" y="54" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="15.5" font-weight="800">5-Agent Continuum Discovery Guild Evolution</text>
-<text x="869" y="74" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="11.5">Welch t = 6.91 (p = 0.00037 &lt; 0.05)  •  Cohen d = 3.99  •  Causal Emergence ΔEI = +0.57b</text>
+<text x="869" y="54" text-anchor="middle" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="15.5" font-weight="800">20-Frontier (A–T) &amp; 24-Vector (V0–V23) Continuum Evolution</text>
+<text x="869" y="74" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="11.5">Welch t = 6.91 (p = 0.00037 &lt; 0.05)  •  Cohen d = 3.99  •  20/20 Frontiers Verified</text>
 <line x1="635.0" y1="395.0" x2="1120.0" y2="395.0" stroke="#253252" stroke-width="1" stroke-dasharray="3,3"/>
 <text x="625.0" y="399.0" text-anchor="end" fill="#94a3b8" font-family="Consolas, monospace" font-size="10.5">0.00</text>
 <line x1="635.0" y1="328.8" x2="1120.0" y2="328.8" stroke="#253252" stroke-width="1" stroke-dasharray="3,3"/>
@@ -94,5 +94,5 @@
 <text x="1070.0" y="427.0" text-anchor="middle" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="10">Archivist</text>
 <rect x="610" y="446" width="520" height="54" rx="8" fill="#0b1020" stroke="#1e293b"/>
 <rect x="628" y="460" width="12" height="12" rx="2" fill="#475569"/><text x="648" y="470" fill="#94a3b8" font-family="Segoe UI, sans-serif" font-size="11">Cycle 0 Pre-Curriculum Competency (Mean = 0.638 • Refuted Counterexample)</text>
-<rect x="628" y="480" width="12" height="12" rx="2" fill="#10b981"/><text x="648" y="490" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Cycle 1 Proved Curriculum Competency (Mean = 0.899 • ΔI = +1.768 bits • PROVED_THEOREM)</text>
+<rect x="628" y="480" width="12" height="12" rx="2" fill="#10b981"/><text x="648" y="490" fill="#10b981" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Cycle 1 Proved Competency (Mean = 0.899 • Frontiers R/S/T Proved • PROVED_THEOREM)</text>
 </svg>

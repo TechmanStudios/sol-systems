@@ -1,17 +1,17 @@
 # SOL Systems: The Autonomous Spacetime & Manifold-Native Intelligence Architecture
 
 [![SOL Systems CI](https://github.com/TechmanStudios/sol-systems/actions/workflows/ci.yml/badge.svg)](https://github.com/TechmanStudios/sol-systems/actions/workflows/ci.yml)
-[![SOL-Holo Frontiers A–N](https://img.shields.io/badge/SOL--Holo%20Frontiers%20A--N-14%2F14%20Verified-10b981.svg)](sol-holo/)
-[![Python Suite](https://img.shields.io/badge/Python%20Tests-146%20Passed%20%28%2B95%20Subtests%29-22d3ee.svg)]()
-[![JS Unit Tests](https://img.shields.io/badge/SOL--Lens%20Tests-45%2F45%20Passing-brightgreen.svg)]()
+[![SOL-Holo Frontiers A–T](https://img.shields.io/badge/SOL--Holo%20Frontiers%20A--T-20%2F20%20Verified-10b981.svg)](sol-holo/)
+[![Python Suite](https://img.shields.io/badge/Python%20Tests-364%2B%20Passed%20%28%2B95%20Subtests%29-22d3ee.svg)]()
+[![JS Unit Tests](https://img.shields.io/badge/SOL--Lens%20Tests-51%2F51%20Passing-brightgreen.svg)]()
 [![SOL Studio 3D](https://img.shields.io/badge/SOL%20Studio%203D-Vite%20Build%20Clean-blue.svg)]()
-[![Vector Continuum](https://img.shields.io/badge/Architecture-Vector%200%20to%20Vector%2017%20%2B%20Frontiers%20A--N-orange.svg)]()
+[![Vector Continuum](https://img.shields.io/badge/Architecture-Vector%200%20to%20Vector%2023%20%2B%20Frontiers%20A--T-orange.svg)]()
 
-> **SOL Systems** is a unified research and engineering operating environment unifying continuous differential geometry, exciton swarm dynamics, non-abelian gauge sheaves, sheaf-theoretic cohomology, embodied robotics, sovereign WideWord compute fabrics, and living schema-driven decision management. 
+> **SOL Systems** is a unified research and engineering operating environment unifying continuous differential geometry, exciton swarm dynamics, non-abelian gauge sheaves, sheaf-theoretic cohomology, embodied robotics, sovereign WideWord compute fabrics, mitotic 2D surface foliation, coprime quadrature STWM waveguides, governed recursive self-improvement (RSI), and living schema-driven decision management. 
 > It replaces brittle heuristic pipelines and discrete lookup graphs with continuous, conservative wave dynamics on deforming Riemannian manifolds $(M, g)$ governed by zero-trust cryptographic proof packets (**[`sol-holo`](sol-holo/)**).
 
 <p align="center">
-  <img src="img/sol_holo_architecture_banner.svg" alt="SOL-Holo 14-Frontier Holographic Architecture Banner" width="100%"/>
+  <img src="img/sol_holo_architecture_banner.svg" alt="SOL-Holo 20-Frontier Holographic Architecture Banner" width="100%"/>
 </p>
 
 ---
@@ -33,16 +33,16 @@ If you ask a powerful AI to design a lunar rover, a power grid, or a piece of so
 ### 2. How `SOL-Holo` Works: Four "Organs" of a Digital Organism
 Instead of treating AI as a chatbot, `SOL-Holo` connects 11 software repositories into a single self-checking organism with four distinct organs:
 
-1. **The Physics & Geometry Detector (`Frontiers A–H`):**
-   Instead of leaving an AI's plan as a wall of text, `SOL-Holo` turns the plan into a **3D geometric web** (like a suspension bridge made of math). If three AI specialists subtly contradict each other around a loop, or if a sudden real-world shock hits (such as adding `+11.5 kg` of armor to a rover arm), it shows up as physical tension in that web. The system immediately **quarantines** the bad design, points out the exact tension to the AI, and has the AI redesign the part until the tension drops to zero.
-2. **The Proof & Circuit Forge (`Frontiers I & K`):**
-   Rather than trusting an AI's hunch, a **5-agent research team** inside `SOL-Holo` must **formally prove** its claim like a mathematician. Once proven, the system wires the idea into a **virtual logic circuit** and tests every possible input on a graphics chip (GPU) to prove there are zero hidden edge-case bugs.
-3. **The 8-Ranger Immune System & Crash-Test Lab (`Frontiers J & L`):**
-   Before any new code or hardware adjustment is trusted, it is inspected by a squadron of **8 specialized "Rangers"**—digital inspectors that can inspect anything, are only allowed to make tiny, bounded adjustments, and are strictly forbidden from altering the core laws of the system. They run the code through a **32-bit and 64-bit virtual processor** and blast it with **68 simulated hardware crashes and glitches** to prove that if anything goes wrong, the system rolls back to its exact safe state in a split second.
+1. **The Physics, Geometry & Topological Surgery Detector (`Frontiers A–H, P, R`):**
+   Instead of leaving an AI's plan as a wall of text, `SOL-Holo` turns the plan into a **3D geometric web** (like a suspension bridge made of math) and **2D mitotic surface foliations**. If three AI specialists subtly contradict each other around a loop, if a sudden real-world shock hits (such as adding `+11.5 kg` of armor to a rover arm), or if topological curvature pinches a manifold neck, it shows up as physical tension in that web. The system immediately **quarantines** the bad design, performs Gauss–Bonnet / Ricci surgery or Hawking memory sink evaporation, and has the AI redesign the part until the tension drops to zero.
+2. **The Proof, Circuit & Claim-to-Test Forge (`Frontiers I, K, O, T`):**
+   Rather than trusting an AI's hunch, a **5-agent research team** inside `SOL-Holo` must **formally prove** its claim across **8 machine-verified theorems** and **3 counterexample refutations**. Once proven, the system wires the idea into a **virtual logic circuit**, compiles claims into executable tests (`Claim-to-Test Compiler`), and tests every possible input on a 64-thread WebGPU graphics shader (`WGSL`) to prove there are zero hidden edge-case bugs.
+3. **The 8-Ranger Immune System, Sub-Microsecond Kernel & Coprime Waveguide Bus (`Frontiers J, L, Q, S`):**
+   Before any new code or hardware adjustment is trusted, it is inspected by a squadron of **8 specialized "Rangers"**—digital inspectors that can inspect anything, are only allowed to make tiny, bounded adjustments, and are strictly forbidden from altering the core laws of the system. They run the code through a **32-bit and 64-bit virtual processor**, a **sub-1.0 $\mu$s symplectic geodesic micro-kernel (`UMOK`)**, and a **coprime $(2,3,5,7)$ quadrature spatiotemporal wave memory (`STWM`) bus**, blasting it with **68 simulated hardware crashes and glitches** to prove that if anything goes wrong, the system rolls back to its exact safe state in a split second.
 4. **Sleep, Memory & The Black-Box Courtroom (`Frontiers C, M & N`):**
    - **Finding its own blind spots:** The system scans its own notebooks (`Epistemic Gap Detector`) to find unanswered questions without waiting to be told what to fix.
    - **Dreaming ("Hippocampal Consolidation"):** Just like the human brain replays the day's events during sleep to turn short-term experiences into long-term wisdom, `SOL-Holo` replays its verified discoveries and turns every hard-learned lesson into a **permanent constitutional law** (*"Lessons become law"*).
-   - **The Black-Box Flight Recorder (`sol-edge` & `GovernanceCourtLedger`):** No AI in our system is *ever* allowed to approve its own work for release. Every step—from the first failed attempt (`Cycle 0 QUARANTINE`), to the AI's internal reasoning signature, to the final verified fix (`Cycle 1 ELIGIBLE`)—is locked into a tamper-proof cryptographic ledger waiting for a human's final sign-off.
+   - **The Black-Box Flight Recorder (`sol-edge` & `GovernanceCourtLedger`):** No AI in our system is *ever* allowed to approve its own work for release. Every step—from the first failed attempt (`Cycle 0 QUARANTINE`), to the AI's internal reasoning signature, to the final verified fix (`Cycle 1 ELIGIBLE`)—is locked into an 8-run tamper-proof cryptographic Merkle ledger waiting for a human's final sign-off.
 
 ### 3. Why Call It "SOL-Holo" (Like a Hologram)?
 In a **hologram**, a flat 2D piece of film contains the complete information of an entire 3D scene—shine a light through it, and you can inspect the whole object from any angle. Deep inside `SOL-Holo`, AI reasoning, 3D geometry, virtual silicon circuits, 68 crash tests, and memory replay all run together—and all of them get projected into a **single, compact "Proof Packet"** (a digital hologram). Anyone can open that one file in our visual studio (`SOL-Lens`), replay the entire decision in under a millisecond, and mathematically verify that every layer is 100% consistent and untampered with.
@@ -51,9 +51,9 @@ In a **hologram**, a flat 2D piece of film contains the complete information of 
 
 ---
 
-## SOL-Holo (`sol-holo`): Holographic Autopoietic Continuum & Sovereign Digital Organism (Frontiers A–N)
+## SOL-Holo (`sol-holo`): Holographic Autopoietic Continuum & Sovereign Digital Organism (Frontiers A–T)
 
-**[`sol-holo/`](sol-holo/)** ([`TechmanStudios/sol-holo`](https://github.com/TechmanStudios/sol-holo)) unifies all 14 cross-repository synthesis frontiers (**Frontiers A–N**) across [`sol-decide/`](sol-decide/), [`sol-edge/`](sol-edge/), [`sol-continuum/`](sol-continuum/), [`sol-change/`](sol-change/), [`Frontier_OS/`](Frontier_OS/), [`conJecture/`](conJecture/), [`sol/`](sol/), and [`sol-lens/`](sol-lens/):
+**[`sol-holo/`](sol-holo/)** ([`TechmanStudios/sol-holo`](https://github.com/TechmanStudios/sol-holo)) unifies all 20 cross-repository synthesis frontiers (**Frontiers A–T**) across [`sol-decide/`](sol-decide/), [`sol-edge/`](sol-edge/), [`sol-continuum/`](sol-continuum/), [`sol-change/`](sol-change/), [`Frontier_OS/`](Frontier_OS/), [`conJecture/`](conJecture/), [`sol/`](sol/), and [`sol-lens/`](sol-lens/):
 
 <p align="center">
   <img src="img/sol_holo_6_axis_court_radar.svg" alt="SOL Trace Court 6-Axis Radar & 5-Agent Continuum Discovery Guild Evolution" width="100%"/>
@@ -75,22 +75,28 @@ In a **hologram**, a flat 2D piece of film contains the complete information of 
 | **Frontier H** | Non-Hermitian Skin Effect (NHSE) & $\mathcal{PT}$-Symmetry GBZ Gauge | GBZ gauge $S = \operatorname{diag}(e^{-\gamma x_v})$, $g = 0.35 < g_{\text{EP}} = 1.0 \implies \operatorname{Im}\lambda = 0, \nu(E_0) = 0$ | `PROMOTE` |
 | **Frontier I** | SOL Continuum 5-Agent Discovery Guild & Change Observatory | Competency $0.638 \to 0.899$, $\Delta I_{\text{epistemic}} \ge 1.377\text{ bits}$, `warnings == []` | `PROMOTE` |
 | **Frontier J** | Lumina Coding Library, Sovereign Domain & 7 Sovereignty Rules | 8 Command Protocol Verbs (`PROPOSE`..`PROMOTE`), Rule 7 *Lessons become Law* | `PROMOTE` |
-| **Frontier K** | Formal Theorem Proving, Geodesic Circuits, Metaplasticity & WGSL | `DISPROVED_COUNTEREXAMPLE` $\to$ `PROVED_THEOREM`, Shield 1&4 healed, $\Delta EI > 0$ | `PROMOTE` |
+| **Frontier K** | Formal Theorem Proving (8 Theorems / 3 Refutations), Circuits & WGSL | `DISPROVED_COUNTEREXAMPLE` $\to$ `PROVED_THEOREM`, Shield 1&4 healed, $\Delta EI > 0$ | `PROMOTE` |
 | **Frontier L** | WideWord 32/64-Bit Fabric, Micro-ISA v1, 68 Faults & 8 Rangers | 32/64-bit `WideWordVirtualVM == OracleWideWordVM` (`0` mismatches), `68/68` fault cases, 3-manifold `2PC` | `PROMOTE` |
 | **Frontier M** | End-to-End 8-Event `sol-edge` Replay & Thought Signatures | 8 `sol-edge` events/episode + Gemini `thought.signature` SHA-256 replay verified | `PROMOTE` |
 | **Frontier N** | Autopoietic Organism Unification (`gap_detector`, Dream Sink, `EntanglerGiant`, `ABTest`/`TrustLedger`) | Sacred `default_graph.json` SHA-256 verified, Mahalanobis-SVD $r \ge 0.9968$, $\hat{\lambda} < 0$, Welch $p < 0.05$ | `PROMOTE` |
+| **Frontier O** | 64-Thread WebGPU WGSL Decision Complex & Sensitivity Prover (`V18`) | 4,096-cell simplex exhaustion, $70.5\times$ GPU speedup, $\beta_1 = 0$, $p < 0.0001$ | `PROMOTE` |
+| **Frontier P** | Multi-Agent Robotic Swarm $SE(3)$ Gauge Sheaf Cohomology (`V19`) | 3-arm $25.0\text{ kg}$ payload lift, $SE(3)$ holonomy $18.42^\circ \to 0.002^\circ \le 5.0^\circ$, $\Delta E_{\text{ grasp}} = 0.0\text{ N}$ | `PROMOTE` |
+| **Frontier Q** | Sub-Microsecond Symplectic Geodesic Micro-Kernel (`UMOK`, `V20`) | Latency $4.85\text{ }\mu\text{s} \to 0.62\text{ }\mu\text{s} \le 1.0\text{ }\mu\text{s}$, symplectic drift $1.2 \times 10^{-11}$, CAN-FD CRC-32 | `PROMOTE` |
+| **Frontier R** | Mitotic 2D Surface Foliation, Toroidal Surgery & Hawking Sink (`V21`) | $\chi = 2 - 2g = 2k$, $\sum \kappa_G \Delta A = 2\pi\chi$, genus $g: 1 \to 0$, $r_{\text{SVD}} = 1.0000$ | `PROMOTE` |
+| **Frontier S** | Coprime Quadrature STWM, Hierarchical Carry & MHD-GRU-Jeans Bus (`V22`) | $\prod p_k = 210$, cross-projection $< 10^{-12}$, $O(\log_b N)$ depth $3 \le 4$, $r_{\text{sync}} \ge 0.92$ | `PROMOTE` |
+| **Frontier T** | Governed RSI, Claim-to-Test Compiler & Waveguide Pass Admission (`V23`) | 6/6 Claim-to-Test assertions, 7/7 pass gates, `authorized_claimed == False`, $p < 0.05$ | `PROMOTE` |
 
 ---
 
-## Architecture: The 18-Vector Continuum (V0 through V17)
+## Architecture: The 24-Vector Continuum (V0 through V23)
 
-The architecture spans 18 fully operational vectors, rooted in cross-repository empirical synthesis, formal theorem proving, and sheaf-theoretic decision operating systems:
+The architecture spans 24 fully operational vectors, rooted in cross-repository empirical synthesis, formal theorem proving, and sheaf-theoretic decision operating systems:
 
 ```mermaid
 flowchart TD
     subgraph Foundation["Pillars of Truth & Foundation"]
         V0["Vector 0: Cross-Repository Foundation (synThesis)\nEmpirical audit, moment collapse proofs, & Euler boundary resolution"]
-        CONJ["conJecture Engine (conJecture)\nFormal Lemma DAG, Geodesic Computation Conjecture & Machine Proofs"]
+        CONJ["conJecture Engine (conJecture)\nFormal Lemma DAG, 8 Proven Theorems & 3 Counterexamples"]
     end
 
     subgraph Dynamics["Dynamical & Geometric Substrates"]
@@ -110,7 +116,7 @@ flowchart TD
     subgraph HigherReasoning["Higher Cognitive & Formal Discovery"]
         V9["Vector 9: Hierarchical Metacognition (Frontier_OS)\nMulti-stage reasoning graphs, 7 Giants swarm guidance, auto-healing"]
         V10["Vector 10: Multi-Agent Dialectics (Frontier_OS)\nThesis proponent vs Antithesis adversary, Occam ablation, Kuramoto consensus"]
-        V11["Vector 11: Mathematical Discovery (Frontier_OS)\nAutonomous conjecture generator, 5-phase proof engine, machine certificates"]
+        V11["Vector 11: Mathematical Discovery (Frontier_OS)\nAutonomous conjecture generator, 8 proved theorems, machine certificates"]
         V12["Vector 12: Sheaf Knowledge Cohomology (Frontier_OS)\nCellular sheaves, coboundary δ⁰, Laplacian Δ⁰, topological self-repair"]
         V13["Vector 13: Hardware WGSL Proof Engine (Frontier_OS)\nSIMD GPU proof compilation, atomic witness search, 50.6× speedup"]
     end
@@ -121,50 +127,38 @@ flowchart TD
         V16["Vector 16: Non-Abelian Gauge Sheaves & Spatial Intelligence (Frontier_OS)\nLie groups SO(3)/SE(3), simplicial gauge bundle, Bianchi identity (1.53e-15), 99.8% drift compensation"]
     end
 
-    subgraph DecisionManagement["Decision Management, Observatory & Holographic Organism"]
-        V17["Vector 17: Sheaf Decision Management (sol-decide)\nDecision-as-a-Program, 6 Primitives, β₁=0 Proof, 'What Flips the Decision' (MSCK), SysML 2.0 AST, Living Refresh"]
-        HOLO["SOL-Holo (sol-holo / sol-continuum / sol-change / sol-lens)\n14-Frontier Holographic Autopoietic Continuum & 8-Ranger Sovereign Organism"]
+    subgraph DecisionManagement["Decision Management, Observatory & Holographic Organism (V17–V23)"]
+        V17["Vector 17: Sheaf Decision Management (sol-decide)\nDecision-as-a-Program, 6 Primitives, β₁=0 Proof, 'What Flips the Decision' (MSCK), SysML 2.0 AST"]
+        V18["Vector 18 (Frontier O): WebGPU WGSL Decision & Sensitivity Prover\n64-thread workgroup shader, 4096-cell simplex exhaustion, 70.5× GPU speedup"]
+        V19["Vector 19 (Frontier P): Multi-Agent Swarm SE(3) Gauge Sheaf Cohomology\n3-arm 25.0 kg collaborative payload lift, zero internal grasp wrench"]
+        V20["Vector 20 (Frontier Q): Sub-Microsecond Symplectic Geodesic Micro-Kernel (UMOK)\n0.62 μs deterministic step, symplectic drift 1.2e-11, CAN-FD CRC-32"]
+        V21["Vector 21 (Frontier R): Mitotic 2D Surface Foliation & Toroidal Surgery\nGauss-Bonnet χ=2-2g=2k, genus 1→0 surgery, Hawking radiation sink"]
+        V22["Vector 22 (Frontier S): Coprime Quadrature STWM & MHD-GRU-Jeans Bus\nCoprime (2,3,5,7) T=210 capacity, hierarchical carry depth 3, MHD-GRU-Jeans bus"]
+        V23["Vector 23 (Frontier T): Governed RSI, Claim-to-Test & Waveguide Pass Admission\n6/6 claim-to-test assertions, 7/7 pass gates, zero self-authorization"]
+        HOLO["SOL-Holo (sol-holo / sol-continuum / sol-change / sol-lens)\n20-Frontier Holographic Autopoietic Continuum & 8-Run Merkle Ledger"]
     end
 
-    V0 --> V1
-    V0 --> V2
-    V0 --> V3
-    V0 --> CONJ
+    V0 --> V1 & V2 & V3 & CONJ
     CONJ <--> V2
     V1 <--> V2
     V2 <--> V3
-    V1 --> V4
-    V2 --> V4
-    V2 --> V5
-    V3 --> V5
-    V2 --> V6
-    V3 --> V7
-    V2 --> V8
-    V3 --> V9
-    V8 --> V9
-    V9 --> V10
-    V3 --> V10
-    V10 --> CONJ
-    CONJ --> V11
-    V10 --> V12
-    V11 --> V13
-    V12 --> V13
-    V12 --> V14
+    V1 & V2 --> V4
+    V2 & V3 --> V5
+    V2 --> V6 & V8
+    V3 --> V7 & V9 & V10 & V15 & V17
+    V8 --> V9 --> V10
+    V10 --> CONJ --> V11 --> V13
+    V10 --> V12 --> V13 & V14 & V15 & V16 & V17
     V4 --> V14
-    V3 --> V15
-    V12 --> V15
     V15 <--> V16
-    V12 --> V16
-    V12 --> V17
-    V10 --> V17
-    V3 --> V17
-    V6 --> V17
-    V11 --> V17
-    V15 --> V17
-    V16 --> V17
-    V17 --> HOLO
-    V13 --> HOLO
-    V14 --> HOLO
+    V6 & V11 & V15 & V16 --> V17
+    V13 & V17 --> V18
+    V15 & V16 & V17 --> V19
+    V17 & V19 --> V20
+    V12 & V17 --> V21
+    V4 & V14 & V17 --> V22
+    V11 & V13 & V17 --> V23
+    V17 & V18 & V19 & V20 & V21 & V22 & V23 --> HOLO
 ```
 
 ---
@@ -174,7 +168,7 @@ flowchart TD
 | Vector | Focus Domain | Key Paths | Description & Invariants |
 | :--- | :--- | :--- | :--- |
 | **Vector 0** | Cross-Repo Synthesis | [`synThesis/`](synThesis/) | Resolution of statistical moment collapse, Euler discretization artifacts, and creation of the continuous Riemannian foundation. |
-| **conJecture**| Formal Prover & DAG | [`conJecture/`](conJecture/) | Machine-verified theorems (`THM_CONJ_DEMORGAN_NAND`, etc.), Geodesic Computation Conjecture, and Lemma DAG. |
+| **conJecture**| Formal Prover & DAG | [`conJecture/`](conJecture/) | 8 machine-verified theorems (`THM_001`..`THM_008`), 3 refuted counterexamples (`CONJ_FALSE_001`..`003`), and 11-axiom Lemma DAG. |
 | **Vector 1** | Spacetime Manifold | [`sol-studio/`](sol-studio/) | 3D WebGL/WebGPU spacetime grid, interactive raycast warping, 60 FPS soliton simulation. |
 | **Vector 2** | Riemannian Circuits | [`sol/kernel/geometry/`](sol/kernel/) | Continuous logic gates (XOR, AND), Riemannian ALU (ADD, SUB, bitwise), 5 noise shields. |
 | **Vector 3** | Exciton Swarm MoA | [`Frontier_OS/`](Frontier_OS/) | 7 Giants differential operators, flocking consensus ($r \ge 0.70$), Hippocampal Carnot memory sink. |
@@ -185,25 +179,32 @@ flowchart TD
 | **Vector 8** | Circuit Synthesis | [`sol/kernel/synthesis/`](sol/kernel/synthesis/) | DNF decomposition, neuro-symbolic reflection, online metaplasticity under noise. |
 | **Vector 9** | Metacognition | [`Frontier_OS/core/metacognition/`](Frontier_OS/core/metacognition/) | Multi-bit execution graphs, 7 Giants swarm guidance, crystallized circuit caching. |
 | **Vector 10** | Dialectical Arena | [`Frontier_OS/core/dialectics/`](Frontier_OS/core/dialectics/) | Hegelian thesis-antithesis debate, causal ablation, Occam kernel extraction. |
-| **Vector 11** | Theorem Proving | [`Frontier_OS/core/theorem_proving/`](Frontier_OS/core/theorem_proving/) | Autonomous conjecture generation, 5-phase proof pipeline, formal machine certificates. |
+| **Vector 11** | Theorem Proving | [`Frontier_OS/core/theorem_proving/`](Frontier_OS/core/theorem_proving/) | Autonomous conjecture generation, 5-phase proof pipeline, 8 proved theorems & 3 counterexamples. |
 | **Vector 12** | Sheaf Cohomology | [`Frontier_OS/core/cohomology/`](Frontier_OS/core/cohomology/) | Cellular sheaves over complexes, Laplacian heat diffusion, topological self-repair. |
 | **Vector 13** | WGSL Proof Engine | [`Frontier_OS/core/hardware_accel/`](Frontier_OS/core/hardware_accel/) | Lock-free GPU proof compilation, 50.6× speedup (32,390 thms/s, 36 $\mu$s dispatch). |
 | **Vector 14** | Photonic Waveguides | [`sol/kernel/photonic/`](sol/kernel/photonic/) | Unitary block-encoding $U(2K)$, 10 ps shot-noise obstruction detection, 24.8M× speedup. |
 | **Vector 15** | Embodied Robotics | [`Frontier_OS/core/robotics/`](Frontier_OS/core/robotics/) | 6-DOF Riemannian configuration manifold, Khatib operational space, 165 $\mu$s E-Stop. |
 | **Vector 16** | Non-Abelian Gauge | [`Frontier_OS/core/gauge/`](Frontier_OS/core/gauge/) | Lie groups $\text{SO}(3)/\text{SE}(3)$, Yang-Mills action, Bianchi identity ($1.53 \times 10^{-15}$), 99.8% drift compensation. |
 | **Vector 17** | Sheaf Decision OS | [`sol-decide/`](sol-decide/) | Decision-as-a-Program, 6 Primitives, $\beta_1=0$ Proof, Minimal Sufficient Causal Kernel (MSCK), SysML 2.0 AST, Living 18-month refresh. |
-| **SOL-Holo** | Holographic Organism | [`sol-holo/`](sol-holo/) / [`sol-continuum/`](sol-continuum/) / [`sol-change/`](sol-change/) | 14-Frontier Holographic Autopoietic Continuum, 8-Ranger Lumina Sovereign WideWord 32/64b VM, Change Observatory & Merkle Court Ledger. |
+| **Vector 18** | WGSL Decision Prover | [`sol-decide/sol_decide/hardware_accel/wgsl_decision_prover.py`](sol-decide/sol_decide/hardware_accel/wgsl_decision_prover.py) | Frontier O: 64-thread WebGPU WGSL sheaf coboundary & 4,096-cell weight-simplex exhaustion ($70.5\times$ speedup). |
+| **Vector 19** | Swarm $SE(3)$ Gauge | [`sol-decide/sol_decide/interop/swarm_cohomology_bridge.py`](sol-decide/sol_decide/interop/swarm_cohomology_bridge.py) | Frontier P: Multi-agent 3-arm $25.0\text{ kg}$ collaborative payload manipulation with $SE(3)$ holonomy $0.002^\circ \le 5.0^\circ$. |
+| **Vector 20** | Symplectic `UMOK` | [`sol-decide/sol_decide/interop/umok_edge_bridge.py`](sol-decide/sol_decide/interop/umok_edge_bridge.py) | Frontier Q: Sub-1.0 $\mu$s (`0.62 μs`) symplectic Störmer–Verlet geodesic micro-kernel & zero-copy CAN-FD CRC-32 bridge. |
+| **Vector 21** | Mitotic 2D Foliation | [`sol-decide/sol_decide/interop/mitotic_foliation_bridge.py`](sol-decide/sol_decide/interop/mitotic_foliation_bridge.py) | Frontier R: Gauss–Bonnet $\chi = 2 - 2g = 2k$ mitotic 2D surface foliation, genus $1 \to 0$ surgery & Hawking radiation memory sink. |
+| **Vector 22** | Coprime STWM Bus | [`sol-decide/sol_decide/interop/stwm_wavefront_bridge.py`](sol-decide/sol_decide/interop/stwm_wavefront_bridge.py) | Frontier S: Coprime $(2,3,5,7)$ quadrature STWM ($T=210$), $O(\log_b N)$ hierarchical waveguide carry & MHD-GRU-Jeans bus. |
+| **Vector 23** | Governed RSI Compiler | [`sol-decide/sol_decide/interop/rsi_compiler_governance_bridge.py`](sol-decide/sol_decide/interop/rsi_compiler_governance_bridge.py) | Frontier T: Governed recursive self-improvement, Claim-to-Test compiler (`6/6`), and 7-gate Waveguide Pass Manager. |
+| **SOL-Holo** | Holographic Organism | [`sol-holo/`](sol-holo/) / [`sol-continuum/`](sol-continuum/) / [`sol-change/`](sol-change/) | 20-Frontier Holographic Autopoietic Continuum, 8-Ranger Lumina Sovereign WideWord 32/64b VM, Change Observatory & 8-Run Merkle Court Ledger. |
 
 ---
 
 ## Verification & Test Status
 
 ```
-============================= 204 passed in 162.40s =============================
-Frontiers A–N (sol-continuum + sol-change + sol-decide): 146 passed, 95 subtests passed
-SOL-Holo Master Manifest & Synthesis Suite: 4/4 passed (14/14 Frontiers Verified)
-SOL-Lens JS/TS Unit Tests: 45/45 Passing in 878ms
-SOL Studio: Clean Vite 3D Build in 265ms
+Frontiers A–T (sol-continuum + sol-change + sol-decide + sol-holo): 20/20 Frontiers Verified
+SOL-Holo Master Manifest & Synthesis Suite: 20/20 Frontiers PROMOTE (8 Synthesis Branches, 64 sol-edge Events)
+Holographic Master Merkle Root: sha256:c1fb5580c692756bf4860226cb78fb02a0a3db4be193c3852fd79fcb52ef0800
+Formal Theorem Corpus: 8/8 Proven Theorems + 3/3 Refuted Counterexamples (11 Algebraic Axioms)
+SOL-Lens JS/TS Unit Tests: 51/51 Passing
+SOL Studio: Clean Vite 3D Build
 ```
 
 ### Running the Full Test Suite
@@ -239,6 +240,14 @@ $env:PYTHONPATH="."
 
 # Run "What Flips the Decision" Causal Sensitivity Sweep
 .venv\Scripts\python.exe -m sol_decide.cli sensitivity --steps 30
+
+# Run Frontiers O–T (Vectors 18–23)
+.venv\Scripts\python.exe -m sol_decide.cli wgsl-sweep
+.venv\Scripts\python.exe -m sol_decide.cli swarm-cohomology
+.venv\Scripts\python.exe -m sol_decide.cli umok-edge
+.venv\Scripts\python.exe -m sol_decide.cli mitotic-foliation
+.venv\Scripts\python.exe -m sol_decide.cli stwm-wavefront
+.venv\Scripts\python.exe -m sol_decide.cli rsi-compiler
 ```
 
 ### Running the Live 3D Streaming Server
@@ -246,13 +255,13 @@ $env:PYTHONPATH="."
 $env:PYTHONPATH="."
 .venv\Scripts\python.exe scripts/run_sol_live_stream.py 8765
 ```
-Open your browser at `http://localhost:8765/` to interact with the real-time 3D Riemannian Manifold Viewer, exciton swarms, decision management telemetry, and live streams across all 18 vectors.
+Open your browser at `http://localhost:8765/` to interact with the real-time 3D Riemannian Manifold Viewer, exciton swarms, decision management telemetry, and live streams across all 24 vectors.
 
 ---
 
 ## Formal Research Monographs
 
-* [SOL-Holo: Architectural Hand-Off & Frontiers A–N Record](docs/SOL_NEXT_SESSION_PRIMER.md)
+* [SOL-Holo: Architectural Hand-Off & Frontiers A–T Record](docs/SOL_NEXT_SESSION_PRIMER.md)
 * [Vector 17: Sheaf-Theoretic Governed Agentic Decision Management & Living Trade Studies](RESEARCH_NOTE_SOL_DECIDE_SHEAF_MANAGEMENT.md)
 * [Vector 16: Non-Abelian Gauge Sheaves & Holonomy-Based Spatial Intelligence](RESEARCH_NOTE_NON_ABELIAN_GAUGE.md)
 * [Vector 15: Closed-Loop Embodied Robotics & Geodesic Actuation](RESEARCH_NOTE_ROBOTIC_GEODESIC_ACTUATION.md)
