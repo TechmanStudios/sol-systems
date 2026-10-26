@@ -350,12 +350,20 @@
             <option value="conj_xor_associativity">XOR Group Associativity</option>
             <option value="conj_adder_carry_majority">Carry-Majority Isomorphism</option>
             <option value="conj_causal_emergence_arbiter">Causal Emergence Arbiter Bound</option>
-            <option value="conj_coprime_stwm_orthogonality">Coprime STWM Orthogonality</option>
-            <option value="conj_prefix_carry_logarithmic">O(log N) Prefix Carry Soundness</option>
-            <option value="conj_hawking_evaporation_conservation">Hawking Mass-Energy Conservation</option>
+            <option value="conj_mitotic_hawking_conservation">Mitotic Hawking Mass Conservation</option>
+            <option value="conj_coprime_stwm_prefix_carry">Coprime STWM Prefix Carry Orthogonality</option>
+            <option value="conj_governed_compiler_pass_idempotence">Governed Compiler Pass Idempotence</option>
+            <option value="conj_hcam_cross_shard_consensus_gc">Sharded H-CAM BFT &amp; GC Isomorphism</option>
+            <option value="conj_waveguide_predicated_scoreboard_simd">Waveguide Predicated Scoreboard SIMD</option>
+            <option value="conj_burnin_stability_offline_attestation">Burn-In Stability &amp; Offline Attestation</option>
+            <option value="conj_entangled_cadence_wavefront_sync">Entangled 2PC Cadence &amp; Wavefront Sync</option>
+            <option value="conj_waveguide_channel_compaction_staging">Waveguide Channel Compaction &amp; Local Staging</option>
+            <option value="conj_sovereign_court_lockdown_closure">Sovereign Court &amp; System Lockdown Closure</option>
             <option value="conj_flawed_xor_linear">Hypothetical Linear XOR (Flawed)</option>
             <option value="conj_flawed_even_majority">Hypothetical Even Majority (Flawed)</option>
-            <option value="conj_flawed_commensurate_stwm">Hypothetical Commensurate STWM (Flawed)</option>
+            <option value="conj_false_resonant_wall_linear_pdm">Hypothetical Resonant Wall PDM (Flawed)</option>
+            <option value="conj_false_unbarriered_alias_reorder_equivalence">Hypothetical Unbarriered Alias Reorder (Flawed)</option>
+            <option value="conj_false_unbounded_autonomous_cadence_bypass">Hypothetical Unbounded Cadence Bypass (Flawed)</option>
           </select>
           <button id="btn-prove-conjecture" class="glass-btn" type="button" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); font-weight: 600;" title="Prove or Refute Conjecture">Prove 📜</button>
         </div>
@@ -381,7 +389,7 @@
         </div>
         <div class="drawer-stat-row">
           <span>Corpus Theorem Count:</span>
-          <strong id="discovery-corpus-count" class="solar">8 Proven</strong>
+          <strong id="discovery-corpus-count" class="solar">14 Proven</strong>
         </div>
         <div id="discovery-witness-box" style="display: none; margin-top: 6px; padding: 6px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 4px; font-size: 10px; color: #fca5a5;">
           <strong>Refuted Witness Vector:</strong>
@@ -439,12 +447,20 @@
             <option value="conj_xor_associativity">XOR Parity Associativity</option>
             <option value="conj_adder_carry_majority">Full-Adder Carry Majority</option>
             <option value="conj_causal_emergence_arbiter">Causal Emergence Arbiter</option>
-            <option value="conj_coprime_stwm_orthogonality">Coprime STWM Orthogonality</option>
-            <option value="conj_prefix_carry_logarithmic">O(log N) Prefix Carry Soundness</option>
-            <option value="conj_hawking_evaporation_conservation">Hawking Mass-Energy Conservation</option>
-            <option value="conj_flawed_xor_linear">Flawed Parity Contradiction</option>
+            <option value="conj_mitotic_hawking_conservation">Mitotic Hawking Conservation</option>
+            <option value="conj_coprime_stwm_prefix_carry">Coprime STWM Prefix Carry</option>
+            <option value="conj_governed_compiler_pass_idempotence">Governed Compiler Pass Idempotence</option>
+            <option value="conj_hcam_cross_shard_consensus_gc">Sharded H-CAM BFT &amp; GC</option>
+            <option value="conj_waveguide_predicated_scoreboard_simd">Waveguide Predicated Scoreboard SIMD</option>
+            <option value="conj_burnin_stability_offline_attestation">Burn-In Stability &amp; Offline Attestation</option>
+            <option value="conj_entangled_cadence_wavefront_sync">Entangled 2PC Cadence &amp; Wavefront Sync</option>
+            <option value="conj_waveguide_channel_compaction_staging">Waveguide Channel Compaction &amp; Local Staging</option>
+            <option value="conj_sovereign_court_lockdown_closure">Sovereign Court &amp; System Lockdown Closure</option>
+            <option value="conj_flawed_xor_linear">Flawed Linear XOR Refutation</option>
             <option value="conj_flawed_even_majority">Flawed Even Majority Refutation</option>
-            <option value="conj_flawed_commensurate_stwm">Flawed Commensurate STWM</option>
+            <option value="conj_false_resonant_wall_linear_pdm">Flawed Resonant Wall PDM</option>
+            <option value="conj_false_unbarriered_alias_reorder_equivalence">Flawed Unbarriered Alias Reorder</option>
+            <option value="conj_false_unbounded_autonomous_cadence_bypass">Flawed Unbounded Cadence Bypass</option>
           </select>
           <button id="btn-wgsl-prove" class="glass-btn" type="button" style="color: #ec4899; border-color: rgba(236, 72, 153, 0.4); font-weight: 600;" title="Execute WGSL Hardware-Accelerated Proof">Prove ⚡</button>
           <button id="btn-wgsl-diffuse" class="glass-btn" type="button" style="color: #06b6d4; border-color: rgba(6, 182, 212, 0.4); font-weight: 600;" title="Execute GPU Sheaf Heat Diffusion">Diffuse 🌊</button>
@@ -606,10 +622,64 @@
           <strong id="rst-rsi-status" class="solar">ΔF = +0.248 · 0 Failed</strong>
         </div>
         <div class="drawer-stat-row">
-          <span>20-Frontier Holographic Merkle Root:</span>
-          <code id="rst-merkle-root" style="color: #7dd3fc; font-size: 9.5px;">sha256:c1fb5580c692756b…</code>
+          <span>26-Frontier Holographic Merkle Root:</span>
+          <code id="rst-merkle-root" style="color: #7dd3fc; font-size: 9.5px;">sha256:2f6864c46feb2108…</code>
         </div>
-        <div class="card-footnote">20 Frontiers (A–T) · 24 Vectors (V0–V23) · 8 Proven Theorems · 64 SOL-Edge Events.</div>
+        <div class="card-footnote">26 Frontiers (A–Z) · 30 Vectors (V0–V29) · 14 Proven Theorems · 112 SOL-Edge Events.</div>
+      </div>
+
+      <!-- Vectors 24–26 (Frontiers U, V, W): Sharded H-CAM BFT, Waveguide-SIMD & Burn-In Attestation Card -->
+      <div class="drawer-card" id="frontiers-uvw-card" style="border-color: rgba(56, 189, 248, 0.45);">
+        <div class="card-caption" style="color: #38bdf8;">Vectors 24–26 (Frontiers U–W): H-CAM BFT, Waveguide-SIMD & Burn-In</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+          <button id="btn-hcam-shard" class="glass-btn" type="button" style="flex: 1; color: #38bdf8; border-color: rgba(56, 189, 248, 0.45); font-weight: 600;">🛰️ Sharded H-CAM BFT</button>
+          <button id="btn-waveguide-simd" class="glass-btn" type="button" style="flex: 1; color: #f472b6; border-color: rgba(244, 114, 182, 0.45); font-weight: 600;">⚡ Waveguide-SIMD</button>
+          <button id="btn-burnin-attestation" class="glass-btn" type="button" style="flex: 1; color: #c084fc; border-color: rgba(192, 132, 252, 0.45); font-weight: 600;">🔥 10K Burn-In</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Frontier U (Sharded H-CAM & BFT Quorum):</span>
+          <strong id="uvw-hcam-status" class="cyan">4/4 Shards · β₁ = 0 · 0.0° Defect</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Frontier V (STWM/MHD WGSL-SIMD Pipeline):</span>
+          <strong id="uvw-waveguide-status" class="green">256/256 Bit-Exact · 0.34 µs</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Frontier W (10,000-Epoch Burn-In Attestation):</span>
+          <strong id="uvw-burnin-status" class="solar">0 Violations · |ΔM| = 0.0</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>26-Frontier Holographic Merkle Root:</span>
+          <code id="uvw-merkle-root" style="color: #7dd3fc; font-size: 9.5px;">sha256:2f6864c46feb2108…</code>
+        </div>
+        <div class="card-footnote">14-Run Governance Court Ledger (112 SOL-Edge Events) · Default-Deny Interlocks.</div>
+      </div>
+
+      <!-- Vectors 27–29 (Frontiers X, Y, Z): Entangled Cadence 2PC, Waveguide Channel Staging & Sovereign Lockdown Card -->
+      <div class="drawer-card" id="frontiers-xyz-card" style="border-color: rgba(244, 63, 94, 0.45);">
+        <div class="card-caption" style="color: #fda4af;">Vectors 27–29 (Frontiers X–Z Capstone): Entangled 2PC, Waveguide Staging & Lockdown</div>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+          <button id="btn-entangled-cadence" class="glass-btn" type="button" style="flex: 1; color: #22d3ee; border-color: rgba(34, 211, 238, 0.45); font-weight: 600;">🔗 Entangled 2PC</button>
+          <button id="btn-waveguide-channel" class="glass-btn" type="button" style="flex: 1; color: #34d399; border-color: rgba(52, 211, 153, 0.45); font-weight: 600;">📦 Waveguide Staging</button>
+          <button id="btn-sovereign-lockdown" class="glass-btn" type="button" style="flex: 1; color: #fb7185; border-color: rgba(251, 113, 133, 0.45); font-weight: 600;">🏛️ Sovereign Lockdown</button>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Frontier X (Entangled Cadence & Wavefront 2PC):</span>
+          <strong id="xyz-cadence-status" class="cyan">4/4 Manifolds · R = 0.999992 · 2PC</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Frontier Y (Waveguide Channel & Local Staging):</span>
+          <strong id="xyz-waveguide-status" class="green">182 Dry-Run Events · 28/28 Staged</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>Frontier Z (Sovereign Court & System Lockdown):</span>
+          <strong id="xyz-lockdown-status" class="solar">12/12 Gates · 20/20 Frozen · LOCKED</strong>
+        </div>
+        <div class="drawer-stat-row">
+          <span>26-Frontier Holographic Merkle Root:</span>
+          <code id="xyz-merkle-root" style="color: #7dd3fc; font-size: 9.5px;">sha256:2f6864c46feb2108…</code>
+        </div>
+        <div class="card-footnote">26/26 Frontiers (A–Z) · 30 Vectors (V0–V29) · Fail-Closed External Release Authority Gate.</div>
       </div>
 
       <!-- Active Logons Coordinate Table -->

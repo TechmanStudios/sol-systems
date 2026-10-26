@@ -439,6 +439,12 @@ def replay_persisted_runtime_events(ledger_db: Path, run_id: str | None = None) 
                 "mitotic_foliation_observatory",
                 "stwm_wavefront_observatory",
                 "rsi_compiler_observatory",
+                "hcam_shard_consensus_observatory",
+                "waveguide_simd_pipeline_observatory",
+                "burnin_attestation_observatory",
+                "entangled_cadence_wavefront_observatory",
+                "waveguide_channel_staging_observatory",
+                "sovereign_court_lockdown_observatory",
             ):
                 has_c0 = any(k.endswith(":cycle0-quarantine") for k in by_opt)
                 has_c1 = any(k.endswith(":cycle1-eligible") for k in by_opt)
@@ -702,6 +708,12 @@ def assess_continuum_observatory(
     fr = cand_source_pkt.get("frontier_r_verification")
     fs = cand_source_pkt.get("frontier_s_verification")
     ft = cand_source_pkt.get("frontier_t_verification")
+    fu = cand_source_pkt.get("frontier_u_verification")
+    fv = cand_source_pkt.get("frontier_v_verification")
+    fw = cand_source_pkt.get("frontier_w_verification")
+    fx = cand_source_pkt.get("frontier_x_verification")
+    fy = cand_source_pkt.get("frontier_y_verification")
+    fz = cand_source_pkt.get("frontier_z_verification")
     cand_cond = candidate_run.get("conditions", {}) if isinstance(candidate_run.get("conditions"), dict) else {}
 
     def _d(val: object) -> dict:
@@ -846,6 +858,135 @@ def assess_continuum_observatory(
         )
         if isinstance(ft, dict)
         else bool(cand_cond.get("frontier_t_verified", False))
+    )
+
+    fu_verified_bool = (
+        bool(
+            fu.get("hcam_shard_verified") is True
+            and isinstance(fu.get("hcam_associative_recall"), dict)
+            and isinstance(fu.get("cross_shard_consensus"), dict)
+            and isinstance(fu.get("transactional_geodesic_and_migration"), dict)
+            and isinstance(fu.get("manifold_garbage_collection"), dict)
+            and isinstance(fu.get("eligibility_interlock"), dict)
+            and isinstance(fu.get("cycle1_audit"), dict)
+            and _i(_d(fu.get("hcam_associative_recall")).get("32b_banks"), 0) == 4
+            and _i(_d(fu.get("hcam_associative_recall")).get("64b_banks"), 0) == 8
+            and _d(fu.get("hcam_associative_recall")).get("word_assembly_verified") is True
+            and _d(fu.get("cross_shard_consensus")).get("cycle1_global_quorum_met") is True
+            and _d(fu.get("cross_shard_consensus")).get("consensus_commit_verified") is True
+            and _d(fu.get("transactional_geodesic_and_migration")).get("migration_committed_shadow") is True
+            and _i(_d(fu.get("manifold_garbage_collection")).get("orphan_nodes_reclaimed"), 0) >= 1
+            and _d(fu.get("manifold_garbage_collection")).get("live_root_reclaimed") is False
+            and _d(fu.get("eligibility_interlock")).get("authorized_claimed") is False
+            and _d(fu.get("cycle1_audit")).get("policy_status") == "ELIGIBLE"
+        )
+        if isinstance(fu, dict)
+        else bool(cand_cond.get("frontier_u_verified", False))
+    )
+
+    fv_verified_bool = (
+        bool(
+            fv.get("waveguide_simd_verified") is True
+            and isinstance(fv.get("waveguide_arithmetic_and_predication"), dict)
+            and isinstance(fv.get("scoreboard_and_memory_alias"), dict)
+            and isinstance(fv.get("simd_multicore_and_route_rebalance"), dict)
+            and isinstance(fv.get("eligibility_interlock"), dict)
+            and isinstance(fv.get("cycle1_audit"), dict)
+            and _d(fv.get("waveguide_arithmetic_and_predication")).get("add_32b_oracle_match") is True
+            and _d(fv.get("waveguide_arithmetic_and_predication")).get("add_64b_oracle_match") is True
+            and _d(fv.get("waveguide_arithmetic_and_predication")).get("flags_externally_visible") is False
+            and _d(fv.get("scoreboard_and_memory_alias")).get("cycle1_schedule_serial_equivalent") is True
+            and _d(fv.get("simd_multicore_and_route_rebalance")).get("simd_oracle_match") is True
+            and _i(_d(fv.get("simd_multicore_and_route_rebalance")).get("fault_matrix_passed_cases"), 0) >= 33
+            and _d(fv.get("eligibility_interlock")).get("authorized_claimed") is False
+            and _d(fv.get("cycle1_audit")).get("policy_status") == "ELIGIBLE"
+        )
+        if isinstance(fv, dict)
+        else bool(cand_cond.get("frontier_v_verified", False))
+    )
+
+    fw_verified_bool = (
+        bool(
+            fw.get("burnin_attestation_verified") is True
+            and isinstance(fw.get("sovereign_burnin_and_stability_ledger"), dict)
+            and isinstance(fw.get("package_archive_digest_attestation"), dict)
+            and isinstance(fw.get("offline_consumer_verification_and_final_manifest"), dict)
+            and isinstance(fw.get("eligibility_interlock"), dict)
+            and isinstance(fw.get("cycle1_audit"), dict)
+            and _i(_d(fw.get("sovereign_burnin_and_stability_ledger")).get("cycles_executed"), 0) >= 6
+            and _d(fw.get("sovereign_burnin_and_stability_ledger")).get("ledger_chain_valid") is True
+            and _d(fw.get("package_archive_digest_attestation")).get("archive_file_digest_match") is True
+            and _d(fw.get("package_archive_digest_attestation")).get("real_signature_claimed") is False
+            and _d(fw.get("package_archive_digest_attestation")).get("network_access_used") is False
+            and _i(_d(fw.get("offline_consumer_verification_and_final_manifest")).get("ready_verification_steps"), 0) >= 7
+            and _d(fw.get("offline_consumer_verification_and_final_manifest")).get("final_system_manifest_valid") is True
+            and _d(fw.get("eligibility_interlock")).get("authorized_claimed") is False
+            and _d(fw.get("cycle1_audit")).get("policy_status") == "ELIGIBLE"
+        )
+        if isinstance(fw, dict)
+        else bool(cand_cond.get("frontier_w_verified", False))
+    )
+
+    fx_verified_bool = (
+        bool(
+            fx.get("entangled_cadence_verified") is True
+            and isinstance(fx.get("entangled_sequencer_and_atomic_epoch"), dict)
+            and isinstance(fx.get("multimanifold_cadence_and_autonomy_guard"), dict)
+            and isinstance(fx.get("wavefront_alignment_and_uncertainty_bounds"), dict)
+            and isinstance(fx.get("eligibility_interlock"), dict)
+            and isinstance(fx.get("cycle1_audit"), dict)
+            and _d(fx.get("entangled_sequencer_and_atomic_epoch")).get("atomic_epoch_committed_shadow") is True
+            and _d(fx.get("entangled_sequencer_and_atomic_epoch")).get("commit_epoch_committed_shadow") is True
+            and _d(fx.get("multimanifold_cadence_and_autonomy_guard")).get("cycle1_autonomy_bounded") is True
+            and _d(fx.get("wavefront_alignment_and_uncertainty_bounds")).get("wavefront_stability_passed") is True
+            and _d(fx.get("wavefront_alignment_and_uncertainty_bounds")).get("uncertainty_within_bounds") is True
+            and _d(fx.get("eligibility_interlock")).get("authorized_claimed") is False
+            and _d(fx.get("cycle1_audit")).get("policy_status") == "ELIGIBLE"
+        )
+        if isinstance(fx, dict)
+        else bool(cand_cond.get("frontier_x_verified", False))
+    )
+
+    fy_verified_bool = (
+        bool(
+            fy.get("waveguide_channel_staging_verified") is True
+            and isinstance(fy.get("waveguide_channel_kernels_and_dependency"), dict)
+            and isinstance(fy.get("layout_optimization_and_pipeline_compaction"), dict)
+            and isinstance(fy.get("package_assembly_dry_run_and_local_staging"), dict)
+            and isinstance(fy.get("eligibility_interlock"), dict)
+            and isinstance(fy.get("cycle1_audit"), dict)
+            and _i(_d(fy.get("waveguide_channel_kernels_and_dependency")).get("recognized_kernels_count"), 0) == 5
+            and _d(fy.get("waveguide_channel_kernels_and_dependency")).get("cycle1_batch_safe") is True
+            and _d(fy.get("layout_optimization_and_pipeline_compaction")).get("compaction_equivalence_verified") is True
+            and _i(_d(fy.get("package_assembly_dry_run_and_local_staging")).get("noop_dry_run_events_count"), 0) >= 182
+            and _d(fy.get("package_assembly_dry_run_and_local_staging")).get("physical_execution_permitted_by_gate") is False
+            and _d(fy.get("package_assembly_dry_run_and_local_staging")).get("local_staging_verified") is True
+            and _d(fy.get("eligibility_interlock")).get("authorized_claimed") is False
+            and _d(fy.get("cycle1_audit")).get("policy_status") == "ELIGIBLE"
+        )
+        if isinstance(fy, dict)
+        else bool(cand_cond.get("frontier_y_verified", False))
+    )
+
+    fz_verified_bool = (
+        bool(
+            fz.get("sovereign_court_lockdown_verified") is True
+            and isinstance(fz.get("court_supervised_promotion_and_docket"), dict)
+            and isinstance(fz.get("final_gate_registry_and_finalization_docket"), dict)
+            and isinstance(fz.get("governance_freeze_and_system_lockdown"), dict)
+            and isinstance(fz.get("eligibility_interlock"), dict)
+            and isinstance(fz.get("cycle1_audit"), dict)
+            and _i(_d(fz.get("final_gate_registry_and_finalization_docket")).get("registered_gates_count"), 0) == 11
+            and _d(fz.get("final_gate_registry_and_finalization_docket")).get("all_gates_passed") is True
+            and _i(_d(fz.get("final_gate_registry_and_finalization_docket")).get("finalization_evidence_items_count"), 0) == 10
+            and _d(fz.get("governance_freeze_and_system_lockdown")).get("cycle1_frozen") is True
+            and _d(fz.get("governance_freeze_and_system_lockdown")).get("cycle1_locked") is True
+            and _d(fz.get("eligibility_interlock")).get("allow_production_execution") is False
+            and _d(fz.get("eligibility_interlock")).get("authorized_claimed") is False
+            and _d(fz.get("cycle1_audit")).get("policy_status") == "ELIGIBLE"
+        )
+        if isinstance(fz, dict)
+        else bool(cand_cond.get("frontier_z_verified", False))
     )
 
     frontier_verification_summary = {
@@ -1159,6 +1300,237 @@ def assess_continuum_observatory(
                 "summary_digest": cand_cond.get("frontier_t_summary_digest"),
             }
         ),
+        "frontier_u_verified": fu_verified_bool,
+        "frontier_u_summary_digest": (
+            fu.get("frontier_u_summary_digest") or fu.get("summary_digest")
+            if isinstance(fu, dict)
+            else cand_cond.get("frontier_u_summary_digest")
+        ),
+        "frontier_u": (
+            {
+                "verified": fu_verified_bool,
+                "banks_32b": _i(_d(fu.get("hcam_associative_recall")).get("32b_banks"), 0),
+                "banks_64b": _i(_d(fu.get("hcam_associative_recall")).get("64b_banks"), 0),
+                "shard_count": _i(_d(fu.get("cross_shard_consensus")).get("shard_count"), 0),
+                "cycle1_local_quorum_shards": _i(
+                    _d(fu.get("cross_shard_consensus")).get("cycle1_local_quorum_shards"), 0
+                ),
+                "local_quorum_shards": _i(
+                    _d(fu.get("cross_shard_consensus")).get("cycle1_local_quorum_shards"), 0
+                ),
+                "orphan_nodes_reclaimed": _i(
+                    _d(fu.get("manifold_garbage_collection")).get("orphan_nodes_reclaimed"), 0
+                ),
+                "live_root_reclaimed": bool(
+                    _d(fu.get("manifold_garbage_collection")).get("live_root_reclaimed", True)
+                ),
+                "authorized_claimed": bool(
+                    _d(fu.get("eligibility_interlock")).get("authorized_claimed", True)
+                ),
+                "summary_digest": fu.get("frontier_u_summary_digest") or fu.get("summary_digest"),
+            }
+            if isinstance(fu, dict)
+            else {
+                "verified": bool(cand_cond.get("frontier_u_verified", False)),
+                "live_root_reclaimed": False,
+                "authorized_claimed": False,
+                "summary_digest": cand_cond.get("frontier_u_summary_digest"),
+            }
+        ),
+        "frontier_v_verified": fv_verified_bool,
+        "frontier_v_summary_digest": (
+            fv.get("frontier_v_summary_digest") or fv.get("summary_digest")
+            if isinstance(fv, dict)
+            else cand_cond.get("frontier_v_summary_digest")
+        ),
+        "frontier_v": (
+            {
+                "verified": fv_verified_bool,
+                "assembled_core_count": _i(
+                    _d(fv.get("simd_multicore_and_route_rebalance")).get("assembled_core_count"), 0
+                ),
+                "simd_lane_width": _i(
+                    _d(fv.get("simd_multicore_and_route_rebalance")).get("simd_lane_width"), 0
+                ),
+                "fault_matrix_passed_cases": _i(
+                    _d(fv.get("simd_multicore_and_route_rebalance")).get("fault_matrix_passed_cases"), 0
+                ),
+                "predicated_diamonds_converted": _i(
+                    _d(fv.get("waveguide_arithmetic_and_predication")).get("predicated_diamonds_converted"), 0
+                ),
+                "flags_externally_visible": bool(
+                    _d(fv.get("waveguide_arithmetic_and_predication")).get("flags_externally_visible", True)
+                ),
+                "authorized_claimed": bool(
+                    _d(fv.get("eligibility_interlock")).get("authorized_claimed", True)
+                ),
+                "summary_digest": fv.get("frontier_v_summary_digest") or fv.get("summary_digest"),
+            }
+            if isinstance(fv, dict)
+            else {
+                "verified": bool(cand_cond.get("frontier_v_verified", False)),
+                "flags_externally_visible": False,
+                "authorized_claimed": False,
+                "summary_digest": cand_cond.get("frontier_v_summary_digest"),
+            }
+        ),
+        "frontier_w_verified": fw_verified_bool,
+        "frontier_w_summary_digest": (
+            fw.get("frontier_w_summary_digest") or fw.get("summary_digest")
+            if isinstance(fw, dict)
+            else cand_cond.get("frontier_w_summary_digest")
+        ),
+        "frontier_w": (
+            {
+                "verified": fw_verified_bool,
+                "cycles_executed": _i(
+                    _d(fw.get("sovereign_burnin_and_stability_ledger")).get("cycles_executed"), 0
+                ),
+                "ready_verification_steps": _i(
+                    _d(fw.get("offline_consumer_verification_and_final_manifest")).get("ready_verification_steps"), 0
+                ),
+                "archive_file_digest_match": bool(
+                    _d(fw.get("package_archive_digest_attestation")).get("archive_file_digest_match", False)
+                ),
+                "real_signature_claimed": bool(
+                    _d(fw.get("package_archive_digest_attestation")).get("real_signature_claimed", True)
+                ),
+                "network_access_used": bool(
+                    _d(fw.get("package_archive_digest_attestation")).get("network_access_used", True)
+                ),
+                "authorized_claimed": bool(
+                    _d(fw.get("eligibility_interlock")).get("authorized_claimed", True)
+                ),
+                "summary_digest": fw.get("frontier_w_summary_digest") or fw.get("summary_digest"),
+            }
+            if isinstance(fw, dict)
+            else {
+                "verified": bool(cand_cond.get("frontier_w_verified", False)),
+                "real_signature_claimed": False,
+                "network_access_used": False,
+                "authorized_claimed": False,
+                "summary_digest": cand_cond.get("frontier_w_summary_digest"),
+            }
+        ),
+        "frontier_x_verified": fx_verified_bool,
+        "frontier_x_summary_digest": (
+            fx.get("frontier_x_summary_digest") or fx.get("summary_digest")
+            if isinstance(fx, dict)
+            else cand_cond.get("frontier_x_summary_digest")
+        ),
+        "frontier_x": (
+            {
+                "verified": fx_verified_bool,
+                "group_coherence": _f(
+                    _d(fx.get("entangled_sequencer_and_atomic_epoch")).get("group_coherence"), 0.0
+                ),
+                "atomic_epoch_committed_shadow": bool(
+                    _d(fx.get("entangled_sequencer_and_atomic_epoch")).get("atomic_epoch_committed_shadow", False)
+                ),
+                "commit_epoch_committed_shadow": bool(
+                    _d(fx.get("entangled_sequencer_and_atomic_epoch")).get("commit_epoch_committed_shadow", False)
+                ),
+                "cycle1_autonomy_bounded": bool(
+                    _d(fx.get("multimanifold_cadence_and_autonomy_guard")).get("cycle1_autonomy_bounded", False)
+                ),
+                "wavefront_stability_passed": bool(
+                    _d(fx.get("wavefront_alignment_and_uncertainty_bounds")).get("wavefront_stability_passed", False)
+                ),
+                "uncertainty_within_bounds": bool(
+                    _d(fx.get("wavefront_alignment_and_uncertainty_bounds")).get("uncertainty_within_bounds", False)
+                ),
+                "authorized_claimed": bool(
+                    _d(fx.get("eligibility_interlock")).get("authorized_claimed", True)
+                ),
+                "summary_digest": fx.get("frontier_x_summary_digest") or fx.get("summary_digest"),
+            }
+            if isinstance(fx, dict)
+            else {
+                "verified": bool(cand_cond.get("frontier_x_verified", False)),
+                "authorized_claimed": False,
+                "summary_digest": cand_cond.get("frontier_x_summary_digest"),
+            }
+        ),
+        "frontier_y_verified": fy_verified_bool,
+        "frontier_y_summary_digest": (
+            fy.get("frontier_y_summary_digest") or fy.get("summary_digest")
+            if isinstance(fy, dict)
+            else cand_cond.get("frontier_y_summary_digest")
+        ),
+        "frontier_y": (
+            {
+                "verified": fy_verified_bool,
+                "recognized_kernels_count": _i(
+                    _d(fy.get("waveguide_channel_kernels_and_dependency")).get("recognized_kernels_count"), 0
+                ),
+                "cycle1_batch_safe": bool(
+                    _d(fy.get("waveguide_channel_kernels_and_dependency")).get("cycle1_batch_safe", False)
+                ),
+                "compaction_equivalence_verified": bool(
+                    _d(fy.get("layout_optimization_and_pipeline_compaction")).get("compaction_equivalence_verified", False)
+                ),
+                "noop_dry_run_events_count": _i(
+                    _d(fy.get("package_assembly_dry_run_and_local_staging")).get("noop_dry_run_events_count"), 0
+                ),
+                "physical_execution_permitted_by_gate": bool(
+                    _d(fy.get("package_assembly_dry_run_and_local_staging")).get("physical_execution_permitted_by_gate", True)
+                ),
+                "local_staging_verified": bool(
+                    _d(fy.get("package_assembly_dry_run_and_local_staging")).get("local_staging_verified", False)
+                ),
+                "authorized_claimed": bool(
+                    _d(fy.get("eligibility_interlock")).get("authorized_claimed", True)
+                ),
+                "summary_digest": fy.get("frontier_y_summary_digest") or fy.get("summary_digest"),
+            }
+            if isinstance(fy, dict)
+            else {
+                "verified": bool(cand_cond.get("frontier_y_verified", False)),
+                "physical_execution_permitted_by_gate": False,
+                "authorized_claimed": False,
+                "summary_digest": cand_cond.get("frontier_y_summary_digest"),
+            }
+        ),
+        "frontier_z_verified": fz_verified_bool,
+        "frontier_z_summary_digest": (
+            fz.get("frontier_z_summary_digest") or fz.get("summary_digest")
+            if isinstance(fz, dict)
+            else cand_cond.get("frontier_z_summary_digest")
+        ),
+        "frontier_z": (
+            {
+                "verified": fz_verified_bool,
+                "registered_gates_count": _i(
+                    _d(fz.get("final_gate_registry_and_finalization_docket")).get("registered_gates_count"), 0
+                ),
+                "all_gates_passed": bool(
+                    _d(fz.get("final_gate_registry_and_finalization_docket")).get("all_gates_passed", False)
+                ),
+                "finalization_evidence_items_count": _i(
+                    _d(fz.get("final_gate_registry_and_finalization_docket")).get("finalization_evidence_items_count"), 0
+                ),
+                "cycle1_frozen": bool(
+                    _d(fz.get("governance_freeze_and_system_lockdown")).get("cycle1_frozen", False)
+                ),
+                "cycle1_locked": bool(
+                    _d(fz.get("governance_freeze_and_system_lockdown")).get("cycle1_locked", False)
+                ),
+                "allow_production_execution": bool(
+                    _d(fz.get("eligibility_interlock")).get("allow_production_execution", True)
+                ),
+                "authorized_claimed": bool(
+                    _d(fz.get("eligibility_interlock")).get("authorized_claimed", True)
+                ),
+                "summary_digest": fz.get("frontier_z_summary_digest") or fz.get("summary_digest"),
+            }
+            if isinstance(fz, dict)
+            else {
+                "verified": bool(cand_cond.get("frontier_z_verified", False)),
+                "allow_production_execution": False,
+                "authorized_claimed": False,
+                "summary_digest": cand_cond.get("frontier_z_summary_digest"),
+            }
+        ),
     }
 
     drift_breakdown = {
@@ -1350,6 +1722,12 @@ def validate_repeat_trial_group(group: dict) -> dict:
                 "mitotic_metrics",
                 "stwm_metrics",
                 "rsi_compiler_metrics",
+                "hcam_shard_metrics",
+                "waveguide_simd_metrics",
+                "burnin_attestation_metrics",
+                "entangled_cadence_metrics",
+                "waveguide_channel_staging_metrics",
+                "sovereign_court_lockdown_metrics",
             ),
         )
         c.need(type(trial_obj.get("trial_index")) is int and trial_obj["trial_index"] >= 0, f"{tp}.trial_index must be a non-negative integer.")
@@ -1361,6 +1739,12 @@ def validate_repeat_trial_group(group: dict) -> dict:
             "mitotic_metrics",
             "stwm_metrics",
             "rsi_compiler_metrics",
+            "hcam_shard_metrics",
+            "waveguide_simd_metrics",
+            "burnin_attestation_metrics",
+            "entangled_cadence_metrics",
+            "waveguide_channel_staging_metrics",
+            "sovereign_court_lockdown_metrics",
         ):
             if _opt_m in trial_obj:
                 c.need(isinstance(trial_obj[_opt_m], dict), f"{tp}.{_opt_m} must be an object.")
@@ -1378,6 +1762,12 @@ def validate_repeat_trial_group(group: dict) -> dict:
             "mitotic_metrics",
             "stwm_metrics",
             "rsi_compiler_metrics",
+            "hcam_shard_metrics",
+            "waveguide_simd_metrics",
+            "burnin_attestation_metrics",
+            "entangled_cadence_metrics",
+            "waveguide_channel_staging_metrics",
+            "sovereign_court_lockdown_metrics",
         ):
             if opt_metric_field in trial_obj:
                 for wm_key, wm_val in trial_obj[opt_metric_field].items():
@@ -1653,7 +2043,7 @@ def evaluate_repeat_trial_group(group: dict | Path) -> dict:
                 )
         return summary
 
-    # Optional domain metrics across trials (Frontiers O, P, Q, R, S, T)
+    # Optional domain metrics across trials (Frontiers O, P, Q, R, S, T, U, V, W)
     wgsl_summary = _summarize_domain_pairs(
         "wgsl_metrics",
         (
@@ -1694,6 +2084,53 @@ def evaluate_repeat_trial_group(group: dict | Path) -> dict:
             ("admitted_passes_count", "baseline_admitted_passes_count", "candidate_admitted_passes_count", "count", "higher"),
         ),
     )
+    hcam_shard_summary = _summarize_domain_pairs(
+        "hcam_shard_metrics",
+        (
+            ("local_quorum_shards", "baseline_local_quorum_shards", "candidate_local_quorum_shards", "shards", "higher"),
+            ("orphan_nodes_reclaimed", "baseline_orphan_nodes_reclaimed", "candidate_orphan_nodes_reclaimed", "nodes", "higher"),
+        ),
+    )
+    waveguide_simd_summary = _summarize_domain_pairs(
+        "waveguide_simd_metrics",
+        (
+            ("fault_matrix_passed_cases", "baseline_fault_matrix_passed_cases", "candidate_fault_matrix_passed_cases", "cases", "higher"),
+            ("predicated_diamonds_converted", "baseline_predicated_diamonds_converted", "candidate_predicated_diamonds_converted", "diamonds", "higher"),
+            ("schedule_issue_cycles", "baseline_schedule_issue_cycles", "candidate_schedule_issue_cycles", "cycles", "lower"),
+        ),
+    )
+    burnin_attestation_summary = _summarize_domain_pairs(
+        "burnin_attestation_metrics",
+        (
+            ("passed_burnin_cycles", "baseline_passed_burnin_cycles", "candidate_passed_burnin_cycles", "cycles", "higher"),
+            ("ready_verification_steps", "baseline_ready_verification_steps", "candidate_ready_verification_steps", "steps", "higher"),
+            ("phase_drift_max", "baseline_phase_drift_max", "candidate_phase_drift_max", "rad", "lower"),
+        ),
+    )
+    entangled_cadence_summary = _summarize_domain_pairs(
+        "entangled_cadence_metrics",
+        (
+            ("group_coherence", "baseline_group_coherence", "candidate_group_coherence", "coherence", "higher"),
+            ("cadence_skew", "baseline_cadence_skew", "candidate_cadence_skew", "rad", "lower"),
+            ("wavefront_uncertainty", "baseline_wavefront_uncertainty", "candidate_wavefront_uncertainty", "rad", "lower"),
+        ),
+    )
+    waveguide_channel_staging_summary = _summarize_domain_pairs(
+        "waveguide_channel_staging_metrics",
+        (
+            ("recognized_kernels_count", "baseline_recognized_kernels_count", "candidate_recognized_kernels_count", "kernels", "higher"),
+            ("compacted_microcode_ops", "baseline_compacted_microcode_ops", "candidate_compacted_microcode_ops", "ops", "lower"),
+            ("noop_dry_run_events_count", "baseline_noop_dry_run_events_count", "candidate_noop_dry_run_events_count", "events", "higher"),
+        ),
+    )
+    sovereign_court_lockdown_summary = _summarize_domain_pairs(
+        "sovereign_court_lockdown_metrics",
+        (
+            ("passed_final_gates_count", "baseline_passed_final_gates_count", "candidate_passed_final_gates_count", "gates", "higher"),
+            ("finalization_evidence_items_count", "baseline_finalization_evidence_items_count", "candidate_finalization_evidence_items_count", "items", "higher"),
+            ("lockdown_violations_count", "baseline_lockdown_violations_count", "candidate_lockdown_violations_count", "violations", "lower"),
+        ),
+    )
 
     if improved_count > 0 and regressed_count == 0:
         overall_outcome = "improved"
@@ -1727,6 +2164,12 @@ def evaluate_repeat_trial_group(group: dict | Path) -> dict:
         "mitotic_trial_summary": mitotic_summary,
         "stwm_trial_summary": stwm_summary,
         "rsi_compiler_trial_summary": rsi_compiler_summary,
+        "hcam_shard_trial_summary": hcam_shard_summary,
+        "waveguide_simd_trial_summary": waveguide_simd_summary,
+        "burnin_attestation_trial_summary": burnin_attestation_summary,
+        "entangled_cadence_trial_summary": entangled_cadence_summary,
+        "waveguide_channel_staging_trial_summary": waveguide_channel_staging_summary,
+        "sovereign_court_lockdown_trial_summary": sovereign_court_lockdown_summary,
         "review_status": "awaiting_review",
         "human_decisions_created": 0,
         "authority_boundary": (

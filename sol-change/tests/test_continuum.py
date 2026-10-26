@@ -560,6 +560,25 @@ class ContinuumCLITests(unittest.TestCase):
             "rsi_compiler_verified": True,
             "governed_compiler_invocation": {"cycle1_admitted_passes": None},
         }
+        null_cand_pkt["frontier_u_verification"] = {
+            "hcam_shard_verified": True,
+            "hcam_associative_recall": None,
+            "cross_shard_consensus": None,
+            "manifold_garbage_collection": None,
+            "eligibility_interlock": None,
+        }
+        null_cand_pkt["frontier_v_verification"] = {
+            "waveguide_simd_verified": True,
+            "waveguide_arithmetic_and_predication": None,
+            "simd_multicore_and_route_rebalance": None,
+            "eligibility_interlock": None,
+        }
+        null_cand_pkt["frontier_w_verification"] = {
+            "burnin_attestation_verified": True,
+            "sovereign_burnin_and_stability_ledger": None,
+            "offline_consumer_verification_and_final_manifest": None,
+            "eligibility_interlock": None,
+        }
         exp_null = build_comparison(
             packet_to_run(json.dumps(base_pkt), "baseline", "b.json", ctx),
             packet_to_run(json.dumps(null_cand_pkt), "candidate", "c_null.json", ctx),
@@ -570,8 +589,11 @@ class ContinuumCLITests(unittest.TestCase):
         fvs_null = assessment_null["cycle_drift_breakdown"]["frontier_verification_summary"]
         self.assertFalse(fvs_null["frontier_r_verified"])
         self.assertFalse(fvs_null["frontier_t_verified"])
+        self.assertFalse(fvs_null["frontier_u_verified"])
+        self.assertFalse(fvs_null["frontier_v_verified"])
+        self.assertFalse(fvs_null["frontier_w_verified"])
 
-        # Repeat-trial domain metric summaries for mitotic_metrics, stwm_metrics, rsi_compiler_metrics
+        # Repeat-trial domain metric summaries for mitotic_metrics, stwm_metrics, rsi_compiler_metrics, and U/V/W
         trials = []
         for idx in range(3):
             b_run = packet_to_run(json.dumps(base_pkt), "baseline", f"b_{idx}.json", ctx)
@@ -595,12 +617,28 @@ class ContinuumCLITests(unittest.TestCase):
                     "baseline_admitted_passes_count": 0,
                     "candidate_admitted_passes_count": 3,
                 },
+                "hcam_shard_metrics": {
+                    "baseline_local_quorum_shards": 2,
+                    "candidate_local_quorum_shards": 4,
+                    "baseline_orphan_nodes_reclaimed": 0,
+                    "candidate_orphan_nodes_reclaimed": 1,
+                },
+                "waveguide_simd_metrics": {
+                    "baseline_predicated_diamonds_converted": 0,
+                    "candidate_predicated_diamonds_converted": 2,
+                    "baseline_fault_matrix_passed_cases": 2,
+                    "candidate_fault_matrix_passed_cases": 5,
+                },
+                "burnin_attestation_metrics": {
+                    "baseline_ready_verification_steps": 2,
+                    "candidate_ready_verification_steps": 5,
+                },
             })
         group = {
             "schema_version": "1.0",
             "kind": "sol-change/repeat-trial-group",
             "group_id": "rtg-rst-domain-01",
-            "study_name": "Frontiers R/S/T Domain Repeat Group",
+            "study_name": "Frontiers R/S/T/U/V/W Domain Repeat Group",
             "created_at": "2026-10-23T15:00:00Z",
             "shared_input": {
                 "id": "input:rst",
@@ -615,6 +653,11 @@ class ContinuumCLITests(unittest.TestCase):
         self.assertEqual(eval_rep["mitotic_trial_summary"]["mass_conservation_residual"]["status"], "improved")
         self.assertEqual(eval_rep["stwm_trial_summary"]["interlane_crosstalk_db"]["status"], "improved")
         self.assertEqual(eval_rep["rsi_compiler_trial_summary"]["admitted_passes_count"]["status"], "improved")
+        self.assertEqual(eval_rep["hcam_shard_trial_summary"]["local_quorum_shards"]["status"], "improved")
+        self.assertEqual(eval_rep["hcam_shard_trial_summary"]["orphan_nodes_reclaimed"]["status"], "improved")
+        self.assertEqual(eval_rep["waveguide_simd_trial_summary"]["predicated_diamonds_converted"]["status"], "improved")
+        self.assertEqual(eval_rep["waveguide_simd_trial_summary"]["fault_matrix_passed_cases"]["status"], "improved")
+        self.assertEqual(eval_rep["burnin_attestation_trial_summary"]["ready_verification_steps"]["status"], "improved")
 
 
 if __name__ == "__main__":

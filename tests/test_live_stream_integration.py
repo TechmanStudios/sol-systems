@@ -948,3 +948,169 @@ def test_mitotic_foliation_stwm_and_rsi_compiler_live_stream_endpoints(live_serv
         assert ver_data["integrity"]["isValid"] is True
 
 
+def test_hcam_shard_waveguide_simd_and_burnin_attestation_live_stream_endpoints(live_server, tmp_path):
+    """
+    Verifies Frontiers U, V, and W live stream endpoints:
+    - POST /api/continuum/hcam_shard_consensus (Frontier U / Vector 24)
+    - POST /api/continuum/waveguide_simd_pipeline (Frontier V / Vector 25)
+    - POST /api/continuum/burnin_attestation (Frontier W / Vector 26)
+    """
+    for endpoint, study_name, ver_key, flag_key, run_mode in [
+        (
+            "/api/continuum/hcam_shard_consensus",
+            "LiveStream_HCAM_Shard_Consensus_Integration_v1",
+            "frontier_u_verification",
+            "hcam_shard_verified",
+            "hcam_shard_consensus_observatory",
+        ),
+        (
+            "/api/continuum/waveguide_simd_pipeline",
+            "LiveStream_Waveguide_SIMD_Pipeline_Integration_v1",
+            "frontier_v_verification",
+            "waveguide_simd_verified",
+            "waveguide_simd_pipeline_observatory",
+        ),
+        (
+            "/api/continuum/burnin_attestation",
+            "LiveStream_BurnIn_Attestation_Integration_v1",
+            "frontier_w_verification",
+            "burnin_attestation_verified",
+            "burnin_attestation_observatory",
+        ),
+    ]:
+        exp_root = tmp_path / f"{run_mode}_exp"
+        obs_db = tmp_path / f"{run_mode}_obs.sqlite3"
+        body = json.dumps({
+            "study_name": study_name,
+            "repeat_trial_count": 3,
+            "use_live_gemini": False,
+            "experiments_root": str(exp_root),
+            "observatory_db_path": str(obs_db),
+            "register_in_observatory_db": True,
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            f"{live_server}{endpoint}",
+            data=body,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req) as resp:
+            assert resp.status == 200
+            data = json.loads(resp.read().decode("utf-8"))
+            assert data["ok"] is True
+            ep = data["episode"]
+            assert ep["study_name"] == study_name
+            assert ep["cycle0_audit"]["policy_status"] == "QUARANTINE"
+            assert ep["cycle1_audit"]["policy_status"] == "ELIGIBLE"
+            assert ep["sol_change_handoff"]["comparability"] == "compatible"
+            assert ep["sol_change_handoff"]["outcome"] == "improved"
+            assert ep[ver_key][flag_key] is True
+            assert data["ledger_entry"]["run_mode"] == run_mode
+            assert data["ledger_entry"]["edge_event_count"] == 8
+
+    req_ver = urllib.request.Request(
+        f"{live_server}/api/ledger/verify",
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req_ver) as resp:
+        assert resp.status == 200
+        ver_data = json.loads(resp.read().decode("utf-8"))
+        assert ver_data["ok"] is True
+        assert ver_data["integrity"]["isValid"] is True
+
+    req_studio = urllib.request.Request(f"{live_server}/api/studio/state")
+    with urllib.request.urlopen(req_studio) as resp:
+        assert resp.status == 200
+        studio_data = json.loads(resp.read().decode("utf-8"))
+        assert studio_data["ok"] is True
+        assert studio_data["total_frontiers"] == 26
+        assert studio_data["total_vectors"] == 30
+        assert studio_data["frontiers_range"] == "Frontier_A..Frontier_Z"
+        assert studio_data["vectors_range"] == "V0..V29"
+        assert studio_data["holographic_merkle_root"].startswith("sha256:")
+
+
+def test_entangled_cadence_waveguide_channel_and_sovereign_lockdown_live_stream_endpoints(
+    live_server: str, tmp_path
+) -> None:
+    """
+    Verifies Frontier X (`/api/continuum/entangled_cadence`), Frontier Y (`/api/continuum/waveguide_channel_staging`),
+    and Frontier Z (`/api/continuum/sovereign_court_lockdown`) POST endpoints, plus `/api/studio/state` GET.
+    """
+    for endpoint, study_name, ver_key, flag_key, run_mode in [
+        (
+            "/api/continuum/entangled_cadence",
+            "LiveStream_Entangled_Cadence_Wavefront_2PC_Integration_v1",
+            "frontier_x_verification",
+            "entangled_cadence_verified",
+            "entangled_cadence_wavefront_observatory",
+        ),
+        (
+            "/api/continuum/waveguide_channel_staging",
+            "LiveStream_Waveguide_Channel_Staging_Integration_v1",
+            "frontier_y_verification",
+            "waveguide_channel_staging_verified",
+            "waveguide_channel_staging_observatory",
+        ),
+        (
+            "/api/continuum/sovereign_court_lockdown",
+            "LiveStream_Sovereign_Court_Lockdown_Integration_v1",
+            "frontier_z_verification",
+            "sovereign_court_lockdown_verified",
+            "sovereign_court_lockdown_observatory",
+        ),
+    ]:
+        exp_root = tmp_path / f"{run_mode}_exp"
+        obs_db = tmp_path / f"{run_mode}_obs.sqlite3"
+        body = json.dumps({
+            "study_name": study_name,
+            "repeat_trial_count": 3,
+            "use_live_gemini": False,
+            "experiments_root": str(exp_root),
+            "observatory_db_path": str(obs_db),
+            "register_in_observatory_db": True,
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            f"{live_server}{endpoint}",
+            data=body,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req) as resp:
+            assert resp.status == 200
+            data = json.loads(resp.read().decode("utf-8"))
+            assert data["ok"] is True
+            ep = data["episode"]
+            assert ep["study_name"] == study_name
+            assert ep["cycle0_audit"]["policy_status"] == "QUARANTINE"
+            assert ep["cycle1_audit"]["policy_status"] == "ELIGIBLE"
+            assert ep["sol_change_handoff"]["comparability"] == "compatible"
+            assert ep["sol_change_handoff"]["outcome"] == "improved"
+            assert ep[ver_key][flag_key] is True
+            assert ep[ver_key]["allow_production_execution"] is False
+            assert ep[ver_key]["authorized_claimed"] is False
+            assert data["ledger_entry"]["run_mode"] == run_mode
+            assert data["ledger_entry"]["edge_event_count"] == 8
+
+    req_ver = urllib.request.Request(
+        f"{live_server}/api/ledger/verify",
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req_ver) as resp:
+        assert resp.status == 200
+        ver_data = json.loads(resp.read().decode("utf-8"))
+        assert ver_data["ok"] is True
+        assert ver_data["integrity"]["isValid"] is True
+
+    req_studio = urllib.request.Request(f"{live_server}/api/studio/state")
+    with urllib.request.urlopen(req_studio) as resp:
+        assert resp.status == 200
+        studio_data = json.loads(resp.read().decode("utf-8"))
+        assert studio_data["ok"] is True
+        assert studio_data["total_frontiers"] == 26
+        assert studio_data["total_vectors"] == 30
+        assert studio_data["frontiers_range"] == "Frontier_A..Frontier_Z"
+        assert studio_data["vectors_range"] == "V0..V29"
+        assert studio_data["holographic_merkle_root"].startswith("sha256:")
+
+

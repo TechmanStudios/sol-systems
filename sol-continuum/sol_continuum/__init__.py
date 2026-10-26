@@ -31,6 +31,22 @@ from .lumina_observatory_bridge import (
     LuminaSovereignAuditResult,
     SolEdgeLuminaSovereignGate,
 )
+from .entangled_cadence import (
+    EntangledCadenceReport,
+    EntangledCadenceWavefrontEngine,
+)
+from .waveguide_channels import (
+    WaveguideChannelStagingEngine,
+    WaveguideChannelStagingReport,
+)
+from .sovereign_lockdown import (
+    SovereignCourtLockdownEngine,
+    SovereignCourtLockdownReport,
+)
+from .harmonizer import (
+    FrontierXYZCapstoneHarmonizer,
+    FrontierXYZCapstoneReport,
+)
 
 __all__ = [
     "COMMAND_PROTOCOL_VERBS",
@@ -44,8 +60,12 @@ __all__ = [
     "ContinuumDiscoveryEpisodeRecord",
     "ContinuumDiscoveryProposalSpec",
     "ContinuumReasoningTelemetry",
+    "EntangledCadenceReport",
+    "EntangledCadenceWavefrontEngine",
     "FrontierNAutopoieticHarmonizer",
     "FrontierNAutopoieticReport",
+    "FrontierXYZCapstoneHarmonizer",
+    "FrontierXYZCapstoneReport",
     "LuminaLibraryObservatoryOrchestrator",
     "LuminaObservatoryEpisodeRecord",
     "LuminaRangerObservatoryProposalSpec",
@@ -53,8 +73,13 @@ __all__ = [
     "SolContinuumDiscoveryOrchestrator",
     "SolEdgeContinuumDiscoveryGate",
     "SolEdgeLuminaSovereignGate",
+    "SovereignCourtLockdownEngine",
+    "SovereignCourtLockdownReport",
+    "WaveguideChannelStagingEngine",
+    "WaveguideChannelStagingReport",
     "build_sol_edge_cycle_events",
     "verify_core_graph_immutability",
 ]
+
 
 

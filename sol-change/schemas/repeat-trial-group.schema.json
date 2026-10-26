@@ -82,7 +82,13 @@
           "umok_metrics": { "type": "object" },
           "mitotic_metrics": { "type": "object" },
           "stwm_metrics": { "type": "object" },
-          "rsi_compiler_metrics": { "type": "object" }
+          "rsi_compiler_metrics": { "type": "object" },
+          "hcam_shard_metrics": { "type": "object" },
+          "waveguide_simd_metrics": { "type": "object" },
+          "burnin_attestation_metrics": { "type": "object" },
+          "entangled_cadence_metrics": { "type": "object" },
+          "waveguide_channel_staging_metrics": { "type": "object" },
+          "sovereign_court_lockdown_metrics": { "type": "object" }
         }
       }
     },

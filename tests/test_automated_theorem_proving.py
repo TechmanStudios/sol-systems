@@ -16,10 +16,13 @@ import numpy as np
 from Frontier_OS.core.theorem_proving import (
     MathematicalDomain,
     AxiomDefinition,
+    AlgebraicRewriter,
     build_axiom_library,
+    build_default_axiom_registry,
     ConjectureType,
     MathematicalConjecture,
     AutonomousConjectureEngine,
+    generate_canonical_conjectures,
     ProofVerdict,
     ProofStep,
     TheoremProofCertificate,
@@ -34,7 +37,8 @@ class TestAxiomLibrary:
 
     def test_axiom_library_completeness(self):
         axioms = build_axiom_library()
-        assert len(axioms) == 11
+        assert len(axioms) == 17
+        assert len(build_default_axiom_registry()) == 17
         assert "AXIOM_DEMORGAN_AND" in axioms
         assert "AXIOM_XOR_INVOLUTION" in axioms
         assert "AXIOM_MAJORITY_SELF_DUAL" in axioms
@@ -43,6 +47,24 @@ class TestAxiomLibrary:
         assert "AXIOM_MITOTIC_MASS_CONTINUITY" in axioms
         assert "AXIOM_COPRIME_QUADRATURE_ORTHOGONALITY" in axioms
         assert "AXIOM_GOVERNED_PASS_REPLAY_IDEMPOTENCE" in axioms
+        assert "AXIOM_HCAM_REDUCTION_QUORUM_ISOMORPHISM" in axioms
+        assert "AXIOM_PREDICATED_SCOREBOARD_SERIAL_EQUIVALENCE" in axioms
+        assert "AXIOM_BURNIN_LEDGER_ATTESTATION_CLOSURE" in axioms
+        assert "AXIOM_ENTANGLED_CADENCE_WAVEFRONT_COHERENCE" in axioms
+        assert "AXIOM_CHANNEL_KERNEL_COMPACTION_NOOP_BOUNDARY" in axioms
+        assert "AXIOM_COURT_SUPERVISED_LOCKDOWN_CLOSURE" in axioms
+
+        rewriter = AlgebraicRewriter(axioms)
+        chain = rewriter.apply_chain(
+            [
+                "AXIOM_ENTANGLED_CADENCE_WAVEFRONT_COHERENCE",
+                "AXIOM_CHANNEL_KERNEL_COMPACTION_NOOP_BOUNDARY",
+                "AXIOM_COURT_SUPERVISED_LOCKDOWN_CLOSURE",
+            ],
+            "Phi_0",
+        )
+        assert len(chain) == 3
+        assert all(step["verified"] is True for step in chain)
 
         demorgan = axioms["AXIOM_DEMORGAN_AND"]
         assert demorgan.domain == MathematicalDomain.BOOLEAN_ALGEBRA
@@ -60,7 +82,8 @@ class TestConjectureEngine:
         engine = AutonomousConjectureEngine()
         catalog = engine.generate_conjecture_catalog()
 
-        assert len(catalog) == 11
+        assert len(catalog) == 19
+        assert len(generate_canonical_conjectures()) == 19
         for conj in catalog:
             assert conj.conjecture_id != ""
             assert conj.entropy_score > 0.0  # Guarantees non-triviality (not constant function)
@@ -72,8 +95,8 @@ class TestConjectureEngine:
         # Check sound vs flawed conjectures
         sound_conjs = [c for c in catalog if not c.is_deliberately_false]
         flawed_conjs = [c for c in catalog if c.is_deliberately_false]
-        assert len(sound_conjs) == 8
-        assert len(flawed_conjs) == 3
+        assert len(sound_conjs) == 14
+        assert len(flawed_conjs) == 5
 
 
 class TestAutomatedProofEngine:
@@ -130,6 +153,58 @@ class TestAutomatedProofEngine:
         assert flawed_cert.verdict == ProofVerdict.DISPROVED_COUNTEREXAMPLE
         assert flawed_cert.is_crystallized is False
         assert flawed_cert.counter_example_witness is not None
+
+    def test_prove_frontier_uvw_conjectures_and_refute_unbarriered_alias_reorder(self):
+        engine = AutonomousConjectureEngine()
+        prover = AutomatedProofEngine()
+        catalog = {c.conjecture_id: c for c in engine.discover_conjectures()}
+
+        for cid in (
+            "conj_hcam_cross_shard_consensus_gc",
+            "conj_waveguide_predicated_scoreboard_simd",
+            "conj_burnin_stability_offline_attestation",
+        ):
+            cert = prover.prove_conjecture(catalog[cid], max_debate_rounds=6)
+            assert cert.verdict == ProofVerdict.PROVED_THEOREM
+            assert cert.is_crystallized is True
+            assert cert.counter_example_witness is None
+
+        flawed_cert = prover.prove_conjecture(
+            catalog["conj_false_unbarriered_alias_reorder_equivalence"], max_debate_rounds=6
+        )
+        assert flawed_cert.verdict == ProofVerdict.DISPROVED_COUNTEREXAMPLE
+        assert flawed_cert.is_crystallized is False
+        assert flawed_cert.counter_example_witness is not None
+        assert (
+            flawed_cert.counter_example_witness["expected_output"]
+            != flawed_cert.counter_example_witness["observed_output"]
+        )
+
+    def test_prove_frontier_xyz_conjectures_and_refute_unbounded_cadence_bypass(self):
+        engine = AutonomousConjectureEngine()
+        prover = AutomatedProofEngine()
+        catalog = {c.conjecture_id: c for c in engine.discover_conjectures()}
+
+        for cid in (
+            "conj_entangled_cadence_wavefront_sync",
+            "conj_waveguide_channel_compaction_staging",
+            "conj_sovereign_court_lockdown_closure",
+        ):
+            cert = prover.prove_conjecture(catalog[cid], max_debate_rounds=6)
+            assert cert.verdict == ProofVerdict.PROVED_THEOREM
+            assert cert.is_crystallized is True
+            assert cert.counter_example_witness is None
+
+        flawed_cert = prover.prove_conjecture(
+            catalog["conj_false_unbounded_autonomous_cadence_bypass"], max_debate_rounds=6
+        )
+        assert flawed_cert.verdict == ProofVerdict.DISPROVED_COUNTEREXAMPLE
+        assert flawed_cert.is_crystallized is False
+        assert flawed_cert.counter_example_witness is not None
+        assert (
+            flawed_cert.counter_example_witness["expected_output"]
+            != flawed_cert.counter_example_witness["observed_output"]
+        )
 
     def test_refute_flawed_xor_linear(self):
         engine = AutonomousConjectureEngine()

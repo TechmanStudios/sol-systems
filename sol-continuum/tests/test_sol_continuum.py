@@ -1109,3 +1109,74 @@ def test_frontier_n_autopoietic_organism_unification_and_edge_cases() -> None:
             else:
                 sys.modules.pop("telemetry", None)
 
+
+def test_frontier_xyz_capstone_engines_and_harmonizer() -> None:
+    """
+    Frontier X/Y/Z Unit & Edge-Case Test: Verifies `EntangledCadenceWavefrontEngine`,
+    `WaveguideChannelStagingEngine`, `SovereignCourtLockdownEngine`, and
+    `FrontierXYZCapstoneHarmonizer` in `sol_continuum`, including Cycle 0 fault rejection,
+    parameter validation, fail-closed governance, and sacred core graph SHA-256 immutability.
+    """
+    import pytest
+    from sol_continuum import (
+        EXPECTED_CORE_GRAPH_SHA256,
+        EntangledCadenceWavefrontEngine,
+        FrontierXYZCapstoneHarmonizer,
+        SovereignCourtLockdownEngine,
+        WaveguideChannelStagingEngine,
+        verify_core_graph_immutability,
+    )
+
+    fx_engine = EntangledCadenceWavefrontEngine()
+    fy_engine = WaveguideChannelStagingEngine()
+    fz_engine = SovereignCourtLockdownEngine()
+
+    # 1. Parameter validation edge cases
+    with pytest.raises(ValueError, match="manifold_count"):
+        fx_engine.evaluate(manifold_count=1)
+    with pytest.raises(ValueError, match="steps"):
+        fx_engine.evaluate(steps=5)
+
+    # 2. Evaluate Frontier X, Y, Z reports including Cycle 0 fault checks
+    fx_rep = fx_engine.evaluate(inject_cycle0_fault=True)
+    assert fx_rep.entangled_cadence_verified is True
+    assert fx_rep.core_immutability_verified is True
+    assert fx_rep.core_graph_sha256 == EXPECTED_CORE_GRAPH_SHA256
+    assert len(fx_rep.summary_digest) == 64
+    assert fx_rep.allow_production_execution is False
+    assert fx_rep.authorized_claimed is False
+
+    fy_rep = fy_engine.evaluate(inject_cycle0_raw_hazard=True)
+    assert fy_rep.waveguide_channel_staging_verified is True
+    assert fy_rep.core_immutability_verified is True
+    assert fy_rep.core_graph_sha256 == EXPECTED_CORE_GRAPH_SHA256
+    assert len(fy_rep.summary_digest) == 64
+    assert fy_rep.allow_production_execution is False
+    assert fy_rep.authorized_claimed is False
+
+    fz_rep = fz_engine.evaluate(attempt_production_execution=True)
+    assert fz_rep.sovereign_court_lockdown_verified is True
+    assert fz_rep.core_immutability_verified is True
+    assert fz_rep.core_graph_sha256 == EXPECTED_CORE_GRAPH_SHA256
+    assert len(fz_rep.summary_digest) == 64
+    assert fz_rep.allow_production_execution is False
+    assert fz_rep.authorized_claimed is False
+
+    # 3. Evaluate combined FrontierXYZCapstoneHarmonizer
+    cap = FrontierXYZCapstoneHarmonizer().evaluate_capstone_xyz()
+    assert cap.all_verified is True
+    assert cap.core_immutability_verified is True
+    assert cap.core_graph_sha256 == EXPECTED_CORE_GRAPH_SHA256
+    assert cap.allow_production_execution is False
+    assert cap.authorized_claimed is False
+    assert cap.capstone_digest.startswith("sha256:")
+    cap_dict = cap.to_dict()
+    assert cap_dict["all_verified"] is True
+    assert cap_dict["frontier_x"]["entangled_cadence_verified"] is True
+    assert cap_dict["frontier_y"]["waveguide_channel_staging_verified"] is True
+    assert cap_dict["frontier_z"]["sovereign_court_lockdown_verified"] is True
+
+    # 4. Sacred core graph SHA-256 remains untouched
+    ok, sha = verify_core_graph_immutability()
+    assert ok is True
+    assert sha == EXPECTED_CORE_GRAPH_SHA256

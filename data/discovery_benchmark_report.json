@@ -1,17 +1,17 @@
 {
   "benchmark_name": "VECTOR_11_AUTOMATED_THEOREM_PROVING_BENCHMARK",
-  "timestamp": "2026-10-23 07:12:02",
-  "total_conjectures": 11,
-  "theorems_proved": 8,
-  "conjectures_refuted": 3,
+  "timestamp": "2026-10-23 14:27:04",
+  "total_conjectures": 19,
+  "theorems_proved": 14,
+  "conjectures_refuted": 5,
   "false_positive_rate": 0.0,
   "false_negative_rate": 0.0,
-  "mean_hegelian_consensus_proved": 0.9991,
+  "mean_hegelian_consensus_proved": 0.999,
   "mean_dialectical_causal_gain_bits": 0.05,
-  "mean_kernel_nodes": 7.2,
-  "corpus_theorems_count": 8,
+  "mean_kernel_nodes": 7.1,
+  "corpus_theorems_count": 14,
   "monograph_path": "C:\\sol-systems\\conJecture\\FORMAL_THEOREMS_CORPUS.md",
-  "total_runtime_seconds": 7.66,
+  "total_runtime_seconds": 16.14,
   "certificates": [
     {
       "conjecture_id": "conj_demorgan_nand",
@@ -69,7 +69,7 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": true,
           "details": {
-            "consensus_order": 0.999,
+            "consensus_order": 0.9988,
             "dialectic_causal_gain": 0.05,
             "verdict": "SYNTHESIS_PROVED"
           }
@@ -79,8 +79,8 @@
       "causal_emergence_gain": 0.05,
       "counter_example_witness": null,
       "counterexample_witness": null,
-      "hegelian_consensus_order": 0.999,
-      "proof_duration_ms": 947.14,
+      "hegelian_consensus_order": 0.9988,
+      "proof_duration_ms": 1084.52,
       "is_crystallized": true
     },
     {
@@ -88,620 +88,6 @@
       "title": "Majority Gate Self-Duality Invariant",
       "latex_formula": "\\text{Maj}(\\neg A, \\neg B, \\neg C) \\iff \\neg \\text{Maj}(A, B, C)",
       "domain": "BOOLEAN_ALGEBRA",
-      "verdict": "PROVED_THEOREM",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 1.0,
-            "num_cases": 8
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": true,
-          "details": {
-            "accuracy": 1.0,
-            "delta_ei": 0.377,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": true,
-          "details": {
-            "verdict": "SURVIVED",
-            "counter_examples_found": 0,
-            "max_tolerated_strain": 0.25
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": true,
-          "details": {
-            "kernel_node_count": 7,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.377
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": true,
-          "details": {
-            "consensus_order": 0.9993,
-            "dialectic_causal_gain": 0.05,
-            "verdict": "SYNTHESIS_PROVED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 7,
-      "causal_emergence_gain": 0.05,
-      "counter_example_witness": null,
-      "counterexample_witness": null,
-      "hegelian_consensus_order": 0.9993,
-      "proof_duration_ms": 787.05,
-      "is_crystallized": true
-    },
-    {
-      "conjecture_id": "conj_xor_associativity",
-      "title": "XOR Group Associativity",
-      "latex_formula": "(A \\oplus B) \\oplus C \\iff A \\oplus (B \\oplus C)",
-      "domain": "BOOLEAN_ALGEBRA",
-      "verdict": "PROVED_THEOREM",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 1.0,
-            "num_cases": 8
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": true,
-          "details": {
-            "accuracy": 1.0,
-            "delta_ei": -0.0005,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": true,
-          "details": {
-            "verdict": "SURVIVED",
-            "counter_examples_found": 0,
-            "max_tolerated_strain": 0.25
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": true,
-          "details": {
-            "kernel_node_count": 6,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": -0.0005
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": true,
-          "details": {
-            "consensus_order": 0.999,
-            "dialectic_causal_gain": 0.05,
-            "verdict": "SYNTHESIS_PROVED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 6,
-      "causal_emergence_gain": 0.05,
-      "counter_example_witness": null,
-      "counterexample_witness": null,
-      "hegelian_consensus_order": 0.999,
-      "proof_duration_ms": 548.06,
-      "is_crystallized": true
-    },
-    {
-      "conjecture_id": "conj_adder_carry_majority",
-      "title": "Arithmetic Carry-Majority Isomorphism",
-      "latex_formula": "C_{\\text{out}}(A, B, C_{\\text{in}}) \\equiv \\text{Maj}(A, B, C_{\\text{in}})",
-      "domain": "ARITHMETIC_ALGEBRA",
-      "verdict": "PROVED_THEOREM",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 1.0,
-            "num_cases": 8
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": true,
-          "details": {
-            "accuracy": 1.0,
-            "delta_ei": 0.377,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": true,
-          "details": {
-            "verdict": "SURVIVED",
-            "counter_examples_found": 0,
-            "max_tolerated_strain": 0.25
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": true,
-          "details": {
-            "kernel_node_count": 7,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.377
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": true,
-          "details": {
-            "consensus_order": 0.9991,
-            "dialectic_causal_gain": 0.05,
-            "verdict": "SYNTHESIS_PROVED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 7,
-      "causal_emergence_gain": 0.05,
-      "counter_example_witness": null,
-      "counterexample_witness": null,
-      "hegelian_consensus_order": 0.9991,
-      "proof_duration_ms": 849.9,
-      "is_crystallized": true
-    },
-    {
-      "conjecture_id": "conj_causal_emergence_arbiter",
-      "title": "Decision Arbiter Causal Emergence Bound",
-      "latex_formula": "\\Delta EI(\\text{Maj}_3) = EI(\\text{macro}) - EI(\\text{micro}) > 0.30\\text{ bits}",
-      "domain": "CAUSAL_INFORMATION",
-      "verdict": "PROVED_THEOREM",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 1.0,
-            "num_cases": 8
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": true,
-          "details": {
-            "accuracy": 1.0,
-            "delta_ei": 0.377,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": true,
-          "details": {
-            "verdict": "SURVIVED",
-            "counter_examples_found": 0,
-            "max_tolerated_strain": 0.25
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": true,
-          "details": {
-            "kernel_node_count": 7,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.377
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": true,
-          "details": {
-            "consensus_order": 0.999,
-            "dialectic_causal_gain": 0.05,
-            "verdict": "SYNTHESIS_PROVED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 7,
-      "causal_emergence_gain": 0.05,
-      "counter_example_witness": null,
-      "counterexample_witness": null,
-      "hegelian_consensus_order": 0.999,
-      "proof_duration_ms": 840.25,
-      "is_crystallized": true
-    },
-    {
-      "conjecture_id": "conj_flawed_xor_linear",
-      "title": "Hypothetical Linear XOR Superposition",
-      "latex_formula": "A \\oplus B \\stackrel{?}{=} A + B - 0 \\implies (1 \\oplus 1 = 1)",
-      "domain": "BOOLEAN_ALGEBRA",
-      "verdict": "DISPROVED_COUNTEREXAMPLE",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 0.8113,
-            "num_cases": 4
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": false,
-          "details": {
-            "accuracy": 0.75,
-            "delta_ei": -0.0004,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": false,
-          "details": {
-            "verdict": "REFUTED",
-            "counter_examples_found": 1,
-            "max_tolerated_strain": 0.0
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": false,
-          "details": {
-            "kernel_node_count": 4,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": -0.0004
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": false,
-          "details": {
-            "consensus_order": 0.3197,
-            "dialectic_causal_gain": 0.0,
-            "verdict": "THESIS_REFUTED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 4,
-      "causal_emergence_gain": 0.0,
-      "counter_example_witness": {
-        "input_vector": {
-          "A": 1.0,
-          "B": 1.0
-        },
-        "expected_output": {
-          "Y": 1
-        },
-        "observed_output": {
-          "Y": 0
-        },
-        "margin_error": 0.9975,
-        "attack_type": "DISCRETE_WITNESS"
-      },
-      "counterexample_witness": {
-        "input_vector": {
-          "A": 1.0,
-          "B": 1.0
-        },
-        "expected_output": {
-          "Y": 1
-        },
-        "observed_output": {
-          "Y": 0
-        },
-        "margin_error": 0.9975,
-        "attack_type": "DISCRETE_WITNESS"
-      },
-      "hegelian_consensus_order": 0.3197,
-      "proof_duration_ms": 159.54,
-      "is_crystallized": false
-    },
-    {
-      "conjecture_id": "conj_flawed_even_majority",
-      "title": "Hypothetical Even Symmetry Majority Gate",
-      "latex_formula": "\\text{Maj}(A, B, C) \\stackrel{?}{=} \\text{Maj}(\\neg A, \\neg B, \\neg C)",
-      "domain": "BOOLEAN_ALGEBRA",
-      "verdict": "DISPROVED_COUNTEREXAMPLE",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 0.9544,
-            "num_cases": 8
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": false,
-          "details": {
-            "accuracy": 0.75,
-            "delta_ei": 0.377,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": false,
-          "details": {
-            "verdict": "REFUTED",
-            "counter_examples_found": 1,
-            "max_tolerated_strain": 0.0
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": false,
-          "details": {
-            "kernel_node_count": 8,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.377
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": false,
-          "details": {
-            "consensus_order": 0.2969,
-            "dialectic_causal_gain": 0.0,
-            "verdict": "THESIS_REFUTED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 8,
-      "causal_emergence_gain": 0.0,
-      "counter_example_witness": {
-        "input_vector": {
-          "A": 1.0,
-          "B": 1.0,
-          "C": 1.0
-        },
-        "expected_output": {
-          "Y": 1
-        },
-        "observed_output": {
-          "Y": 0
-        },
-        "margin_error": 0.9974,
-        "attack_type": "DISCRETE_WITNESS"
-      },
-      "counterexample_witness": {
-        "input_vector": {
-          "A": 1.0,
-          "B": 1.0,
-          "C": 1.0
-        },
-        "expected_output": {
-          "Y": 1
-        },
-        "observed_output": {
-          "Y": 0
-        },
-        "margin_error": 0.9974,
-        "attack_type": "DISCRETE_WITNESS"
-      },
-      "hegelian_consensus_order": 0.2969,
-      "proof_duration_ms": 522.08,
-      "is_crystallized": false
-    },
-    {
-      "conjecture_id": "conj_mitotic_hawking_conservation",
-      "title": "Mitotic Dual-Path Hawking Mass Conservation",
-      "latex_formula": "\\text{Tr}(\\rho_{A} + \\rho_{B}) = \\text{Tr}(\\rho_{\\text{in}}) - \\Delta E_{\\text{Hawking}}",
-      "domain": "RIEMANNIAN_GEOMETRY",
-      "verdict": "PROVED_THEOREM",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 1.0,
-            "num_cases": 8
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": true,
-          "details": {
-            "accuracy": 1.0,
-            "delta_ei": 0.377,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": true,
-          "details": {
-            "verdict": "SURVIVED",
-            "counter_examples_found": 0,
-            "max_tolerated_strain": 0.25
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": true,
-          "details": {
-            "kernel_node_count": 7,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.377
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": true,
-          "details": {
-            "consensus_order": 0.9991,
-            "dialectic_causal_gain": 0.05,
-            "verdict": "SYNTHESIS_PROVED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 7,
-      "causal_emergence_gain": 0.05,
-      "counter_example_witness": null,
-      "counterexample_witness": null,
-      "hegelian_consensus_order": 0.9991,
-      "proof_duration_ms": 813.35,
-      "is_crystallized": true
-    },
-    {
-      "conjecture_id": "conj_coprime_stwm_prefix_carry",
-      "title": "Coprime STWM Prefix Carry Orthogonality",
-      "latex_formula": "C_{\\text{out}} = G \\lor (P \\land C_{\\text{in}}) \\;\\wedge\\; \\langle \\Psi_p \\mid \\Psi_q \\rangle = \\delta_{p,q}",
-      "domain": "WAVEGUIDE_FABRIC",
-      "verdict": "PROVED_THEOREM",
-      "proof_steps": [
-        {
-          "step_index": 1,
-          "phase_name": "CONJECTURE_PARSING",
-          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
-          "passed": true,
-          "details": {
-            "entropy_score": 1.0,
-            "num_cases": 8
-          }
-        },
-        {
-          "step_index": 2,
-          "phase_name": "AFFIRMATIVE_SYNTHESIS",
-          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
-          "passed": true,
-          "details": {
-            "accuracy": 1.0,
-            "delta_ei": 0.377,
-            "max_condition_number": 1.0
-          }
-        },
-        {
-          "step_index": 3,
-          "phase_name": "ADVERSARIAL_CHALLENGE",
-          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
-          "passed": true,
-          "details": {
-            "verdict": "SURVIVED",
-            "counter_examples_found": 0,
-            "max_tolerated_strain": 0.25
-          }
-        },
-        {
-          "step_index": 4,
-          "phase_name": "CAUSAL_ABLATION",
-          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
-          "passed": true,
-          "details": {
-            "kernel_node_count": 7,
-            "compression_ratio": 0.0,
-            "kernel_delta_ei": 0.377
-          }
-        },
-        {
-          "step_index": 5,
-          "phase_name": "SYNTHESIS_ARBITRATION",
-          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
-          "passed": true,
-          "details": {
-            "consensus_order": 0.9991,
-            "dialectic_causal_gain": 0.05,
-            "verdict": "SYNTHESIS_PROVED"
-          }
-        }
-      ],
-      "minimal_causal_kernel_nodes": 7,
-      "causal_emergence_gain": 0.05,
-      "counter_example_witness": null,
-      "counterexample_witness": null,
-      "hegelian_consensus_order": 0.9991,
-      "proof_duration_ms": 844.98,
-      "is_crystallized": true
-    },
-    {
-      "conjecture_id": "conj_governed_compiler_pass_idempotence",
-      "title": "Governed Compiler Pass Admission & Replay Idempotence",
-      "latex_formula": "\\text{Replay}(\\text{Admit}(\\Pi, x)) = \\text{Admit}(\\Pi, x) \\implies H_{\\text{trace}}(x^{(1)}) = H_{\\text{trace}}(x^{(0)})",
-      "domain": "META_PLASTICITY",
       "verdict": "PROVED_THEOREM",
       "proof_steps": [
         {
@@ -764,7 +150,621 @@
       "counter_example_witness": null,
       "counterexample_witness": null,
       "hegelian_consensus_order": 0.9989,
-      "proof_duration_ms": 809.79,
+      "proof_duration_ms": 862.24,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_xor_associativity",
+      "title": "XOR Group Associativity",
+      "latex_formula": "(A \\oplus B) \\oplus C \\iff A \\oplus (B \\oplus C)",
+      "domain": "BOOLEAN_ALGEBRA",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": -0.0005,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 6,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": -0.0005
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9991,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 6,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9991,
+      "proof_duration_ms": 700.71,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_adder_carry_majority",
+      "title": "Arithmetic Carry-Majority Isomorphism",
+      "latex_formula": "C_{\\text{out}}(A, B, C_{\\text{in}}) \\equiv \\text{Maj}(A, B, C_{\\text{in}})",
+      "domain": "ARITHMETIC_ALGEBRA",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.999,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.999,
+      "proof_duration_ms": 991.06,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_causal_emergence_arbiter",
+      "title": "Decision Arbiter Causal Emergence Bound",
+      "latex_formula": "\\Delta EI(\\text{Maj}_3) = EI(\\text{macro}) - EI(\\text{micro}) > 0.30\\text{ bits}",
+      "domain": "CAUSAL_INFORMATION",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9987,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9987,
+      "proof_duration_ms": 956.75,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_flawed_xor_linear",
+      "title": "Hypothetical Linear XOR Superposition",
+      "latex_formula": "A \\oplus B \\stackrel{?}{=} A + B - 0 \\implies (1 \\oplus 1 = 1)",
+      "domain": "BOOLEAN_ALGEBRA",
+      "verdict": "DISPROVED_COUNTEREXAMPLE",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 0.8113,
+            "num_cases": 4
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": false,
+          "details": {
+            "accuracy": 0.75,
+            "delta_ei": -0.0004,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": false,
+          "details": {
+            "verdict": "REFUTED",
+            "counter_examples_found": 1,
+            "max_tolerated_strain": 0.0
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": false,
+          "details": {
+            "kernel_node_count": 4,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": -0.0004
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": false,
+          "details": {
+            "consensus_order": 0.2907,
+            "dialectic_causal_gain": 0.0,
+            "verdict": "THESIS_REFUTED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 4,
+      "causal_emergence_gain": 0.0,
+      "counter_example_witness": {
+        "input_vector": {
+          "A": 1.0,
+          "B": 1.0
+        },
+        "expected_output": {
+          "Y": 1
+        },
+        "observed_output": {
+          "Y": 0
+        },
+        "margin_error": 0.9975,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "counterexample_witness": {
+        "input_vector": {
+          "A": 1.0,
+          "B": 1.0
+        },
+        "expected_output": {
+          "Y": 1
+        },
+        "observed_output": {
+          "Y": 0
+        },
+        "margin_error": 0.9975,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "hegelian_consensus_order": 0.2907,
+      "proof_duration_ms": 159.73,
+      "is_crystallized": false
+    },
+    {
+      "conjecture_id": "conj_flawed_even_majority",
+      "title": "Hypothetical Even Symmetry Majority Gate",
+      "latex_formula": "\\text{Maj}(A, B, C) \\stackrel{?}{=} \\text{Maj}(\\neg A, \\neg B, \\neg C)",
+      "domain": "BOOLEAN_ALGEBRA",
+      "verdict": "DISPROVED_COUNTEREXAMPLE",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 0.9544,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": false,
+          "details": {
+            "accuracy": 0.75,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": false,
+          "details": {
+            "verdict": "REFUTED",
+            "counter_examples_found": 1,
+            "max_tolerated_strain": 0.0
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": false,
+          "details": {
+            "kernel_node_count": 8,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": false,
+          "details": {
+            "consensus_order": 0.2902,
+            "dialectic_causal_gain": 0.0,
+            "verdict": "THESIS_REFUTED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 8,
+      "causal_emergence_gain": 0.0,
+      "counter_example_witness": {
+        "input_vector": {
+          "A": 1.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "expected_output": {
+          "Y": 1
+        },
+        "observed_output": {
+          "Y": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "counterexample_witness": {
+        "input_vector": {
+          "A": 1.0,
+          "B": 1.0,
+          "C": 1.0
+        },
+        "expected_output": {
+          "Y": 1
+        },
+        "observed_output": {
+          "Y": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "hegelian_consensus_order": 0.2902,
+      "proof_duration_ms": 632.35,
+      "is_crystallized": false
+    },
+    {
+      "conjecture_id": "conj_mitotic_hawking_conservation",
+      "title": "Mitotic Dual-Path Hawking Mass Conservation",
+      "latex_formula": "\\text{Tr}(\\rho_{A} + \\rho_{B}) = \\text{Tr}(\\rho_{\\text{in}}) - \\Delta E_{\\text{Hawking}}",
+      "domain": "RIEMANNIAN_GEOMETRY",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.999,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.999,
+      "proof_duration_ms": 932.64,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_coprime_stwm_prefix_carry",
+      "title": "Coprime STWM Prefix Carry Orthogonality",
+      "latex_formula": "C_{\\text{out}} = G \\lor (P \\land C_{\\text{in}}) \\;\\wedge\\; \\langle \\Psi_p \\mid \\Psi_q \\rangle = \\delta_{p,q}",
+      "domain": "WAVEGUIDE_FABRIC",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.999,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.999,
+      "proof_duration_ms": 934.41,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_governed_compiler_pass_idempotence",
+      "title": "Governed Compiler Pass Admission & Replay Idempotence",
+      "latex_formula": "\\text{Replay}(\\text{Admit}(\\Pi, x)) = \\text{Admit}(\\Pi, x) \\implies H_{\\text{trace}}(x^{(1)}) = H_{\\text{trace}}(x^{(0)})",
+      "domain": "META_PLASTICITY",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.999,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.999,
+      "proof_duration_ms": 938.13,
       "is_crystallized": true
     },
     {
@@ -823,7 +823,7 @@
           "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
           "passed": false,
           "details": {
-            "consensus_order": 0.2617,
+            "consensus_order": 0.303,
             "dialectic_causal_gain": 0.0,
             "verdict": "THESIS_REFUTED"
           }
@@ -861,8 +861,624 @@
         "margin_error": 0.9974,
         "attack_type": "DISCRETE_WITNESS"
       },
-      "hegelian_consensus_order": 0.2617,
-      "proof_duration_ms": 535.27,
+      "hegelian_consensus_order": 0.303,
+      "proof_duration_ms": 633.93,
+      "is_crystallized": false
+    },
+    {
+      "conjecture_id": "conj_hcam_cross_shard_consensus_gc",
+      "title": "HCAM Associative Reduction & Cross-Shard Quorum Consensus Isomorphism",
+      "latex_formula": "\\bigoplus_{b=0}^{B-1} \\text{Bank}_b(q) = \\text{Word}(q) \\;\\wedge\\; \\text{Quorum}_{\\text{global}}(\\mathcal{S}) \\implies \\text{Live}(\\mathcal{R}) \\cap \\text{GC}_{\\text{reclaimed}} = \\emptyset",
+      "domain": "CAUSAL_INFORMATION",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9989,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9989,
+      "proof_duration_ms": 1152.06,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_waveguide_predicated_scoreboard_simd",
+      "title": "Waveguide Predicated Diamond & Scoreboard Serial Equivalence",
+      "latex_formula": "\\text{Exec}_{\\text{pred}}(P, T, F) = (P \\land T) \\lor (\\neg P \\land F) \\;\\wedge\\; \\text{Barrier}(\\text{RAW},\\text{WAW},\\text{WAR}) \\implies \\sigma_{\\text{SIMD}} \\equiv \\sigma_{\\text{serial}}",
+      "domain": "WAVEGUIDE_FABRIC",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9991,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9991,
+      "proof_duration_ms": 1105.15,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_burnin_stability_offline_attestation",
+      "title": "Sovereign Burn-In Stability Ledger & Offline Digest Attestation Closure",
+      "latex_formula": "\\Delta_{\\text{reg}} = 0 \\;\\wedge\\; H_{\\text{SHA256}}(\\mathcal{A}_{\\text{recomputed}}) = H_{\\text{SHA256}}(\\mathcal{A}_{\\text{recorded}}) \\implies \\text{OfflineReady}(\\mathcal{A}) \\land \\neg\\text{RealSigClaimed}",
+      "domain": "META_PLASTICITY",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9991,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9991,
+      "proof_duration_ms": 940.78,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_false_unbarriered_alias_reorder_equivalence",
+      "title": "Hypothetical Unbarriered Alias Reorder Equivalence",
+      "latex_formula": "\\text{Reorder}_{\\text{unbarriered}}(\\text{Store}(a, v_1), \\text{Load}(a)) \\stackrel{?}{\\equiv} \\text{Serial}(\\text{Store}(a, v_1), \\text{Load}(a))",
+      "domain": "WAVEGUIDE_FABRIC",
+      "verdict": "DISPROVED_COUNTEREXAMPLE",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 0.9544,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": false,
+          "details": {
+            "accuracy": 0.75,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": false,
+          "details": {
+            "verdict": "REFUTED",
+            "counter_examples_found": 1,
+            "max_tolerated_strain": 0.0
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": false,
+          "details": {
+            "kernel_node_count": 8,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": false,
+          "details": {
+            "consensus_order": 0.296,
+            "dialectic_causal_gain": 0.0,
+            "verdict": "THESIS_REFUTED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 8,
+      "causal_emergence_gain": 0.0,
+      "counter_example_witness": {
+        "input_vector": {
+          "RAW_HAZARD": 1.0,
+          "WAW_HAZARD": 1.0,
+          "NO_BARRIER": 1.0
+        },
+        "expected_output": {
+          "SERIAL_EQUIV": 1
+        },
+        "observed_output": {
+          "SERIAL_EQUIV": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "counterexample_witness": {
+        "input_vector": {
+          "RAW_HAZARD": 1.0,
+          "WAW_HAZARD": 1.0,
+          "NO_BARRIER": 1.0
+        },
+        "expected_output": {
+          "SERIAL_EQUIV": 1
+        },
+        "observed_output": {
+          "SERIAL_EQUIV": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "hegelian_consensus_order": 0.296,
+      "proof_duration_ms": 663.85,
+      "is_crystallized": false
+    },
+    {
+      "conjecture_id": "conj_entangled_cadence_wavefront_sync",
+      "title": "Entangled Multi-Manifold Cadence & Wavefront Alignment Coherence",
+      "latex_formula": "(\\text{Prepare} \\land \\text{Consensus} \\land \\text{Calibration}) \\;\\wedge\\; |\\Delta \\omega| \\le \\tau_{\\text{guard}} \\;\\wedge\\; \\sigma_{\\text{wf}} \\le \\tau_{\\text{window}} \\implies C_{\\text{group}} \\ge 0.95",
+      "domain": "RIEMANNIAN_GEOMETRY",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9992,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9992,
+      "proof_duration_ms": 946.1,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_waveguide_channel_compaction_staging",
+      "title": "Waveguide Channel Kernel Compaction & No-Op Dry-Run Staging Equivalence",
+      "latex_formula": "\\text{Safe}_{\\text{chan}}(\\mathcal{K}_{5}) \\;\\wedge\\; (T_{\\text{compact}} \\equiv T_{\\text{serial}}) \\;\\wedge\\; (\\text{PhysExec} = 0) \\implies \\text{SafeStaging}(\\mathcal{P})",
+      "domain": "WAVEGUIDE_FABRIC",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9992,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9992,
+      "proof_duration_ms": 964.59,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_sovereign_court_lockdown_closure",
+      "title": "Sovereign Court-Supervised Promotion & System Lockdown Closure",
+      "latex_formula": "\\text{ValidToken}_{\\text{shadow}}(\\tau) \\;\\wedge\\; (\\Delta_{\\text{freeze}} = 0 \\land \\Delta_{\\text{lockdown}} = 0) \\;\\wedge\\; \\text{Docket}_{\\text{A..Z}} \\implies \\text{Sealed}(\\Omega_{26}) \\land \\neg\\text{LiveExec}",
+      "domain": "META_PLASTICITY",
+      "verdict": "PROVED_THEOREM",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 1.0,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": true,
+          "details": {
+            "accuracy": 1.0,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": true,
+          "details": {
+            "verdict": "SURVIVED",
+            "counter_examples_found": 0,
+            "max_tolerated_strain": 0.25
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": true,
+          "details": {
+            "kernel_node_count": 7,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": true,
+          "details": {
+            "consensus_order": 0.9992,
+            "dialectic_causal_gain": 0.05,
+            "verdict": "SYNTHESIS_PROVED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 7,
+      "causal_emergence_gain": 0.05,
+      "counter_example_witness": null,
+      "counterexample_witness": null,
+      "hegelian_consensus_order": 0.9992,
+      "proof_duration_ms": 955.41,
+      "is_crystallized": true
+    },
+    {
+      "conjecture_id": "conj_false_unbounded_autonomous_cadence_bypass",
+      "title": "Hypothetical Unbounded Autonomous Cadence Guard Bypass",
+      "latex_formula": "\\text{Coherence}(\\text{BypassGuard}(\\Delta \\omega \\gg \\tau_{\\text{guard}})) \\stackrel{?}{\\ge} 0.95",
+      "domain": "RIEMANNIAN_GEOMETRY",
+      "verdict": "DISPROVED_COUNTEREXAMPLE",
+      "proof_steps": [
+        {
+          "step_index": 1,
+          "phase_name": "CONJECTURE_PARSING",
+          "claim": "Verify non-triviality of candidate conjecture (Shannon entropy H > 0.0).",
+          "passed": true,
+          "details": {
+            "entropy_score": 0.9544,
+            "num_cases": 8
+          }
+        },
+        {
+          "step_index": 2,
+          "phase_name": "AFFIRMATIVE_SYNTHESIS",
+          "claim": "Construct affirmative continuous Riemannian manifold satisfying the conjecture.",
+          "passed": false,
+          "details": {
+            "accuracy": 0.75,
+            "delta_ei": 0.377,
+            "max_condition_number": 1.0
+          }
+        },
+        {
+          "step_index": 3,
+          "phase_name": "ADVERSARIAL_CHALLENGE",
+          "claim": "Exhaust discrete state space and inject Lie-algebraic metric strain (||\u03b4S|| \u2264 0.20).",
+          "passed": false,
+          "details": {
+            "verdict": "REFUTED",
+            "counter_examples_found": 1,
+            "max_tolerated_strain": 0.0
+          }
+        },
+        {
+          "step_index": 4,
+          "phase_name": "CAUSAL_ABLATION",
+          "claim": "Distill Minimal Sufficient Causal Kernel (MSCK) achieving Occam Emergence.",
+          "passed": false,
+          "details": {
+            "kernel_node_count": 8,
+            "compression_ratio": 0.0,
+            "kernel_delta_ei": 0.377
+          }
+        },
+        {
+          "step_index": 5,
+          "phase_name": "SYNTHESIS_ARBITRATION",
+          "claim": "Phase-lock dual swarm clusters into Hegelian-Kuramoto consensus (r \u2265 0.70).",
+          "passed": false,
+          "details": {
+            "consensus_order": 0.2664,
+            "dialectic_causal_gain": 0.0,
+            "verdict": "THESIS_REFUTED"
+          }
+        }
+      ],
+      "minimal_causal_kernel_nodes": 8,
+      "causal_emergence_gain": 0.0,
+      "counter_example_witness": {
+        "input_vector": {
+          "RESONANT_FEEDBACK": 1.0,
+          "GUARD_BYPASSED": 1.0,
+          "PHASE_SKEW_HIGH": 1.0
+        },
+        "expected_output": {
+          "COHERENT": 1
+        },
+        "observed_output": {
+          "COHERENT": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "counterexample_witness": {
+        "input_vector": {
+          "RESONANT_FEEDBACK": 1.0,
+          "GUARD_BYPASSED": 1.0,
+          "PHASE_SKEW_HIGH": 1.0
+        },
+        "expected_output": {
+          "COHERENT": 1
+        },
+        "observed_output": {
+          "COHERENT": 0
+        },
+        "margin_error": 0.9974,
+        "attack_type": "DISCRETE_WITNESS"
+      },
+      "hegelian_consensus_order": 0.2664,
+      "proof_duration_ms": 584.05,
       "is_crystallized": false
     }
   ]

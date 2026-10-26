@@ -31,13 +31,22 @@ def generate_benchmark_report():
     # 1. Shader status
     shader_status = engine.get_shader_status()
 
-    # 2. Benchmark sound conjectures
+    # 2. Benchmark sound conjectures (14 canonical theorems)
     sound_conjectures = [
         "conj_demorgan_nand",
         "conj_majority_self_duality",
         "conj_xor_associativity",
         "conj_adder_carry_majority",
-        "conj_causal_emergence_arbiter"
+        "conj_causal_emergence_arbiter",
+        "conj_mitotic_hawking_conservation",
+        "conj_coprime_stwm_prefix_carry",
+        "conj_governed_compiler_pass_idempotence",
+        "conj_hcam_cross_shard_consensus_gc",
+        "conj_waveguide_predicated_scoreboard_simd",
+        "conj_burnin_stability_offline_attestation",
+        "conj_entangled_cadence_wavefront_sync",
+        "conj_waveguide_channel_compaction_staging",
+        "conj_sovereign_court_lockdown_closure",
     ]
     sound_results = []
     for cid in sound_conjectures:
@@ -45,10 +54,13 @@ def generate_benchmark_report():
         rep = engine.prove_conjecture_wgsl(conj, metric_strain_eps=0.05)
         sound_results.append(rep.to_dict())
 
-    # 3. Benchmark flawed conjectures
+    # 3. Benchmark flawed conjectures (5 canonical counterexamples)
     flawed_conjectures = [
         "conj_flawed_xor_linear",
-        "conj_flawed_even_majority"
+        "conj_flawed_even_majority",
+        "conj_false_resonant_wall_linear_pdm",
+        "conj_false_unbarriered_alias_reorder_equivalence",
+        "conj_false_unbounded_autonomous_cadence_bypass",
     ]
     flawed_results = []
     for cid in flawed_conjectures:

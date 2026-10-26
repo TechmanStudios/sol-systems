@@ -3488,6 +3488,639 @@ class GovernanceCourtLedger:
             "frontier_t_summary_digest": ft_digest,
         }
 
+    def record_hcam_shard_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier U `HCAMShardEpisodeRecord` (Banked HCAM Associative Memory,
+        Cross-Shard Geodesic Consensus & Live Topology Migration / GC) into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="banked_hcam_4shard_consensus_and_reachability_gc"`)
+        """
+        int_id = str(getattr(record, "interaction_id", f"hcam-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:hcam-shard:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = (
+            getattr(record, "candidate_packet", None)
+            or getattr(record, "sol_lens_packet", None)
+            or getattr(record, "proof_packet", {})
+        )
+        packet_id = str(pkt.get("packet_id", f"pkt:hcam-shard:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "hcam_shard_consensus_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier U HCAM shard consensus metadata verification failed (fail-closed).")
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        model_used = str(getattr(telemetry, "model_used", "gemini-4-argon") or "gemini-4-argon")
+        interaction_id = int_id
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(
+            getattr(record, "selected_option_id", "opt_banked_hcam_4shard_quorum_gc")
+        )
+        selected_opt_name = "Banked HCAM Associative Recall, 4-Shard Quorum Consensus & Reachability GC"
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = c0_replayed_digest
+        final_state_digest = c1_replayed_digest
+
+        spec = getattr(record, "calibration_spec", None)
+        rationale_txt = str(
+            getattr(
+                spec,
+                "cohomological_rationale",
+                "Banked 32b/64b HCAM reduction trees, 4-shard quorum consensus, shadow topology migration, and root-preserving GC.",
+            )
+        )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.local_quorum_shards),
+                    0.0,
+                    1.0,
+                    float(record.cycle1_audit.orphan_nodes_reclaimed),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide HCAM & Cross-Shard Consensus Governance Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            if telemetry is not None:
+                self._insert_telemetry_signatures(
+                    run_id, "HCAM_Cross_Shard_Consensus_And_GC_Synthesizer", telemetry
+                )
+
+            fu_ver = getattr(record, "frontier_u_verification", {}) or {}
+            fu_verified = bool(fu_ver.get("hcam_shard_verified", True))
+            fu_digest = str(
+                fu_ver.get("frontier_u_summary_digest")
+                or getattr(record, "frontier_u_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "banked_hcam_4shard_consensus_and_reachability_gc",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.local_quorum_shards),
+                    float(record.cycle1_audit.local_quorum_shards),
+                    float(record.cycle1_audit.orphan_nodes_reclaimed),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"hcam-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "local_quorum_shards": record.cycle0_audit.local_quorum_shards,
+                            "global_quorum_met": record.cycle0_audit.global_quorum_met,
+                            "orphan_nodes_reclaimed": record.cycle0_audit.orphan_nodes_reclaimed,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "local_quorum_shards": record.cycle1_audit.local_quorum_shards,
+                            "global_quorum_met": record.cycle1_audit.global_quorum_met,
+                            "orphan_nodes_reclaimed": record.cycle1_audit.orphan_nodes_reclaimed,
+                            "frontier_u_verified": fu_verified,
+                            "frontier_u_summary_digest": fu_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_u_verified": fu_verified,
+            "frontier_u_summary_digest": fu_digest,
+        }
+
+    def record_waveguide_simd_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier V `WaveguideSIMDEpisodeRecord` (Waveguide Arithmetic Pipeline,
+        Predicated Branch Diamonds, Scoreboard Hazard Scheduler & Sovereign SIMD Multicore Assembly) into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="waveguide_predicated_scoreboard_and_4core_simd_calibration"`)
+        """
+        int_id = str(getattr(record, "interaction_id", f"wgsimd-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:waveguide-simd:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = (
+            getattr(record, "candidate_packet", None)
+            or getattr(record, "sol_lens_packet", None)
+            or getattr(record, "proof_packet", {})
+        )
+        packet_id = str(pkt.get("packet_id", f"pkt:waveguide-simd:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "waveguide_simd_pipeline_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier V Waveguide SIMD pipeline metadata verification failed (fail-closed).")
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        model_used = str(getattr(telemetry, "model_used", "gemini-4-argon") or "gemini-4-argon")
+        interaction_id = int_id
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(
+            getattr(record, "selected_option_id", "opt_waveguide_predicated_scoreboard_4core_simd")
+        )
+        selected_opt_name = "Waveguide Arithmetic, Predicated Branch Diamonds, Scoreboard & 4-Core SIMD"
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = c0_replayed_digest
+        final_state_digest = c1_replayed_digest
+
+        spec = getattr(record, "calibration_spec", None)
+        rationale_txt = str(
+            getattr(
+                spec,
+                "cohomological_rationale",
+                "Speculative 32b/64b ADD/SUB with prefix-carry, flag-safe branch-diamond predication, alias-barriered scoreboard, and 4-core 64-bit SIMD.",
+            )
+        )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.assembled_core_count),
+                    0.0,
+                    1.0,
+                    float(record.cycle1_audit.fault_matrix_passed_cases),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide Waveguide SIMD & Hazard Scoreboard Governance Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            if telemetry is not None:
+                self._insert_telemetry_signatures(
+                    run_id, "Waveguide_Predicated_Scoreboard_And_SIMD_Synthesizer", telemetry
+                )
+
+            fv_ver = getattr(record, "frontier_v_verification", {}) or {}
+            fv_verified = bool(fv_ver.get("waveguide_simd_verified", True))
+            fv_digest = str(
+                fv_ver.get("frontier_v_summary_digest")
+                or getattr(record, "frontier_v_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "waveguide_predicated_scoreboard_and_4core_simd_calibration",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.fault_matrix_passed_cases),
+                    float(record.cycle1_audit.fault_matrix_passed_cases),
+                    float(record.cycle1_audit.assembled_core_count),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"wgsimd-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "schedule_serial_equivalent": record.cycle0_audit.schedule_serial_equivalent,
+                            "fault_matrix_passed_cases": record.cycle0_audit.fault_matrix_passed_cases,
+                            "assembled_core_count": record.cycle0_audit.assembled_core_count,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "schedule_serial_equivalent": record.cycle1_audit.schedule_serial_equivalent,
+                            "fault_matrix_passed_cases": record.cycle1_audit.fault_matrix_passed_cases,
+                            "assembled_core_count": record.cycle1_audit.assembled_core_count,
+                            "frontier_v_verified": fv_verified,
+                            "frontier_v_summary_digest": fv_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_v_verified": fv_verified,
+            "frontier_v_summary_digest": fv_digest,
+        }
+
+    def record_burnin_attestation_episode(
+        self,
+        record: Any,
+    ) -> Dict[str, Any]:
+        """
+        Persists a Frontier W `BurnInAttestationEpisodeRecord` (Sovereign Burn-In Runtime,
+        Long-Horizon Stability Ledger & Attested Distribution Package Archive / Offline Verification Kit) into:
+        - `governance_court_runs`
+        - `sol_edge_runtime_events` (4-event streams for Cycle 0 QUARANTINE and Cycle 1 ELIGIBLE)
+        - `gemini_thought_signatures`
+        - `cohomological_repair_records` (`repair_kind="sovereign_burnin_stability_ledger_and_offline_attestation"`)
+        """
+        int_id = str(getattr(record, "interaction_id", f"burnin-{record.experiment_id}"))
+        int_suffix = re.sub(r"[-_.]{2,}", "-", re.sub(r"[^a-z0-9_.-]+", "-", int_id[-10:].lower())).strip("-_.") or "0"
+        run_id = f"run:burnin-attestation:{record.experiment_id}:{int_suffix}"[:128]
+        pkt = (
+            getattr(record, "candidate_packet", None)
+            or getattr(record, "sol_lens_packet", None)
+            or getattr(record, "proof_packet", {})
+        )
+        packet_id = str(pkt.get("packet_id", f"pkt:burnin-attestation:{int_suffix}"))
+        study_name = str(record.study_name)
+        run_mode = "burnin_attestation_observatory"
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True)):
+            raise ValueError("Frontier W Burn-In attestation metadata verification failed (fail-closed).")
+        telemetry = getattr(record, "reasoning_telemetry", None)
+        model_used = str(getattr(telemetry, "model_used", "gemini-4-argon") or "gemini-4-argon")
+        interaction_id = int_id
+        t_level = str(getattr(telemetry, "thinking_level", "high") or "high")
+        selected_opt_id = str(
+            getattr(record, "selected_option_id", "opt_sovereign_burnin_stability_ledger_offline_kit")
+        )
+        selected_opt_name = "Sovereign Burn-In Runtime, Stability Ledger & Offline Package Attestation"
+        policy_status = str(record.cycle1_audit.policy_status)
+        runtime_status = "COMPLETED"
+        next_transition = "PROMOTE_IF_REVIEWED"
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=record.cycle0_audit,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=record.cycle1_audit,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = c0_replayed_digest
+        final_state_digest = c1_replayed_digest
+
+        spec = getattr(record, "calibration_spec", None)
+        rationale_txt = str(
+            getattr(
+                spec,
+                "cohomological_rationale",
+                "6-cycle bounded shadow burn-in, SHA-256 StabilityLedger hash chain, local archive digest attestation, and 7-step offline kit.",
+            )
+        )
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used=model_used,
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    model_used,
+                    interaction_id,
+                    t_level,
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    runtime_status,
+                    next_transition,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle1_audit.cycles_executed),
+                    0.0,
+                    1.0,
+                    float(record.cycle1_audit.ready_verification_steps),
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    "SOL-Decide Sovereign Burn-In & Offline Attestation Governance Court",
+                    json.dumps(pkt, sort_keys=True),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            if telemetry is not None:
+                self._insert_telemetry_signatures(
+                    run_id, "Sovereign_BurnIn_Stability_Ledger_And_Attestation_Synthesizer", telemetry
+                )
+
+            fw_ver = getattr(record, "frontier_w_verification", {}) or {}
+            fw_verified = bool(fw_ver.get("burnin_attestation_verified", True))
+            fw_digest = str(
+                fw_ver.get("frontier_w_summary_digest")
+                or getattr(record, "frontier_w_summary_digest", "")
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    "sovereign_burnin_stability_ledger_and_offline_attestation",
+                    selected_opt_id,
+                    int(record.cycle0_audit.effective_beta_1),
+                    int(record.cycle1_audit.effective_beta_1),
+                    float(record.cycle0_audit.ready_verification_steps),
+                    float(record.cycle1_audit.ready_verification_steps),
+                    float(record.cycle1_audit.cycles_executed),
+                    prior_q_digest,
+                    final_state_digest,
+                    f"burnin-c0:{int_suffix}",
+                    interaction_id,
+                    json.dumps(
+                        {
+                            "cycles_executed": record.cycle0_audit.cycles_executed,
+                            "ledger_chain_valid": record.cycle0_audit.ledger_chain_valid,
+                            "ready_verification_steps": record.cycle0_audit.ready_verification_steps,
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "cycles_executed": record.cycle1_audit.cycles_executed,
+                            "ledger_chain_valid": record.cycle1_audit.ledger_chain_valid,
+                            "ready_verification_steps": record.cycle1_audit.ready_verification_steps,
+                            "frontier_w_verified": fw_verified,
+                            "frontier_w_summary_digest": fw_digest,
+                        }
+                    ),
+                    rationale_txt,
+                ),
+            )
+
+            sig_count_row = self._conn.execute(
+                "SELECT COUNT(*) AS cnt FROM gemini_thought_signatures WHERE run_id = ?",
+                (run_id,),
+            ).fetchone()
+            thought_sig_count = int(sig_count_row["cnt"]) if sig_count_row else 0
+
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "experiment_id": record.experiment_id,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "thought_signature_count": thought_sig_count,
+            "frontier_w_verified": fw_verified,
+            "frontier_w_summary_digest": fw_digest,
+        }
+
     def record_release_signature(
         self,
         run_id: str,
@@ -3663,7 +4296,7 @@ class GovernanceCourtLedger:
     @staticmethod
     def _verify_continuum_frontier_metadata(r_mode: str, proof_packet_json_str: str) -> bool:
         """
-        Verifies embedded Frontier K/L/N/O/P/Q/R/S/T verification metadata inside `proof_packet_json`.
+        Verifies embedded Frontier K/L/N/O/P/Q/R/S/T/U/V/W verification metadata inside `proof_packet_json`.
         """
         try:
             pkt = json.loads(str(proof_packet_json_str))
@@ -4116,6 +4749,561 @@ class GovernanceCourtLedger:
                 ).hexdigest()
                 if claimed_ft_digest != expected_ft_digest:
                     return False
+
+            fu = pkt.get("frontier_u_verification")
+            if r_mode == "hcam_shard_consensus_observatory" and not isinstance(fu, dict):
+                return False
+            if fu is not None:
+                if not isinstance(fu, dict) or fu.get("hcam_shard_verified") is not True:
+                    return False
+                har = fu.get("hcam_associative_recall")
+                csc = fu.get("cross_shard_consensus")
+                tgm = fu.get("transactional_geodesic_and_migration")
+                mgc = fu.get("manifold_garbage_collection")
+                ftp_u = fu.get("formal_theorem_proof")
+                eli_u = fu.get("eligibility_interlock")
+                c0u = fu.get("cycle0_audit")
+                c1u = fu.get("cycle1_audit")
+                if (
+                    not isinstance(har, dict)
+                    or not isinstance(csc, dict)
+                    or not isinstance(tgm, dict)
+                    or not isinstance(mgc, dict)
+                    or not isinstance(ftp_u, dict)
+                    or not isinstance(eli_u, dict)
+                    or not isinstance(c0u, dict)
+                    or not isinstance(c1u, dict)
+                ):
+                    return False
+                u_commit_ok = csc.get("cycle1_consensus_commit_verified", csc.get("consensus_commit_verified"))
+                u_mig_ok = tgm.get("cycle1_migration_committed_shadow", tgm.get("migration_committed_shadow"))
+                u_orphans = int(mgc.get("cycle1_orphan_nodes_reclaimed", mgc.get("orphan_nodes_reclaimed", 0)))
+                u_live_root = mgc.get("cycle1_live_root_reclaimed", mgc.get("live_root_reclaimed"))
+                if (
+                    har.get("assembled_32b_hex") not in ("0x7d5d7757", "0xdeadbeef")
+                    or har.get("assembled_64b_hex") not in ("0x78005655775757", "0x0123456789abcdef")
+                    or har.get("word_assembly_verified") is not True
+                    or int(csc.get("cycle1_local_quorum_shards", 0)) < 4
+                    or csc.get("cycle1_global_quorum_met") is not True
+                    or u_commit_ok is not True
+                    or u_mig_ok is not True
+                    or u_orphans < 2
+                    or u_live_root is not False
+                    or ftp_u.get("verdict") != "PROVED_THEOREM"
+                    or eli_u.get("production_mutation_allowed") is not False
+                    or eli_u.get("authorized_claimed") is not False
+                    or eli_u.get("sacred_core_immutable") is not True
+                    or c0u.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                    or c1u.get("policy_status") != "ELIGIBLE"
+                ):
+                    return False
+                claimed_fu_digest = fu.get("frontier_u_summary_digest") or fu.get("summary_digest")
+                if not isinstance(claimed_fu_digest, str) or not claimed_fu_digest.startswith("sha256:"):
+                    return False
+                fu_digest_payload = {
+                    "experiment_id": str(fu.get("experiment_id", "")),
+                    "frontier_id": str(fu.get("frontier_id", "Frontier_U")),
+                    "assembled_32b_hex": str(har.get("assembled_32b_hex", "")),
+                    "assembled_64b_hex": str(har.get("assembled_64b_hex", "")),
+                    "local_quorum_shards": int(csc.get("cycle1_local_quorum_shards", 0)),
+                    "global_quorum_met": bool(csc.get("cycle1_global_quorum_met", False)),
+                    "orphan_nodes_reclaimed": u_orphans,
+                    "cycle0_final_chain_hash": str(c0u.get("final_chain_hash", "")),
+                    "cycle1_final_chain_hash": str(c1u.get("final_chain_hash", "")),
+                }
+                expected_fu_digest = "sha256:" + hashlib.sha256(
+                    json.dumps(fu_digest_payload, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+                if claimed_fu_digest != expected_fu_digest:
+                    return False
+
+            fv = pkt.get("frontier_v_verification")
+            if r_mode == "waveguide_simd_pipeline_observatory" and not isinstance(fv, dict):
+                return False
+            if fv is not None:
+                if not isinstance(fv, dict) or fv.get("waveguide_simd_verified") is not True:
+                    return False
+                wap = fv.get("waveguide_arithmetic_and_predication")
+                sma = fv.get("scoreboard_and_memory_alias")
+                smr = fv.get("simd_multicore_and_route_rebalance")
+                ftp_v = fv.get("formal_theorem_proof")
+                eli_v = fv.get("eligibility_interlock")
+                c0v = fv.get("cycle0_audit")
+                c1v = fv.get("cycle1_audit")
+                if (
+                    not isinstance(wap, dict)
+                    or not isinstance(sma, dict)
+                    or not isinstance(smr, dict)
+                    or not isinstance(ftp_v, dict)
+                    or not isinstance(eli_v, dict)
+                    or not isinstance(c0v, dict)
+                    or not isinstance(c1v, dict)
+                ):
+                    return False
+                if (
+                    wap.get("add_32b_oracle_match") is not True
+                    or wap.get("sub_32b_oracle_match") is not True
+                    or wap.get("add_64b_oracle_match") is not True
+                    or wap.get("sub_64b_oracle_match") is not True
+                    or int(wap.get("predicated_diamonds_converted", 0)) < 1
+                    or wap.get("flags_externally_visible") is not False
+                    or sma.get("cycle1_schedule_serial_equivalent") is not True
+                    or int(smr.get("assembled_core_count", 0)) != 4
+                    or int(smr.get("simd_lane_width", 0)) != 64
+                    or int(smr.get("fault_matrix_passed_cases", 0)) < 33
+                    or ftp_v.get("verdict") != "PROVED_THEOREM"
+                    or ftp_v.get("refuted_verdict") not in ("DISPROVED_COUNTEREXAMPLE", "REFUTED_COUNTEREXAMPLE")
+                    or eli_v.get("production_mutation_allowed") is not False
+                    or eli_v.get("authorized_claimed") is not False
+                    or eli_v.get("sacred_core_immutable") is not True
+                    or c0v.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                    or c1v.get("policy_status") != "ELIGIBLE"
+                ):
+                    return False
+                claimed_fv_digest = fv.get("frontier_v_summary_digest") or fv.get("summary_digest")
+                if not isinstance(claimed_fv_digest, str) or not claimed_fv_digest.startswith("sha256:"):
+                    return False
+                fv_digest_payload = {
+                    "experiment_id": str(fv.get("experiment_id", "")),
+                    "frontier_id": str(fv.get("frontier_id", "Frontier_V")),
+                    "add_64b_oracle_match": bool(wap.get("add_64b_oracle_match", False)),
+                    "sub_64b_oracle_match": bool(wap.get("sub_64b_oracle_match", False)),
+                    "predicated_diamonds_converted": int(wap.get("predicated_diamonds_converted", 0)),
+                    "assembled_core_count": int(smr.get("assembled_core_count", 0)),
+                    "fault_matrix_passed_cases": int(smr.get("fault_matrix_passed_cases", 0)),
+                    "cycle0_final_chain_hash": str(c0v.get("final_chain_hash", "")),
+                    "cycle1_final_chain_hash": str(c1v.get("final_chain_hash", "")),
+                }
+                expected_fv_digest = "sha256:" + hashlib.sha256(
+                    json.dumps(fv_digest_payload, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+                if claimed_fv_digest != expected_fv_digest:
+                    return False
+
+            fw = pkt.get("frontier_w_verification")
+            if r_mode == "burnin_attestation_observatory" and not isinstance(fw, dict):
+                return False
+            if fw is not None:
+                if not isinstance(fw, dict) or fw.get("burnin_attestation_verified") is not True:
+                    return False
+                sbl = fw.get("sovereign_burnin_and_stability_ledger")
+                pad = fw.get("package_archive_digest_attestation")
+                ocv = fw.get("offline_consumer_verification_and_final_manifest")
+                ftp_w = fw.get("formal_theorem_proof")
+                eli_w = fw.get("eligibility_interlock")
+                c0w = fw.get("cycle0_audit")
+                c1w = fw.get("cycle1_audit")
+                if (
+                    not isinstance(sbl, dict)
+                    or not isinstance(pad, dict)
+                    or not isinstance(ocv, dict)
+                    or not isinstance(ftp_w, dict)
+                    or not isinstance(eli_w, dict)
+                    or not isinstance(c0w, dict)
+                    or not isinstance(c1w, dict)
+                ):
+                    return False
+                w_cycles = int(sbl.get("cycle1_cycles_executed", sbl.get("cycles_executed", 0)))
+                w_ledger_ok = sbl.get("cycle1_ledger_chain_valid", sbl.get("ledger_chain_valid"))
+                w_rb_ok = sbl.get("regression_rollback_verified", sbl.get("cycle0_regression_rollback_verified"))
+                w_arch_ok = pad.get("cycle1_archive_file_digest_match", pad.get("archive_file_digest_match"))
+                w_steps = int(ocv.get("cycle1_ready_verification_steps", ocv.get("ready_verification_steps", 0)))
+                if (
+                    w_cycles < 6
+                    or w_ledger_ok is not True
+                    or w_rb_ok is not True
+                    or w_arch_ok is not True
+                    or pad.get("real_signature_claimed") is not False
+                    or pad.get("network_access_used") is not False
+                    or w_steps < 7
+                    or ocv.get("final_system_manifest_valid") is not True
+                    or ftp_w.get("verdict") != "PROVED_THEOREM"
+                    or eli_w.get("production_mutation_allowed") is not False
+                    or eli_w.get("authorized_claimed") is not False
+                    or eli_w.get("sacred_core_immutable") is not True
+                    or c0w.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                    or c1w.get("policy_status") != "ELIGIBLE"
+                ):
+                    return False
+                claimed_fw_digest = fw.get("frontier_w_summary_digest") or fw.get("summary_digest")
+                if not isinstance(claimed_fw_digest, str) or not claimed_fw_digest.startswith("sha256:"):
+                    return False
+                fw_digest_payload = {
+                    "experiment_id": str(fw.get("experiment_id", "")),
+                    "frontier_id": str(fw.get("frontier_id", "Frontier_W")),
+                    "cycles_executed": w_cycles,
+                    "ledger_chain_valid": bool(w_ledger_ok),
+                    "archive_file_digest_match": bool(w_arch_ok),
+                    "ready_verification_steps": w_steps,
+                    "final_system_manifest_valid": bool(ocv.get("final_system_manifest_valid", False)),
+                    "cycle0_final_chain_hash": str(c0w.get("final_chain_hash", "")),
+                    "cycle1_final_chain_hash": str(c1w.get("final_chain_hash", "")),
+                }
+                expected_fw_digest = "sha256:" + hashlib.sha256(
+                    json.dumps(fw_digest_payload, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+                if claimed_fw_digest != expected_fw_digest:
+                    return False
+
+            fx = pkt.get("frontier_x_verification")
+            if r_mode == "entangled_cadence_wavefront_observatory" and not isinstance(fx, dict):
+                return False
+            if fx is not None:
+                if not isinstance(fx, dict) or fx.get("entangled_cadence_verified") is not True:
+                    return False
+                if (
+                    fx.get("allow_production_execution") is not False
+                    or fx.get("authorized_claimed") is not False
+                    or fx.get("edge_gate", {}).get("policy_gate_passed") is not True
+                ):
+                    return False
+                has_fx_bridge = "cadence_calibration" in fx
+                has_fx_pkt = "entangled_sequencer_and_atomic_epoch" in fx
+                if not has_fx_bridge and not has_fx_pkt:
+                    return False
+                if has_fx_bridge:
+                    cad = fx.get("cadence_calibration", {})
+                    res_s = fx.get("resonant_schedule", {})
+                    ent_c = fx.get("entangled_commit", {})
+                    msync = fx.get("manifold_sync", {})
+                    wfs = fx.get("wavefront_synthesis", {})
+                    rangers_x = fx.get("ranger_observations", {})
+                    dgi_x = fx.get("default_graph_integrity", {})
+                    if (
+                        not isinstance(cad, dict)
+                        or not isinstance(res_s, dict)
+                        or not isinstance(ent_c, dict)
+                        or not isinstance(msync, dict)
+                        or not isinstance(wfs, dict)
+                        or not isinstance(rangers_x, dict)
+                        or not isinstance(dgi_x, dict)
+                        or int(cad.get("profile_count", 0)) < 4
+                        or int(cad.get("calibrated_count", 0)) < 4
+                        or cad.get("multimanifold_sync_success") is not True
+                        or cad.get("active_cadence_mutated") is not False
+                        or res_s.get("schedule_valid") is not True
+                        or int(res_s.get("collision_count", -1)) != 0
+                        or res_s.get("cycle0_guard_passed") is not False
+                        or res_s.get("cycle1_guard_passed") is not True
+                        or ent_c.get("status") != "committed_shadow"
+                        or ent_c.get("atomic_barrier_satisfied") is not True
+                        or ent_c.get("commit_barrier_satisfied") is not True
+                        or ent_c.get("active_tables_mutated") is not False
+                        or ent_c.get("fault_abort_status") != "aborted"
+                        or ent_c.get("fault_rollback_performed") is not True
+                        or float(ent_c.get("phase_skew_rad", 1.0)) > 0.05
+                        or msync.get("sync_valid") is not True
+                        or msync.get("drift_quarantine_triggered") is not True
+                        or wfs.get("wavefront_stability_passed") is not True
+                        or wfs.get("uncertainty_within_bounds") is not True
+                        or int(wfs.get("passed_32b_cases", 0)) < 4
+                        or int(wfs.get("passed_64b_cases", 0)) < 4
+                        or int(rangers_x.get("verified_packet_count", 0)) < 4
+                        or dgi_x.get("verified") is not True
+                    ):
+                        return False
+                    fx_eval_keys = (
+                        "frontier",
+                        "vector",
+                        "title",
+                        "default_graph_integrity",
+                        "cadence_calibration",
+                        "resonant_schedule",
+                        "entangled_commit",
+                        "manifold_sync",
+                        "wavefront_synthesis",
+                        "ranger_observations",
+                        "edge_gate",
+                        "allow_production_execution",
+                        "authorized_claimed",
+                        "decisions",
+                    )
+                    fx_eval_sub = {k: fx[k] for k in fx_eval_keys if k in fx}
+                    expected_fx_art = hashlib.sha256(
+                        json.dumps(fx_eval_sub, sort_keys=True, default=str).encode("utf-8")
+                    ).hexdigest()
+                    if fx.get("artifact_digest") != expected_fx_art:
+                        return False
+                if has_fx_pkt:
+                    esae = fx.get("entangled_sequencer_and_atomic_epoch")
+                    mcag = fx.get("multimanifold_cadence_and_autonomy_guard")
+                    waub = fx.get("wavefront_alignment_and_uncertainty_bounds")
+                    ftp_x = fx.get("formal_theorem_proof")
+                    eli_x = fx.get("eligibility_interlock")
+                    c0x = fx.get("cycle0_audit")
+                    c1x = fx.get("cycle1_audit")
+                    if (
+                        not isinstance(esae, dict)
+                        or not isinstance(mcag, dict)
+                        or not isinstance(waub, dict)
+                        or not isinstance(ftp_x, dict)
+                        or not isinstance(eli_x, dict)
+                        or not isinstance(c0x, dict)
+                        or not isinstance(c1x, dict)
+                    ):
+                        return False
+                    if (
+                        int(esae.get("manifold_count", 0)) < 4
+                        or esae.get("atomic_epoch_committed_shadow") is not True
+                        or esae.get("commit_epoch_committed_shadow") is not True
+                        or esae.get("abort_rollback_verified") is not True
+                        or mcag.get("cycle0_autonomy_bounded") is not False
+                        or mcag.get("cycle1_autonomy_bounded") is not True
+                        or mcag.get("autonomy_bounded") is not True
+                        or waub.get("wavefront_stability_passed") is not True
+                        or waub.get("uncertainty_within_bounds") is not True
+                        or ftp_x.get("verdict") != "PROVED_THEOREM"
+                        or eli_x.get("production_mutation_allowed") is not False
+                        or eli_x.get("authorized_claimed") is not False
+                        or eli_x.get("allow_production_execution") is not False
+                        or eli_x.get("sacred_core_immutable") is not True
+                        or c0x.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                        or c1x.get("policy_status") != "ELIGIBLE"
+                    ):
+                        return False
+
+            fy = pkt.get("frontier_y_verification")
+            if r_mode == "waveguide_channel_staging_observatory" and not isinstance(fy, dict):
+                return False
+            if fy is not None:
+                if not isinstance(fy, dict) or fy.get("waveguide_channel_staging_verified") is not True:
+                    return False
+                if (
+                    fy.get("allow_production_execution") is not False
+                    or fy.get("authorized_claimed") is not False
+                    or fy.get("edge_gate", {}).get("policy_gate_passed") is not True
+                ):
+                    return False
+                has_fy_bridge = "channel_kernels" in fy
+                has_fy_pkt = "waveguide_channel_kernels_and_dependency" in fy
+                if not has_fy_bridge and not has_fy_pkt:
+                    return False
+                if has_fy_bridge:
+                    ck = fy.get("channel_kernels", {})
+                    cdep = fy.get("channel_dependency", {})
+                    lopt = fy.get("layout_optimization", {})
+                    pcomp = fy.get("pipeline_compaction", {})
+                    pdrg = fy.get("package_dry_run_and_gate", {})
+                    cls_y = fy.get("controlled_local_staging", {})
+                    dgi_y = fy.get("default_graph_integrity", {})
+                    if (
+                        not isinstance(ck, dict)
+                        or not isinstance(cdep, dict)
+                        or not isinstance(lopt, dict)
+                        or not isinstance(pcomp, dict)
+                        or not isinstance(pdrg, dict)
+                        or not isinstance(cls_y, dict)
+                        or not isinstance(dgi_y, dict)
+                        or ck.get("library_valid") is not True
+                        or int(ck.get("recognized_kernel_count", 0)) < 5
+                        or cdep.get("safe_batch_verified") is not True
+                        or cdep.get("raw_hazard_detected_on_conflict") is not True
+                        or float(lopt.get("crosstalk_reduction", -1.0)) < 0.0
+                        or float(lopt.get("efficiency_gain", -1.0)) < 0.0
+                        or pcomp.get("compaction_equivalence_verified") is not True
+                        or pdrg.get("transcript_valid") is not True
+                        or int(pdrg.get("verified_noop_event_count", 0)) < 182
+                        or pdrg.get("noop_boundary_verified") is not True
+                        or pdrg.get("physical_gate_valid") is not True
+                        or pdrg.get("physical_execution_permitted_by_gate") is not False
+                        or cls_y.get("staging_plan_valid") is not True
+                        or cls_y.get("staging_record_valid") is not True
+                        or int(cls_y.get("copied_file_count", 0)) < 28
+                        or cls_y.get("all_digests_matched") is not True
+                        or cls_y.get("zero_archive_upload_deploy_mutation") is not True
+                        or dgi_y.get("verified") is not True
+                    ):
+                        return False
+                    fy_eval_keys = (
+                        "frontier",
+                        "vector",
+                        "title",
+                        "default_graph_integrity",
+                        "channel_kernels",
+                        "channel_dependency",
+                        "layout_optimization",
+                        "pipeline_compaction",
+                        "package_dry_run_and_gate",
+                        "controlled_local_staging",
+                        "edge_gate",
+                        "allow_production_execution",
+                        "authorized_claimed",
+                        "decisions",
+                    )
+                    fy_eval_sub = {k: fy[k] for k in fy_eval_keys if k in fy}
+                    expected_fy_art = hashlib.sha256(
+                        json.dumps(fy_eval_sub, sort_keys=True, default=str).encode("utf-8")
+                    ).hexdigest()
+                    if fy.get("artifact_digest") != expected_fy_art:
+                        return False
+                if has_fy_pkt:
+                    wckd = fy.get("waveguide_channel_kernels_and_dependency")
+                    lopc = fy.get("layout_optimization_and_pipeline_compaction")
+                    padl = fy.get("package_assembly_dry_run_and_local_staging")
+                    ftp_y = fy.get("formal_theorem_proof")
+                    eli_y = fy.get("eligibility_interlock")
+                    c0y = fy.get("cycle0_audit")
+                    c1y = fy.get("cycle1_audit")
+                    if (
+                        not isinstance(wckd, dict)
+                        or not isinstance(lopc, dict)
+                        or not isinstance(padl, dict)
+                        or not isinstance(ftp_y, dict)
+                        or not isinstance(eli_y, dict)
+                        or not isinstance(c0y, dict)
+                        or not isinstance(c1y, dict)
+                    ):
+                        return False
+                    if (
+                        wckd.get("library_valid") is not True
+                        or int(wckd.get("recognized_kernels_count", 0)) < 5
+                        or wckd.get("cycle1_batch_safe") is not True
+                        or wckd.get("raw_hazard_detected_on_conflict") is not True
+                        or lopc.get("compaction_equivalence_verified") is not True
+                        or float(lopc.get("crosstalk_reduction", 0.0)) <= 0.0
+                        or padl.get("transcript_valid") is not True
+                        or int(padl.get("noop_dry_run_events_count", 0)) < 182
+                        or padl.get("physical_execution_permitted_by_gate") is not False
+                        or int(padl.get("local_staging_copied_files", 0)) < 28
+                        or padl.get("local_staging_all_digests_matched") is not True
+                        or padl.get("zero_archive_upload_deploy_mutation") is not True
+                        or ftp_y.get("verdict") != "PROVED_THEOREM"
+                        or eli_y.get("production_mutation_allowed") is not False
+                        or eli_y.get("authorized_claimed") is not False
+                        or eli_y.get("allow_production_execution") is not False
+                        or eli_y.get("sacred_core_immutable") is not True
+                        or c0y.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                        or c1y.get("policy_status") != "ELIGIBLE"
+                    ):
+                        return False
+
+            fz = pkt.get("frontier_z_verification")
+            if r_mode == "sovereign_court_lockdown_observatory" and not isinstance(fz, dict):
+                return False
+            if fz is not None:
+                if not isinstance(fz, dict) or fz.get("sovereign_court_lockdown_verified") is not True:
+                    return False
+                if (
+                    fz.get("allow_production_execution") is not False
+                    or fz.get("authorized_claimed") is not False
+                    or fz.get("edge_gate", {}).get("policy_gate_passed") is not True
+                ):
+                    return False
+                has_fz_bridge = "court_promotion_docket" in fz
+                has_fz_pkt = "court_supervised_promotion_and_docket" in fz
+                if not has_fz_bridge and not has_fz_pkt:
+                    return False
+                if has_fz_bridge:
+                    cpd = fz.get("court_promotion_docket", {})
+                    fgr = fz.get("final_gate_registry", {})
+                    gfl = fz.get("governance_freeze_and_lockdown", {})
+                    fd_z = fz.get("finalization_docket", {})
+                    srg = fz.get("sovereign_runtime_and_gateway", {})
+                    rangers_z = fz.get("ranger_observations", {})
+                    dgi_z = fz.get("default_graph_integrity", {})
+                    if (
+                        not isinstance(cpd, dict)
+                        or not isinstance(fgr, dict)
+                        or not isinstance(gfl, dict)
+                        or not isinstance(fd_z, dict)
+                        or not isinstance(srg, dict)
+                        or not isinstance(rangers_z, dict)
+                        or not isinstance(dgi_z, dict)
+                        or cpd.get("promotion_ready") is not True
+                        or cpd.get("policy_satisfied") is not True
+                        or cpd.get("production_docket_rejected") is not True
+                        or int(fgr.get("total_gates", 0)) < 11
+                        or int(fgr.get("passed_count", 0)) < 11
+                        or int(fgr.get("failed_count", -1)) != 0
+                        or fgr.get("all_passed") is not True
+                        or fgr.get("finalized_immutable") is not True
+                        or gfl.get("governance_frozen") is not True
+                        or gfl.get("governance_invariants_passed") is not True
+                        or gfl.get("governance_tamper_detected") is not True
+                        or gfl.get("system_locked") is not True
+                        or gfl.get("system_lockdown_passed") is not True
+                        or gfl.get("lockdown_tamper_detected") is not True
+                        or int(fd_z.get("evidence_count", 0)) < 10
+                        or fd_z.get("valid") is not True
+                        or fd_z.get("court_review_verdict") != "promote_level50_candidate"
+                        or srg.get("runtime_valid") is not True
+                        or srg.get("allow_production_execution") is not False
+                        or srg.get("shadow_finalization_command_success") is not True
+                        or srg.get("production_command_blocked_and_held") is not True
+                        or srg.get("gateway_policy_default_deny") is not True
+                        or srg.get("gateway_production_mutation_decision") != "deny"
+                        or int(rangers_z.get("verified_packet_count", 0)) < 4
+                        or dgi_z.get("verified") is not True
+                    ):
+                        return False
+                    fz_eval_keys = (
+                        "frontier",
+                        "vector",
+                        "title",
+                        "default_graph_integrity",
+                        "court_promotion_docket",
+                        "final_gate_registry",
+                        "governance_freeze_and_lockdown",
+                        "finalization_docket",
+                        "sovereign_runtime_and_gateway",
+                        "ranger_observations",
+                        "edge_gate",
+                        "allow_production_execution",
+                        "authorized_claimed",
+                        "decisions",
+                    )
+                    fz_eval_sub = {k: fz[k] for k in fz_eval_keys if k in fz}
+                    expected_fz_art = hashlib.sha256(
+                        json.dumps(fz_eval_sub, sort_keys=True, default=str).encode("utf-8")
+                    ).hexdigest()
+                    if fz.get("artifact_digest") != expected_fz_art:
+                        return False
+                if has_fz_pkt:
+                    cspd = fz.get("court_supervised_promotion_and_docket")
+                    fgrf = fz.get("final_gate_registry_and_finalization_docket")
+                    gfsl = fz.get("governance_freeze_and_system_lockdown")
+                    ftp_z = fz.get("formal_theorem_proof")
+                    eli_z = fz.get("eligibility_interlock")
+                    c0z = fz.get("cycle0_audit")
+                    c1z = fz.get("cycle1_audit")
+                    if (
+                        not isinstance(cspd, dict)
+                        or not isinstance(fgrf, dict)
+                        or not isinstance(gfsl, dict)
+                        or not isinstance(ftp_z, dict)
+                        or not isinstance(eli_z, dict)
+                        or not isinstance(c0z, dict)
+                        or not isinstance(c1z, dict)
+                    ):
+                        return False
+                    if (
+                        cspd.get("auto_promote_allowed") is not False
+                        or cspd.get("production_authority_granted") is not False
+                        or cspd.get("review_decision_verdict") != "approve_sandbox_trial"
+                        or int(fgrf.get("registered_gates_count", 0)) < 11
+                        or int(fgrf.get("passed_gates_count", 0)) < 11
+                        or int(fgrf.get("failed_gates_count", -1)) != 0
+                        or fgrf.get("all_gates_passed") is not True
+                        or fgrf.get("registry_immutable_verified") is not True
+                        or fgrf.get("finalization_docket_valid") is not True
+                        or fgrf.get("court_final_decision") != "approve"
+                        or int(gfsl.get("freeze_invariant_count", 0)) < 10
+                        or int(gfsl.get("cycle1_freeze_violations_count", -1)) != 0
+                        or gfsl.get("cycle1_frozen") is not True
+                        or int(gfsl.get("lockdown_setting_count", 0)) < 12
+                        or int(gfsl.get("cycle1_lockdown_violations_count", -1)) != 0
+                        or gfsl.get("cycle1_locked") is not True
+                        or gfsl.get("runtime_token_shadow_only_verified") is not True
+                        or gfsl.get("production_gateway_blocked_verified") is not True
+                        or ftp_z.get("verdict") != "PROVED_THEOREM"
+                        or eli_z.get("production_mutation_allowed") is not False
+                        or eli_z.get("authorized_claimed") is not False
+                        or eli_z.get("allow_production_execution") is not False
+                        or eli_z.get("sacred_core_immutable") is not True
+                        or c0z.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                        or c1z.get("policy_status") != "ELIGIBLE"
+                    ):
+                        return False
         except (TypeError, ValueError, KeyError, AttributeError):
             return False
 
@@ -4191,6 +5379,12 @@ class GovernanceCourtLedger:
                 "mitotic_foliation_observatory",
                 "stwm_wavefront_observatory",
                 "rsi_compiler_observatory",
+                "hcam_shard_consensus_observatory",
+                "waveguide_simd_pipeline_observatory",
+                "burnin_attestation_observatory",
+                "entangled_cadence_wavefront_observatory",
+                "waveguide_channel_staging_observatory",
+                "sovereign_court_lockdown_observatory",
             ):
                 has_c0 = any(k.endswith(":cycle0-quarantine") for k in by_opt)
                 has_c1 = any(k.endswith(":cycle1-eligible") for k in by_opt)
@@ -4395,9 +5589,280 @@ class GovernanceCourtLedger:
             "shockTimeline": self.get_differential_shock_timeline(limit=limit),
         }
 
+    def _record_frontier_xyz_observatory_run(
+        self,
+        *,
+        frontier_letter: str,
+        run_slug: str,
+        run_mode: str,
+        study_name: str,
+        selected_opt_id: str,
+        selected_opt_name: str,
+        signer_role: str,
+        repair_kind: str,
+        verification_key: str,
+        verified_flag_key: str,
+        evaluation_payload: Any,
+    ) -> Dict[str, Any]:
+        raw_input = evaluation_payload
+        if hasattr(raw_input, "evaluation_payload") and isinstance(getattr(raw_input, "evaluation_payload"), dict):
+            eval_dict = dict(getattr(raw_input, "evaluation_payload"))
+            if hasattr(raw_input, "study_name") and getattr(raw_input, "study_name"):
+                study_name = str(getattr(raw_input, "study_name"))
+            if hasattr(raw_input, "experiment_id") and getattr(raw_input, "experiment_id"):
+                eval_dict.setdefault("experiment_id", str(getattr(raw_input, "experiment_id")))
+        elif hasattr(raw_input, "to_dict") and callable(raw_input.to_dict):
+            d = raw_input.to_dict()
+            eval_dict = dict(d.get("evaluation_payload") or d)
+            if d.get("study_name"):
+                study_name = str(d["study_name"])
+        elif isinstance(raw_input, dict):
+            eval_dict = dict(raw_input.get("evaluation_payload") or raw_input)
+            if raw_input.get("study_name"):
+                study_name = str(raw_input["study_name"])
+        else:
+            eval_dict = {}
+        evaluation_payload = eval_dict
+
+        exp_id = str(evaluation_payload.get("experiment_id") or evaluation_payload.get("artifact_digest", "00000000"))[:16]
+        run_id = f"run:{run_slug}:{exp_id}"[:128]
+        packet_id = f"pkt:{run_slug}:{exp_id}"
+        edge_gate = dict(evaluation_payload.get("edge_gate", {}) or {})
+        policy_passed = bool(edge_gate.get("policy_gate_passed", True))
+        ver_block = dict(evaluation_payload)
+        ver_block[verified_flag_key] = bool(
+            policy_passed
+            and evaluation_payload.get("allow_production_execution") is False
+            and evaluation_payload.get("authorized_claimed") is False
+        )
+        pkt = {
+            "schema": "techman.sol-lens.proof-packet/v0.2",
+            "packet_id": packet_id,
+            "study_name": study_name,
+            verification_key: ver_block,
+        }
+        if not self._verify_continuum_frontier_metadata(run_mode, json.dumps(pkt, sort_keys=True, default=str)):
+            raise ValueError(f"Frontier {frontier_letter} metadata verification failed (fail-closed).")
+
+        now_dt = datetime.now(timezone.utc).replace(microsecond=0)
+        now_iso = now_dt.isoformat()
+
+        class _CycleAuditStub:
+            def __init__(self, policy_status: str, is_quarantined: bool, reason: str) -> None:
+                self.policy_status = policy_status
+                self.is_quarantined = is_quarantined
+                self.governance_reason = reason
+                self.cohomological_event = f"frontier_{frontier_letter.lower()}_{policy_status.lower()}"
+                self.workflow_version = f"frontier-{frontier_letter.lower()}-v1"
+                self.events = ()
+
+        c0_stub = _CycleAuditStub("QUARANTINE", True, f"Frontier {frontier_letter} Cycle 0 baseline quarantine")
+        c1_stub = _CycleAuditStub("ELIGIBLE", False, f"Frontier {frontier_letter} Cycle 1 governed synthesis eligible")
+
+        c0_events, c0_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle0",
+            audit_obj=c0_stub,
+            occurred_at=now_dt,
+        )
+        c1_events, c1_replayed_digest = self._ensure_continuum_cycle_events(
+            run_id=run_id,
+            option_id=selected_opt_id,
+            cycle_label="cycle1",
+            audit_obj=c1_stub,
+            occurred_at=now_dt,
+        )
+        prior_q_digest = c0_replayed_digest
+        final_state_digest = c1_replayed_digest
+        interaction_id = f"{run_slug}-{exp_id}"
+        policy_status = "ELIGIBLE"
+
+        with self._conn:
+            self._conn.execute("DELETE FROM differential_shock_timeline WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM sol_edge_runtime_events WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM gemini_thought_signatures WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM cohomological_repair_records WHERE run_id = ?", (run_id,))
+            self._conn.execute("DELETE FROM governance_court_runs WHERE run_id = ?", (run_id,))
+
+            prev_run_digest = self._get_head_ledger_digest()
+            entry_digest = self.compute_ledger_entry_digest(
+                run_id=run_id,
+                packet_id=packet_id,
+                study_name=study_name,
+                run_mode=run_mode,
+                model_used="gemini-4-argon",
+                interaction_id=interaction_id,
+                selected_option_id=selected_opt_id,
+                policy_status=policy_status,
+                final_state_digest=final_state_digest,
+                prior_quarantined_state_digest=prior_q_digest,
+                previous_run_digest=prev_run_digest,
+            )
+
+            self._conn.execute(
+                """
+                INSERT INTO governance_court_runs (
+                    run_id, packet_id, study_name, run_mode, model_used, interaction_id,
+                    thinking_level, selected_option_id, selected_option_name,
+                    policy_status, runtime_status, next_transition,
+                    pre_beta_1, post_beta_1, dirichlet_energy, coboundary_norm,
+                    kuramoto_order_r, causal_emergence_delta_ei,
+                    final_state_digest, prior_quarantined_state_digest,
+                    previous_run_digest, ledger_entry_digest,
+                    is_signed, signer_name, signer_role, proof_packet_json, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    packet_id,
+                    study_name,
+                    run_mode,
+                    "gemini-4-argon",
+                    interaction_id,
+                    "high",
+                    selected_opt_id,
+                    selected_opt_name,
+                    policy_status,
+                    "COMPLETED",
+                    "PROMOTE_IF_REVIEWED",
+                    1,
+                    0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.25,
+                    final_state_digest,
+                    prior_q_digest,
+                    prev_run_digest,
+                    entry_digest,
+                    0,
+                    None,
+                    signer_role,
+                    json.dumps(pkt, sort_keys=True, default=str),
+                    now_iso,
+                ),
+            )
+
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
+            self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
+
+            self._conn.execute(
+                """
+                INSERT INTO cohomological_repair_records (
+                    run_id, repair_kind, target_option_id,
+                    pre_beta_1, post_beta_1, pre_harmonic_norm, post_harmonic_norm,
+                    l2_projection_distance, quarantined_state_digest, cleared_state_digest,
+                    previous_interaction_id, repair_interaction_id,
+                    pre_stalk_json, post_stalk_json, rationale
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    repair_kind,
+                    selected_opt_id,
+                    1,
+                    0,
+                    1.0,
+                    0.0,
+                    1.0,
+                    prior_q_digest,
+                    final_state_digest,
+                    f"{run_slug}-c0:{exp_id}",
+                    interaction_id,
+                    json.dumps({"cycle": 0, "status": "QUARANTINE"}),
+                    json.dumps({"cycle": 1, "status": "ELIGIBLE", "artifact_digest": evaluation_payload.get("artifact_digest")}),
+                    f"Frontier {frontier_letter} fail-closed sovereign synthesis verified.",
+                ),
+            )
+
+        f_let = frontier_letter.lower()
+        summary_digest = "sha256:" + str(evaluation_payload.get("artifact_digest", entry_digest.replace("sha256:", "")))
+        return {
+            "run_id": run_id,
+            "packet_id": packet_id,
+            "run_mode": run_mode,
+            "policy_status": policy_status.lower(),
+            "previous_run_digest": prev_run_digest,
+            "ledger_entry_digest": entry_digest,
+            "final_state_digest": final_state_digest,
+            "prior_quarantined_state_digest": prior_q_digest,
+            "edge_event_count": len(c0_events) + len(c1_events),
+            "verified": True,
+            f"frontier_{f_let}_verified": True,
+            f"frontier_{f_let}_summary_digest": summary_digest,
+        }
+
+    def record_entangled_cadence_observatory_run(
+        self,
+        evaluation_payload: Dict[str, Any],
+        study_name: str = "Frontier_X_Entangled_Cadence_Wavefront_2PC",
+    ) -> Dict[str, Any]:
+        return self._record_frontier_xyz_observatory_run(
+            frontier_letter="X",
+            run_slug="entangled-cadence",
+            run_mode="entangled_cadence_wavefront_observatory",
+            study_name=study_name,
+            selected_opt_id="opt_entangled_cadence_wavefront_2pc",
+            selected_opt_name="Entangled Multi-Manifold 2PC, Resonant Cadence & Wavefront Synthesis",
+            signer_role="SOL-Decide Entangled Cadence & Wavefront Governance Court",
+            repair_kind="entangled_cadence_wavefront_2pc_synthesis",
+            verification_key="frontier_x_verification",
+            verified_flag_key="entangled_cadence_verified",
+            evaluation_payload=evaluation_payload,
+        )
+
+    def record_waveguide_channel_staging_observatory_run(
+        self,
+        evaluation_payload: Dict[str, Any],
+        study_name: str = "Frontier_Y_Waveguide_Channel_Layout_Local_Staging",
+    ) -> Dict[str, Any]:
+        return self._record_frontier_xyz_observatory_run(
+            frontier_letter="Y",
+            run_slug="waveguide-channel-staging",
+            run_mode="waveguide_channel_staging_observatory",
+            study_name=study_name,
+            selected_opt_id="opt_waveguide_channel_layout_local_staging",
+            selected_opt_name="Waveguide Channel Optimization, Layout Compaction & Local Staging",
+            signer_role="SOL-Decide Waveguide Channel & Local Staging Governance Court",
+            repair_kind="waveguide_channel_layout_compaction_and_local_staging",
+            verification_key="frontier_y_verification",
+            verified_flag_key="waveguide_channel_staging_verified",
+            evaluation_payload=evaluation_payload,
+        )
+
+    def record_sovereign_court_lockdown_observatory_run(
+        self,
+        evaluation_payload: Dict[str, Any],
+        study_name: str = "Frontier_Z_Sovereign_Court_Final_Gate_System_Lockdown",
+    ) -> Dict[str, Any]:
+        return self._record_frontier_xyz_observatory_run(
+            frontier_letter="Z",
+            run_slug="sovereign-court-lockdown",
+            run_mode="sovereign_court_lockdown_observatory",
+            study_name=study_name,
+            selected_opt_id="opt_sovereign_court_final_gate_system_lockdown",
+            selected_opt_name="Sovereign Court Promotion, Final Gate Registry & System Lockdown",
+            signer_role="SOL-Decide Sovereign Court & System Lockdown Capstone Authority",
+            repair_kind="sovereign_court_final_gate_and_system_lockdown",
+            verification_key="frontier_z_verification",
+            verified_flag_key="sovereign_court_lockdown_verified",
+            evaluation_payload=evaluation_payload,
+        )
+
     record_mitotic_foliation_study = record_mitotic_foliation_episode
     record_mitotic_foliation_study_run = record_mitotic_foliation_episode
     record_stwm_wavefront_study = record_stwm_wavefront_episode
     record_stwm_wavefront_study_run = record_stwm_wavefront_episode
     record_rsi_compiler_study = record_rsi_compiler_episode
     record_rsi_compiler_study_run = record_rsi_compiler_episode
+    record_hcam_shard_study = record_hcam_shard_episode
+    record_hcam_shard_study_run = record_hcam_shard_episode
+    record_waveguide_simd_study = record_waveguide_simd_episode
+    record_waveguide_simd_study_run = record_waveguide_simd_episode
+    record_burnin_attestation_study = record_burnin_attestation_episode
+    record_burnin_attestation_study_run = record_burnin_attestation_episode
+    record_entangled_cadence_episode = record_entangled_cadence_observatory_run
+    record_waveguide_channel_staging_episode = record_waveguide_channel_staging_observatory_run
+    record_sovereign_court_lockdown_episode = record_sovereign_court_lockdown_observatory_run
+

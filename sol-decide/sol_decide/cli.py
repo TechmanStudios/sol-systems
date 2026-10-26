@@ -478,7 +478,254 @@ def main(argv=None) -> int:
         help="Optional path to write full JSON output summary",
     )
 
+    # Command: hcam-shard (Frontier U)
+    p_hcam = subparsers.add_parser(
+        "hcam-shard", aliases=["hcam-shard-consensus"],
+        help="Run Frontier U Banked HCAM Associative Memory, Cross-Shard Geodesic Consensus & Live Topology Migration / GC",
+    )
+    p_hcam.add_argument(
+        "--study-name",
+        type=str,
+        default="Frontier_U_HCAM_Banking_Cross_Shard_Consensus_GC",
+        help="Study identifier for HCAM Cross-Shard Consensus & SOL Change Observatory bundle",
+    )
+    p_hcam.add_argument(
+        "--model",
+        type=str,
+        default="gemini-4-argon",
+        help="Gemini model name (default: gemini-4-argon)",
+    )
+    p_hcam.add_argument(
+        "--trials",
+        type=int,
+        default=5,
+        help="Repeat-trial count K >= 3 for SOL Change statistical governance (default: 5)",
+    )
+    p_hcam.add_argument(
+        "--export-observatory-bundle",
+        "--export-observatory-dir",
+        "--experiments-root",
+        dest="export_observatory_bundle",
+        type=str,
+        default="",
+        help="Optional root directory for exported SOL Change Observatory experiment bundle",
+    )
+    p_hcam.add_argument(
+        "--export-lens-packet",
+        "--export-packet",
+        "--sample-packet-out",
+        dest="export_lens_packet",
+        type=str,
+        default="",
+        help="Optional path to export candidate techman.sol-lens.proof-packet/v0.2 JSON",
+    )
+    p_hcam.add_argument(
+        "--observatory-db",
+        type=str,
+        default="",
+        help="Optional path to SQLite SOL Change Observatory database",
+    )
+    p_hcam.add_argument(
+        "--ledger-db",
+        type=str,
+        default="",
+        help="Optional path to SQLite GovernanceCourtLedger database to record the episode",
+    )
+    p_hcam.add_argument(
+        "--output-json",
+        type=str,
+        default="",
+        help="Optional path to write full JSON output summary",
+    )
+
+    # Command: waveguide-simd (Frontier V)
+    p_wgsimd = subparsers.add_parser(
+        "waveguide-simd", aliases=["waveguide-simd-pipeline"],
+        help="Run Frontier V Waveguide Arithmetic Pipeline, Predicated Branch Diamonds, Scoreboard Hazard Scheduler & Sovereign SIMD Multicore Assembly",
+    )
+    p_wgsimd.add_argument(
+        "--study-name",
+        type=str,
+        default="Frontier_V_Waveguide_Arithmetic_Predication_Scoreboard_SIMD",
+        help="Study identifier for Waveguide SIMD Pipeline & SOL Change Observatory bundle",
+    )
+    p_wgsimd.add_argument(
+        "--model",
+        type=str,
+        default="gemini-4-argon",
+        help="Gemini model name (default: gemini-4-argon)",
+    )
+    p_wgsimd.add_argument(
+        "--trials",
+        type=int,
+        default=5,
+        help="Repeat-trial count K >= 3 for SOL Change statistical governance (default: 5)",
+    )
+    p_wgsimd.add_argument(
+        "--export-observatory-bundle",
+        "--export-observatory-dir",
+        "--experiments-root",
+        dest="export_observatory_bundle",
+        type=str,
+        default="",
+        help="Optional root directory for exported SOL Change Observatory experiment bundle",
+    )
+    p_wgsimd.add_argument(
+        "--export-lens-packet",
+        "--export-packet",
+        "--sample-packet-out",
+        dest="export_lens_packet",
+        type=str,
+        default="",
+        help="Optional path to export candidate techman.sol-lens.proof-packet/v0.2 JSON",
+    )
+    p_wgsimd.add_argument(
+        "--observatory-db",
+        type=str,
+        default="",
+        help="Optional path to SQLite SOL Change Observatory database",
+    )
+    p_wgsimd.add_argument(
+        "--ledger-db",
+        type=str,
+        default="",
+        help="Optional path to SQLite GovernanceCourtLedger database to record the episode",
+    )
+    p_wgsimd.add_argument(
+        "--output-json",
+        type=str,
+        default="",
+        help="Optional path to write full JSON output summary",
+    )
+
+    # Command: burnin-attestation (Frontier W)
+    p_burnin = subparsers.add_parser(
+        "burnin-attestation",
+        help="Run Frontier W Sovereign Burn-In Runtime, Long-Horizon Stability Ledger & Attested Distribution Package Archive / Offline Verification Kit",
+    )
+    p_burnin.add_argument(
+        "--study-name",
+        type=str,
+        default="Frontier_W_Sovereign_BurnIn_Stability_Ledger_Offline_Attestation",
+        help="Study identifier for Sovereign Burn-In & Offline Attestation SOL Change Observatory bundle",
+    )
+    p_burnin.add_argument(
+        "--model",
+        type=str,
+        default="gemini-4-argon",
+        help="Gemini model name (default: gemini-4-argon)",
+    )
+    p_burnin.add_argument(
+        "--trials",
+        type=int,
+        default=5,
+        help="Repeat-trial count K >= 3 for SOL Change statistical governance (default: 5)",
+    )
+    p_burnin.add_argument(
+        "--export-observatory-bundle",
+        "--export-observatory-dir",
+        "--experiments-root",
+        dest="export_observatory_bundle",
+        type=str,
+        default="",
+        help="Optional root directory for exported SOL Change Observatory experiment bundle",
+    )
+    p_burnin.add_argument(
+        "--export-lens-packet",
+        "--export-packet",
+        "--sample-packet-out",
+        dest="export_lens_packet",
+        type=str,
+        default="",
+        help="Optional path to export candidate techman.sol-lens.proof-packet/v0.2 JSON",
+    )
+    p_burnin.add_argument(
+        "--observatory-db",
+        type=str,
+        default="",
+        help="Optional path to SQLite SOL Change Observatory database",
+    )
+    p_burnin.add_argument(
+        "--ledger-db",
+        type=str,
+        default="",
+        help="Optional path to SQLite GovernanceCourtLedger database to record the episode",
+    )
+    p_burnin.add_argument(
+        "--output-json",
+        type=str,
+        default="",
+        help="Optional path to write full JSON output summary",
+    )
+
+    # Command: entangled-cadence-observatory (Frontier X)
+    p_fx = subparsers.add_parser(
+        "entangled-cadence-observatory",
+        aliases=["entangled-cadence", "entangled-cadence-wavefront"],
+        help="Run Frontier X Entangled Multi-Manifold 2PC, Resonant Cadence Scheduling & Wavefront Synthesis Observatory",
+    )
+    p_fx.add_argument("--study-name", type=str, default="Frontier_X_Entangled_Cadence_Wavefront_2PC")
+    p_fx.add_argument("--trials", type=int, default=5)
+    p_fx.add_argument("--model", type=str, default="gemini-4-argon")
+    p_fx.add_argument("--export-observatory-bundle", "--export-observatory-dir", dest="export_observatory_bundle", type=str, default="")
+    p_fx.add_argument(
+        "--export-lens-packet",
+        "--export-packet",
+        "--sample-packet-out",
+        dest="export_lens_packet",
+        type=str,
+        default="",
+    )
+    p_fx.add_argument("--observatory-db", type=str, default="")
+    p_fx.add_argument("--ledger-db", type=str, default="")
+    p_fx.add_argument("--output-json", type=str, default="")
+
+    # Command: waveguide-channel-observatory (Frontier Y)
+    p_fy = subparsers.add_parser(
+        "waveguide-channel-observatory",
+        aliases=["waveguide-channel-staging", "waveguide-channel", "channel-staging"],
+        help="Run Frontier Y Waveguide Channel Optimization, Layout Compaction & Local Staging Observatory",
+    )
+    p_fy.add_argument("--study-name", type=str, default="Frontier_Y_Waveguide_Channel_Layout_Local_Staging")
+    p_fy.add_argument("--trials", type=int, default=5)
+    p_fy.add_argument("--model", type=str, default="gemini-4-argon")
+    p_fy.add_argument("--export-observatory-bundle", "--export-observatory-dir", dest="export_observatory_bundle", type=str, default="")
+    p_fy.add_argument(
+        "--export-lens-packet",
+        "--export-packet",
+        "--sample-packet-out",
+        dest="export_lens_packet",
+        type=str,
+        default="",
+    )
+    p_fy.add_argument("--observatory-db", type=str, default="")
+    p_fy.add_argument("--ledger-db", type=str, default="")
+    p_fy.add_argument("--output-json", type=str, default="")
+
+    # Command: sovereign-court-lockdown-observatory (Frontier Z)
+    p_fz = subparsers.add_parser(
+        "sovereign-court-lockdown-observatory",
+        aliases=["sovereign-court-lockdown", "sovereign-lockdown", "court-lockdown"],
+        help="Run Frontier Z Sovereign Court Promotion, Final Gate Registry, System Lockdown & Production Gateway Observatory",
+    )
+    p_fz.add_argument("--study-name", type=str, default="Frontier_Z_Sovereign_Court_Final_Gate_System_Lockdown")
+    p_fz.add_argument("--trials", type=int, default=5)
+    p_fz.add_argument("--model", type=str, default="gemini-4-argon")
+    p_fz.add_argument("--export-observatory-bundle", "--export-observatory-dir", dest="export_observatory_bundle", type=str, default="")
+    p_fz.add_argument(
+        "--export-lens-packet",
+        "--export-packet",
+        "--sample-packet-out",
+        dest="export_lens_packet",
+        type=str,
+        default="",
+    )
+    p_fz.add_argument("--observatory-db", type=str, default="")
+    p_fz.add_argument("--ledger-db", type=str, default="")
+    p_fz.add_argument("--output-json", type=str, default="")
+
     args = parser.parse_args(argv)
+
 
 
 
@@ -1084,9 +1331,421 @@ def main(argv=None) -> int:
             }
             p_json.write_text(json.dumps(out_payload, indent=2) + "\n", encoding="utf-8")
 
+    elif args.command in ("hcam-shard", "hcam-shard-consensus"):
+        from .delivery.governance_ledger import GovernanceCourtLedger
+        from .interop.hcam_shard_consensus_bridge import HCAMShardConsensusOrchestrator
+
+        exp_root = Path(args.export_observatory_bundle) if args.export_observatory_bundle else None
+        obs_db = (
+            Path(args.observatory_db)
+            if args.observatory_db
+            else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+        )
+        pkt_out = Path(args.export_lens_packet) if args.export_lens_packet else None
+        orchestrator = HCAMShardConsensusOrchestrator(model_id=args.model)
+        record = orchestrator.run_episode(
+            study_name=args.study_name,
+            trial_count=max(3, int(args.trials)),
+            experiments_root=exp_root,
+            observatory_db_path=obs_db,
+            register_in_observatory_db=bool(obs_db is not None),
+            export_packet_path=pkt_out,
+        )
+        print("=== FRONTIER U: BANKED HCAM ASSOCIATIVE MEMORY, CROSS-SHARD CONSENSUS & MANIFOLD GC ===")
+        print(f"Study Name:     {record.study_name}")
+        print(f"Experiment ID:  {record.experiment_id}")
+        print(
+            f"HCAM Recall:    32b={record.cycle1_audit.assembled_32b_hex} | "
+            f"64b={record.cycle1_audit.assembled_64b_hex} | "
+            f"c0_shards={record.cycle0_audit.local_quorum_shards}/4 -> c1_shards={record.cycle1_audit.local_quorum_shards}/4"
+        )
+        print(
+            f"Migration & GC: global_quorum={record.cycle1_audit.global_quorum_met} | "
+            f"orphans_reclaimed={record.cycle1_audit.orphan_nodes_reclaimed} | "
+            f"live_root_reclaimed={record.cycle1_audit.live_root_reclaimed}"
+        )
+        print(
+            f"SOL Change:     comparability={record.sol_change_handoff.comparability} | "
+            f"outcome={record.sol_change_handoff.outcome} | "
+            f"review_status={record.sol_change_handoff.review_status}"
+        )
+
+        ledger_entry = None
+        ledger_integrity = None
+        if args.ledger_db:
+            ledger = GovernanceCourtLedger(db_path=Path(args.ledger_db))
+            try:
+                ledger_entry = ledger.record_hcam_shard_episode(record)
+                integrity_rep = ledger.verify_ledger_integrity()
+                ledger_integrity = {
+                    "is_valid": integrity_rep.is_valid,
+                    "total_runs_verified": integrity_rep.total_runs_verified,
+                    "total_events_verified": integrity_rep.total_events_verified,
+                    "head_ledger_digest": integrity_rep.head_ledger_digest,
+                }
+            finally:
+                ledger.close()
+
+        if pkt_out is not None:
+            print(f"Exported SOL-Lens v0.2 proof packet to: {pkt_out}")
+
+        if args.output_json:
+            p_json = Path(args.output_json)
+            p_json.parent.mkdir(parents=True, exist_ok=True)
+            out_payload = {
+                "ok": True,
+                "frontier_u_verified": bool(
+                    record.frontier_u_verification.get("hcam_shard_verified", True)
+                ),
+                "comparability": record.sol_change_handoff.comparability,
+                "outcome": record.sol_change_handoff.outcome,
+                "episode": record.to_dict(),
+                "ledger_entry": ledger_entry,
+                "ledger_integrity": ledger_integrity,
+            }
+            p_json.write_text(json.dumps(out_payload, indent=2) + "\n", encoding="utf-8")
+
+    elif args.command in ("waveguide-simd", "waveguide-simd-pipeline"):
+        from .delivery.governance_ledger import GovernanceCourtLedger
+        from .interop.waveguide_simd_pipeline_bridge import WaveguideSIMDPipelineOrchestrator
+
+        exp_root = Path(args.export_observatory_bundle) if args.export_observatory_bundle else None
+        obs_db = (
+            Path(args.observatory_db)
+            if args.observatory_db
+            else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+        )
+        pkt_out = Path(args.export_lens_packet) if args.export_lens_packet else None
+        orchestrator = WaveguideSIMDPipelineOrchestrator(model_id=args.model)
+        record = orchestrator.run_episode(
+            study_name=args.study_name,
+            trial_count=max(3, int(args.trials)),
+            experiments_root=exp_root,
+            observatory_db_path=obs_db,
+            register_in_observatory_db=bool(obs_db is not None),
+            export_packet_path=pkt_out,
+        )
+        print("=== FRONTIER V: WAVEGUIDE ARITHMETIC, PREDICATION, SCOREBOARD & 4-CORE SIMD ===")
+        print(f"Study Name:     {record.study_name}")
+        print(f"Experiment ID:  {record.experiment_id}")
+        print(
+            f"Arith & Pred:   64b_add={record.cycle1_audit.add_64b_oracle_match} | "
+            f"64b_sub={record.cycle1_audit.sub_64b_oracle_match} | "
+            f"diamonds={record.cycle1_audit.predicated_diamonds_converted}"
+        )
+        print(
+            f"Scoreboard/SIMD: serial_equiv={record.cycle1_audit.schedule_serial_equivalent} | "
+            f"cores={record.cycle1_audit.assembled_core_count} | "
+            f"fault_matrix={record.cycle1_audit.fault_matrix_passed_cases}/33"
+        )
+        print(
+            f"SOL Change:     comparability={record.sol_change_handoff.comparability} | "
+            f"outcome={record.sol_change_handoff.outcome} | "
+            f"review_status={record.sol_change_handoff.review_status}"
+        )
+
+        ledger_entry = None
+        ledger_integrity = None
+        if args.ledger_db:
+            ledger = GovernanceCourtLedger(db_path=Path(args.ledger_db))
+            try:
+                ledger_entry = ledger.record_waveguide_simd_episode(record)
+                integrity_rep = ledger.verify_ledger_integrity()
+                ledger_integrity = {
+                    "is_valid": integrity_rep.is_valid,
+                    "total_runs_verified": integrity_rep.total_runs_verified,
+                    "total_events_verified": integrity_rep.total_events_verified,
+                    "head_ledger_digest": integrity_rep.head_ledger_digest,
+                }
+            finally:
+                ledger.close()
+
+        if pkt_out is not None:
+            print(f"Exported SOL-Lens v0.2 proof packet to: {pkt_out}")
+
+        if args.output_json:
+            p_json = Path(args.output_json)
+            p_json.parent.mkdir(parents=True, exist_ok=True)
+            out_payload = {
+                "ok": True,
+                "frontier_v_verified": bool(
+                    record.frontier_v_verification.get("waveguide_simd_verified", True)
+                ),
+                "comparability": record.sol_change_handoff.comparability,
+                "outcome": record.sol_change_handoff.outcome,
+                "episode": record.to_dict(),
+                "ledger_entry": ledger_entry,
+                "ledger_integrity": ledger_integrity,
+            }
+            p_json.write_text(json.dumps(out_payload, indent=2) + "\n", encoding="utf-8")
+
+    elif args.command == "burnin-attestation":
+        from .delivery.governance_ledger import GovernanceCourtLedger
+        from .interop.burnin_attestation_bridge import BurnInAttestationOrchestrator
+
+        exp_root = Path(args.export_observatory_bundle) if args.export_observatory_bundle else None
+        obs_db = (
+            Path(args.observatory_db)
+            if args.observatory_db
+            else (exp_root / "observatory.sqlite3" if exp_root is not None else None)
+        )
+        pkt_out = Path(args.export_lens_packet) if args.export_lens_packet else None
+        orchestrator = BurnInAttestationOrchestrator(model_id=args.model)
+        record = orchestrator.run_episode(
+            study_name=args.study_name,
+            trial_count=max(3, int(args.trials)),
+            experiments_root=exp_root,
+            observatory_db_path=obs_db,
+            register_in_observatory_db=bool(obs_db is not None),
+            export_packet_path=pkt_out,
+        )
+        print("=== FRONTIER W: SOVEREIGN BURN-IN, STABILITY LEDGER & OFFLINE PACKAGE ATTESTATION ===")
+        print(f"Study Name:     {record.study_name}")
+        print(f"Experiment ID:  {record.experiment_id}")
+        print(
+            f"Burn-In Ledger: cycles={record.cycle1_audit.cycles_executed} | "
+            f"ledger_valid={record.cycle1_audit.ledger_chain_valid} | "
+            f"rollback_verified={record.cycle1_audit.regression_rollback_verified}"
+        )
+        print(
+            f"Attestation:    archive_digest_match={record.cycle1_audit.archive_file_digest_match} | "
+            f"ready_steps={record.cycle1_audit.ready_verification_steps}/7 | "
+            f"final_manifest_valid={record.cycle1_audit.final_system_manifest_valid}"
+        )
+        print(
+            f"SOL Change:     comparability={record.sol_change_handoff.comparability} | "
+            f"outcome={record.sol_change_handoff.outcome} | "
+            f"review_status={record.sol_change_handoff.review_status}"
+        )
+
+        ledger_entry = None
+        ledger_integrity = None
+        if args.ledger_db:
+            ledger = GovernanceCourtLedger(db_path=Path(args.ledger_db))
+            try:
+                ledger_entry = ledger.record_burnin_attestation_episode(record)
+                integrity_rep = ledger.verify_ledger_integrity()
+                ledger_integrity = {
+                    "is_valid": integrity_rep.is_valid,
+                    "total_runs_verified": integrity_rep.total_runs_verified,
+                    "total_events_verified": integrity_rep.total_events_verified,
+                    "head_ledger_digest": integrity_rep.head_ledger_digest,
+                }
+            finally:
+                ledger.close()
+
+        if pkt_out is not None:
+            print(f"Exported SOL-Lens v0.2 proof packet to: {pkt_out}")
+
+        if args.output_json:
+            p_json = Path(args.output_json)
+            p_json.parent.mkdir(parents=True, exist_ok=True)
+            out_payload = {
+                "ok": True,
+                "frontier_w_verified": bool(
+                    record.frontier_w_verification.get("burnin_attestation_verified", True)
+                ),
+                "comparability": record.sol_change_handoff.comparability,
+                "outcome": record.sol_change_handoff.outcome,
+                "episode": record.to_dict(),
+                "ledger_entry": ledger_entry,
+                "ledger_integrity": ledger_integrity,
+            }
+            p_json.write_text(json.dumps(out_payload, indent=2) + "\n", encoding="utf-8")
+
+    elif args.command in ("entangled-cadence-observatory", "entangled-cadence", "entangled-cadence-wavefront"):
+        from .delivery.governance_ledger import GovernanceCourtLedger
+        from .interop.entangled_cadence_wavefront_bridge import EntangledCadenceWavefrontOrchestrator
+
+        orchestrator = EntangledCadenceWavefrontOrchestrator()
+        exp_root = Path(args.export_observatory_bundle) if args.export_observatory_bundle else None
+        obs_db = Path(args.observatory_db) if args.observatory_db else None
+        pkt_out = Path(args.export_lens_packet) if args.export_lens_packet else None
+
+        record = orchestrator.run_episode(
+            study_name=args.study_name,
+            trial_count=max(3, int(args.trials)),
+            experiments_root=exp_root,
+            observatory_db_path=obs_db,
+            register_in_observatory_db=bool(obs_db is not None),
+            export_packet_path=pkt_out,
+        )
+        eval_payload = record.evaluation_payload
+        print("=== FRONTIER X: ENTANGLED MULTI-MANIFOLD 2PC, RESONANT CADENCE & WAVEFRONT SYNTHESIS ===")
+        print(f"Study Name:     {args.study_name}")
+        print(f"Artifact Hash:  {eval_payload['artifact_digest']}")
+        print(
+            f"Cadence/2PC:    profiles={eval_payload['cadence_calibration']['profile_count']} | "
+            f"status={eval_payload['entangled_commit']['status']} | "
+            f"rangers={eval_payload['ranger_observations']['verified_packet_count']}/4"
+        )
+        ledger_entry = None
+        ledger_integrity = None
+        if args.ledger_db:
+            ledger = GovernanceCourtLedger(db_path=Path(args.ledger_db))
+            try:
+                ledger_entry = ledger.record_entangled_cadence_episode(record)
+                integrity_rep = ledger.verify_ledger_integrity()
+                ledger_integrity = {
+                    "is_valid": integrity_rep.is_valid,
+                    "total_runs_verified": integrity_rep.total_runs_verified,
+                    "total_events_verified": integrity_rep.total_events_verified,
+                    "head_ledger_digest": integrity_rep.head_ledger_digest,
+                }
+            finally:
+                ledger.close()
+        if args.output_json:
+            p_json = Path(args.output_json)
+            p_json.parent.mkdir(parents=True, exist_ok=True)
+            p_json.write_text(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "frontier_x_verified": True,
+                        "comparability": record.sol_change_handoff.comparability,
+                        "outcome": record.sol_change_handoff.outcome,
+                        "evaluation": eval_payload,
+                        "episode": record.to_dict(),
+                        "ledger_entry": ledger_entry,
+                        "ledger_integrity": ledger_integrity,
+                    },
+                    indent=2,
+                    default=str,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+    elif args.command in ("waveguide-channel-observatory", "waveguide-channel-staging", "waveguide-channel", "channel-staging"):
+        from .delivery.governance_ledger import GovernanceCourtLedger
+        from .interop.waveguide_channel_staging_bridge import WaveguideChannelStagingOrchestrator
+
+        orchestrator = WaveguideChannelStagingOrchestrator()
+        exp_root = Path(args.export_observatory_bundle) if args.export_observatory_bundle else None
+        obs_db = Path(args.observatory_db) if args.observatory_db else None
+        pkt_out = Path(args.export_lens_packet) if args.export_lens_packet else None
+
+        record = orchestrator.run_episode(
+            study_name=args.study_name,
+            trial_count=max(3, int(args.trials)),
+            experiments_root=exp_root,
+            observatory_db_path=obs_db,
+            register_in_observatory_db=bool(obs_db is not None),
+            export_packet_path=pkt_out,
+        )
+        eval_payload = record.evaluation_payload
+        print("=== FRONTIER Y: WAVEGUIDE CHANNEL OPTIMIZATION, LAYOUT COMPACTION & LOCAL STAGING ===")
+        print(f"Study Name:     {args.study_name}")
+        print(f"Artifact Hash:  {eval_payload['artifact_digest']}")
+        print(
+            f"Kernels/Stage:  kernels={eval_payload['channel_kernels']['recognized_kernel_count']}/5 | "
+            f"dry_run_events={eval_payload['package_dry_run_and_gate']['verified_noop_event_count']} | "
+            f"staged_files={eval_payload['controlled_local_staging']['copied_file_count']}/28"
+        )
+        ledger_entry = None
+        ledger_integrity = None
+        if args.ledger_db:
+            ledger = GovernanceCourtLedger(db_path=Path(args.ledger_db))
+            try:
+                ledger_entry = ledger.record_waveguide_channel_staging_episode(record)
+                integrity_rep = ledger.verify_ledger_integrity()
+                ledger_integrity = {
+                    "is_valid": integrity_rep.is_valid,
+                    "total_runs_verified": integrity_rep.total_runs_verified,
+                    "total_events_verified": integrity_rep.total_events_verified,
+                    "head_ledger_digest": integrity_rep.head_ledger_digest,
+                }
+            finally:
+                ledger.close()
+        if args.output_json:
+            p_json = Path(args.output_json)
+            p_json.parent.mkdir(parents=True, exist_ok=True)
+            p_json.write_text(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "frontier_y_verified": True,
+                        "comparability": record.sol_change_handoff.comparability,
+                        "outcome": record.sol_change_handoff.outcome,
+                        "evaluation": eval_payload,
+                        "episode": record.to_dict(),
+                        "ledger_entry": ledger_entry,
+                        "ledger_integrity": ledger_integrity,
+                    },
+                    indent=2,
+                    default=str,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+    elif args.command in ("sovereign-court-lockdown-observatory", "sovereign-court-lockdown", "sovereign-lockdown", "court-lockdown"):
+        from .delivery.governance_ledger import GovernanceCourtLedger
+        from .interop.sovereign_court_lockdown_bridge import SovereignCourtLockdownOrchestrator
+
+        orchestrator = SovereignCourtLockdownOrchestrator()
+        exp_root = Path(args.export_observatory_bundle) if args.export_observatory_bundle else None
+        obs_db = Path(args.observatory_db) if args.observatory_db else None
+        pkt_out = Path(args.export_lens_packet) if args.export_lens_packet else None
+
+        record = orchestrator.run_episode(
+            study_name=args.study_name,
+            trial_count=max(3, int(args.trials)),
+            experiments_root=exp_root,
+            observatory_db_path=obs_db,
+            register_in_observatory_db=bool(obs_db is not None),
+            export_packet_path=pkt_out,
+        )
+        eval_payload = record.evaluation_payload
+        print("=== FRONTIER Z: SOVEREIGN COURT PROMOTION, FINAL GATE REGISTRY & SYSTEM LOCKDOWN ===")
+        print(f"Study Name:     {args.study_name}")
+        print(f"Artifact Hash:  {eval_payload['artifact_digest']}")
+        print(
+            f"Gates/Lockdown: final_gates={eval_payload['final_gate_registry']['passed_count']}/11 | "
+            f"docket_evidence={eval_payload['finalization_docket']['evidence_count']}/10 | "
+            f"rangers={eval_payload['ranger_observations']['verified_packet_count']}/4"
+        )
+        ledger_entry = None
+        ledger_integrity = None
+        if args.ledger_db:
+            ledger = GovernanceCourtLedger(db_path=Path(args.ledger_db))
+            try:
+                ledger_entry = ledger.record_sovereign_court_lockdown_episode(record)
+                integrity_rep = ledger.verify_ledger_integrity()
+                ledger_integrity = {
+                    "is_valid": integrity_rep.is_valid,
+                    "total_runs_verified": integrity_rep.total_runs_verified,
+                    "total_events_verified": integrity_rep.total_events_verified,
+                    "head_ledger_digest": integrity_rep.head_ledger_digest,
+                }
+            finally:
+                ledger.close()
+        if args.output_json:
+            p_json = Path(args.output_json)
+            p_json.parent.mkdir(parents=True, exist_ok=True)
+            p_json.write_text(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "frontier_z_verified": True,
+                        "comparability": record.sol_change_handoff.comparability,
+                        "outcome": record.sol_change_handoff.outcome,
+                        "evaluation": eval_payload,
+                        "episode": record.to_dict(),
+                        "ledger_entry": ledger_entry,
+                        "ledger_integrity": ledger_integrity,
+                    },
+                    indent=2,
+                    default=str,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
     else:
         parser.print_help()
     return 0
+
 
 
 if __name__ == "__main__":

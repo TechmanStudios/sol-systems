@@ -55,7 +55,7 @@ class TestWGSLProofEngineCore:
         assert "proof_result" in status["storage_buffers"]
 
     def test_sound_conjectures_proving_wgsl(self, engine):
-        """Verifies that sound conjectures are proved with 100% soundness and high Hegelian consensus."""
+        """Verifies that all 14 sound conjectures are proved with 100% soundness and high Hegelian consensus."""
         c_eng = AutonomousConjectureEngine()
         catalog = {c.conjecture_id: c for c in c_eng.generate_conjecture_catalog()}
 
@@ -63,7 +63,17 @@ class TestWGSLProofEngineCore:
             "conj_demorgan_nand",
             "conj_majority_self_duality",
             "conj_xor_associativity",
-            "conj_adder_carry_majority"
+            "conj_adder_carry_majority",
+            "conj_causal_emergence_arbiter",
+            "conj_mitotic_hawking_conservation",
+            "conj_coprime_stwm_prefix_carry",
+            "conj_governed_compiler_pass_idempotence",
+            "conj_hcam_cross_shard_consensus_gc",
+            "conj_waveguide_predicated_scoreboard_simd",
+            "conj_burnin_stability_offline_attestation",
+            "conj_entangled_cadence_wavefront_sync",
+            "conj_waveguide_channel_compaction_staging",
+            "conj_sovereign_court_lockdown_closure",
         ]
 
         for cid in sound_ids:
@@ -72,19 +82,23 @@ class TestWGSLProofEngineCore:
             assert rep.verdict == WGSLProofVerdict.PROVED_THEOREM
             assert rep.counter_examples_found == 0
             assert rep.states_verified == rep.total_states
+            assert rep.total_states == len(conj.target_spec.table)
             assert rep.witness_input_state is None
             assert rep.hegelian_consensus >= 0.70
             assert rep.is_crystallized is True
             assert rep.gpu_dispatch_time_us > 0.0
 
     def test_flawed_conjectures_refutation_with_witness_wgsl(self, engine):
-        """Verifies that flawed conjectures are refuted with atomic counter-example witnesses."""
+        """Verifies that all 5 flawed conjectures are refuted with atomic counter-example witnesses."""
         c_eng = AutonomousConjectureEngine()
         catalog = {c.conjecture_id: c for c in c_eng.generate_conjecture_catalog()}
 
         flawed_ids = [
             "conj_flawed_xor_linear",
-            "conj_flawed_even_majority"
+            "conj_flawed_even_majority",
+            "conj_false_resonant_wall_linear_pdm",
+            "conj_false_unbarriered_alias_reorder_equivalence",
+            "conj_false_unbounded_autonomous_cadence_bypass",
         ]
 
         for cid in flawed_ids:
