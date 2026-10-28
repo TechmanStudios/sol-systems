@@ -9,19 +9,23 @@ navigation loop in real time, serving:
 3. GET /                - Interactive 3D WebGL / Canvas Riemannian manifold viewer.
 """
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
 import json
 from pathlib import Path
 import sys
 import threading
 import time
 from typing import Dict, List, Optional
+import warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning)
 import numpy as np
 
 # Ensure workspace packages are importable
 root_dir = Path(__file__).resolve().parents[1]
-if str(root_dir) not in sys.path:
-    sys.path.insert(0, str(root_dir))
+for sub_pkg in ("", "sol-holo", "sol-continuum", "sol-decide", "sol-edge/src", "sol-change"):
+    pkg_dir = str((root_dir / sub_pkg).resolve()) if sub_pkg else str(root_dir)
+    if pkg_dir not in sys.path:
+        sys.path.insert(0, pkg_dir)
 telemetry_dir = root_dir / "Frontier_OS" / "Exciton-MoA" / "teleMetry"
 if str(telemetry_dir) not in sys.path:
     sys.path.insert(0, str(telemetry_dir))
@@ -797,7 +801,15 @@ class ManifoldSimulationServer:
         # 16 Semantic Nodes
         rng = np.random.RandomState(42)
         self.node_ids = [f"N{i+1:02d}" for i in range(16)]
-        self.node_coords = {nid: rng.randn(self.dim) * 6.0 for nid in self.node_ids}
+        self.node_coords = {
+            f"N{i+1:02d}": np.array([
+                np.cos((i / 16.0) * 2.0 * np.pi) * (9.0 + (i % 3) * 2.2),
+                np.sin((i / 16.0) * 2.0 * np.pi) * (9.0 + (i % 3) * 2.2),
+                0.0,
+                0.0,
+            ], dtype=np.float64)
+            for i in range(16)
+        }
         self.base_metric = np.eye(self.dim) * 2.0
         self.node_metrics = {nid: self.base_metric.copy() for nid in self.node_ids}
         self.node_ricci = {nid: 0.0 for nid in self.node_ids}
@@ -1030,9 +1042,19 @@ class ManifoldSimulationServer:
                 extra_accs, readouts = self.giants_ensemble.compute_giant_operators(self.router, metrics)
                 self.giant_readouts = readouts
 
-                for a_id, extra_acc in extra_accs.items():
+                for idx_a, (a_id, extra_acc) in enumerate(extra_accs.items()):
                     if a_id in self.router.agents:
-                        self.router.agents[a_id].velocity += self.router.dt * 0.5 * extra_acc
+                        ag = self.router.agents[a_id]
+                        ag.velocity += self.router.dt * 0.5 * extra_acc
+                        # Continuous Keplerian tangential orbital drive around the 16-node ring
+                        theta = step * 0.04 + (idx_a * 2.0 * np.pi / 7.0)
+                        target_r = 7.2 + 1.8 * np.sin(step * 0.02 + idx_a)
+                        tx = np.cos(theta) * target_r
+                        tz = np.sin(theta) * target_r
+                        ag.position[0] = 0.88 * ag.position[0] + 0.12 * tx
+                        ag.position[1] = 0.88 * ag.position[1] + 0.12 * tz
+                        ag.velocity[0] = -np.sin(theta) * 2.2
+                        ag.velocity[1] = np.cos(theta) * 2.2
 
                 # 2. Step the autonomous swarm router and distributed cluster
                 step_rep = self.router.step_swarm(step_index=step)
@@ -1731,6 +1753,105 @@ def create_handler(server_instance: ManifoldSimulationServer):
                     "latest_waveguide_channel_staging_experiment_id": getattr(fy_ep, "experiment_id", None) if fy_ep else None,
                     "latest_sovereign_court_lockdown_experiment_id": getattr(fz_ep, "experiment_id", None) if fz_ep else None,
                 }).encode("utf-8"))
+            elif path in (
+                "/api/continuum/v3_brain_manifest",
+                "/api/holo/v3_brain_manifest",
+                "/api/decide/v3_brain_manifest",
+            ):
+                manifest_file = root_dir / "sol-holo" / "packets" / "v3_brain_manifest.json"
+                lens_packet_file = root_dir / "sol-lens" / "samples" / "live_gemini4_v3_brain_manifest_packet.json"
+                if manifest_file.exists():
+                    manifest_dict = json.loads(manifest_file.read_text(encoding="utf-8"))
+                    lens_packet_dict = (
+                        json.loads(lens_packet_file.read_text(encoding="utf-8"))
+                        if lens_packet_file.exists()
+                        else None
+                    )
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "ok": True,
+                        "manifest": manifest_dict,
+                        "sol_lens_packet": lens_packet_dict,
+                    }).encode("utf-8"))
+                else:
+                    from sol_holo.v3_brain_manifest import V3BrainReflectiveOrchestrator
+
+                    orchestrator = V3BrainReflectiveOrchestrator(
+                        model="gemini-4-argon",
+                        thinking_level="high",
+                        live=False,
+                    )
+                    v3_rep = orchestrator.run_v3_brain_synthesis(repeat_trial_count=5)
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "ok": True,
+                        "manifest": v3_rep.manifest.to_dict(),
+                        "sol_lens_packet": v3_rep.sol_lens_packet,
+                    }).encode("utf-8"))
+            elif path in (
+                "/api/continuum/awakened_subsystems",
+                "/api/holo/awakened_subsystems",
+            ):
+                from sol_continuum.reflective_domain import (
+                    SACRED_DEFAULT_GRAPH_SHA256,
+                    verify_sacred_core_graph_sha256,
+                )
+                from sol_continuum.substrate_tools import (
+                    SUBSTRATE_TOOL_DECLARATIONS,
+                    SubstrateToolSandbox,
+                )
+
+                qs = urllib.parse.parse_qs(parsed.query)
+                force_refresh = qs.get("refresh", ["0"])[0] in ("1", "true", "yes")
+                cached_payload = getattr(server_instance, "_cached_awakened_payload", None)
+                if cached_payload is None and not force_refresh:
+                    manifest_file = root_dir / "sol-holo" / "packets" / "v3_brain_manifest.json"
+                    if manifest_file.exists():
+                        try:
+                            m_data = json.loads(manifest_file.read_text(encoding="utf-8"))
+                            es_data = m_data.get("emergent_phenomena_summary") or m_data.get("emergent_substrate_summary") or m_data.get("dormant_subsystems_awakening_summary")
+                            execs_data = m_data.get("substrate_tool_executions", [])
+                            if es_data and int(es_data.get("awakened_subsystems_count", 0)) >= 12:
+                                graph_ok, graph_sha = verify_sacred_core_graph_sha256(root_dir)
+                                cached_payload = {
+                                    "ok": True,
+                                    "status": "ok",
+                                    "declared_tools_count": len(SUBSTRATE_TOOL_DECLARATIONS),
+                                    "declared_tool_names": [d["name"] for d in SUBSTRATE_TOOL_DECLARATIONS],
+                                    "sacred_core_graph_sha256": graph_sha or SACRED_DEFAULT_GRAPH_SHA256,
+                                    "sacred_core_graph_immutable": bool(graph_ok),
+                                    "emergent_phenomena_summary": es_data,
+                                    "substrate_tool_executions": execs_data,
+                                }
+                                server_instance._cached_awakened_payload = cached_payload
+                        except Exception:
+                            cached_payload = None
+                if cached_payload is None or force_refresh:
+                    sandbox = SubstrateToolSandbox(repo_root=root_dir)
+                    summary = sandbox.run_deterministic_suite()
+                    graph_ok, graph_sha = verify_sacred_core_graph_sha256(root_dir)
+                    cached_payload = {
+                        "ok": True,
+                        "status": "ok",
+                        "declared_tools_count": len(SUBSTRATE_TOOL_DECLARATIONS),
+                        "declared_tool_names": [d["name"] for d in SUBSTRATE_TOOL_DECLARATIONS],
+                        "sacred_core_graph_sha256": graph_sha or SACRED_DEFAULT_GRAPH_SHA256,
+                        "sacred_core_graph_immutable": bool(graph_ok),
+                        "emergent_phenomena_summary": summary,
+                        "substrate_tool_executions": sandbox.tool_executions,
+                    }
+                    server_instance._cached_awakened_payload = cached_payload
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(cached_payload).encode("utf-8"))
             else:
                 self.send_response(404)
                 self.end_headers()
@@ -3630,6 +3751,96 @@ def create_handler(server_instance: ManifoldSimulationServer):
                     "ledger_entry": ledger_entry,
                 }).encode("utf-8"))
 
+            elif path in (
+                "/api/continuum/v3_brain_manifest",
+                "/api/holo/v3_brain_manifest",
+                "/api/decide/v3_brain_manifest",
+            ):
+                from sol_holo.v3_brain_manifest import V3BrainReflectiveOrchestrator
+
+                model_name = body.get("model", "gemini-4-argon") or "gemini-4-argon"
+                study_name = body.get(
+                    "study_name", "V3_Brain_Manifest_Reflective_Agentic_Domain"
+                )
+                repeat_trials = max(3, int(body.get("repeat_trial_count", 5)))
+                pin_live_packet = bool(body.get("pin_live_packet", True))
+                prefer_live_api = bool(body.get("use_live_gemini", False))
+                background_decode = bool(body.get("background", False))
+
+                orchestrator = V3BrainReflectiveOrchestrator(
+                    model=model_name,
+                    thinking_level="high",
+                    live=prefer_live_api,
+                    background=background_decode,
+                )
+                v3_rep = orchestrator.run_v3_brain_synthesis(
+                    study_name=study_name,
+                    repeat_trial_count=repeat_trials,
+                )
+                with server_instance.lock:
+                    server_instance.latest_decide_packet = v3_rep.sol_lens_packet
+                    server_instance.override_live_packet = pin_live_packet
+                    ledger_entry = server_instance.governance_ledger.record_v3_brain_manifest_observatory_run(
+                        evaluation_payload=v3_rep.manifest.to_dict(),
+                        study_name=study_name,
+                    )
+                    server_instance.latest_ledger_run_id = ledger_entry["run_id"]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "manifest": v3_rep.manifest.to_dict(),
+                    "sol_lens_packet": v3_rep.sol_lens_packet,
+                    "ledger_entry": ledger_entry,
+                    "observatory_assessment": v3_rep.observatory_assessment,
+                    "repeat_trial_evaluation": v3_rep.repeat_trial_evaluation,
+                }).encode("utf-8"))
+
+            elif path in (
+                "/api/continuum/awakened_subsystems",
+                "/api/holo/awakened_subsystems",
+            ):
+                from sol_continuum.reflective_domain import (
+                    SACRED_DEFAULT_GRAPH_SHA256,
+                    verify_sacred_core_graph_sha256,
+                )
+                from sol_continuum.substrate_tools import (
+                    SUBSTRATE_TOOL_DECLARATIONS,
+                    SubstrateToolSandbox,
+                )
+
+                sandbox = SubstrateToolSandbox(repo_root=root_dir)
+                tool_name = body.get("tool_name")
+                run_all = bool(body.get("run_all", tool_name is None))
+                tool_result = None
+                if tool_name and not run_all:
+                    tool_result = sandbox.execute_tool(
+                        str(tool_name),
+                        dict(body.get("arguments") or {}),
+                    )
+                    if isinstance(tool_result, dict) and "tool_name" not in tool_result:
+                        tool_result["tool_name"] = tool_result.get("tool", str(tool_name))
+                    summary = sandbox.summarize_emergent_phenomena()
+                else:
+                    summary = sandbox.run_deterministic_suite()
+                graph_ok, graph_sha = verify_sacred_core_graph_sha256(root_dir)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "ok": True,
+                    "status": "ok",
+                    "declared_tools_count": len(SUBSTRATE_TOOL_DECLARATIONS),
+                    "sacred_core_graph_sha256": graph_sha or SACRED_DEFAULT_GRAPH_SHA256,
+                    "sacred_core_graph_immutable": bool(graph_ok),
+                    "tool_result": tool_result,
+                    "emergent_phenomena_summary": summary,
+                    "substrate_tool_executions": sandbox.tool_executions,
+                }).encode("utf-8"))
+
             elif path == "/api/ledger/verify":
                 with server_instance.lock:
                     rep = server_instance.governance_ledger.verify_ledger_integrity()
@@ -3655,8 +3866,16 @@ def create_handler(server_instance: ManifoldSimulationServer):
     return RequestHandler
 
 
-class ReusableHTTPServer(HTTPServer):
+class ReusableHTTPServer(ThreadingHTTPServer):
     allow_reuse_address = True
+    daemon_threads = True
+
+    def handle_error(self, request, client_address):
+        import sys
+        exc = sys.exc_info()[1]
+        if isinstance(exc, (BrokenPipeError, ConnectionResetError, ConnectionAbortedError)):
+            return
+        super().handle_error(request, client_address)
 
 
 def main():

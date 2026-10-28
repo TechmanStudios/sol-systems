@@ -724,6 +724,50 @@ def main(argv=None) -> int:
     p_fz.add_argument("--ledger-db", type=str, default="")
     p_fz.add_argument("--output-json", type=str, default="")
 
+    # Command: v3-brain (V3 Brain Manifest Reflective Agentic Domain)
+    p_v3 = subparsers.add_parser(
+        "v3-brain",
+        aliases=["v3-brain-manifest", "reflective-domain", "v3-brain-observatory"],
+        help="Run V3 Brain Manifest Reflective Agentic Domain (SOLHoloOrganism + Cortex + Hippocampus + RSI/Self-Train)",
+    )
+    p_v3.add_argument("--study-name", type=str, default="V3_Brain_Manifest_Reflective_Agentic_Domain")
+    p_v3.add_argument("--trials", type=int, default=5)
+    p_v3.add_argument("--model", type=str, default="gemini-4-argon")
+    p_v3.add_argument("--thinking-level", type=str, default="high", choices=["minimal", "low", "medium", "high"])
+    p_v3.add_argument("--live", action="store_true", help="Use live gemini-4-argon API if GEMINI_API_KEY is set")
+    p_v3.add_argument(
+        "--enable-substrate-tools",
+        dest="enable_substrate_tools",
+        action="store_true",
+        default=True,
+        help="Enable emergent substrate tool-calling loop in v3-brain (default: True)",
+    )
+    p_v3.add_argument(
+        "--no-substrate-tools",
+        dest="enable_substrate_tools",
+        action="store_false",
+        help="Disable live substrate tool-calling loop",
+    )
+    p_v3.add_argument(
+        "--max-tool-rounds",
+        type=int,
+        default=2,
+        help="Maximum multi-turn tool-calling rounds for Holo_Substrate_Synthesizer (default: 2)",
+    )
+    p_v3.add_argument("--export-observatory-bundle", "--export-observatory-dir", dest="export_observatory_bundle", type=str, default="")
+    p_v3.add_argument(
+        "--export-lens-packet",
+        "--export-packet",
+        "--sample-packet-out",
+        dest="export_lens_packet",
+        type=str,
+        default="",
+    )
+    p_v3.add_argument("--output-manifest", type=str, default="")
+    p_v3.add_argument("--observatory-db", type=str, default="")
+    p_v3.add_argument("--ledger-db", type=str, default="")
+    p_v3.add_argument("--output-json", type=str, default="")
+
     args = parser.parse_args(argv)
 
 
@@ -1741,6 +1785,48 @@ def main(argv=None) -> int:
                 + "\n",
                 encoding="utf-8",
             )
+
+    elif args.command in ("v3-brain", "v3-brain-manifest", "reflective-domain", "v3-brain-observatory"):
+        from sol_holo.v3_brain_manifest import V3BrainReflectiveOrchestrator
+
+        orch = V3BrainReflectiveOrchestrator(
+            model=args.model,
+            thinking_level=args.thinking_level,
+            live=bool(args.live),
+            enable_substrate_tools=bool(getattr(args, "enable_substrate_tools", True)),
+            max_tool_rounds=max(1, int(getattr(args, "max_tool_rounds", 2))),
+        )
+        rep = orch.run_v3_brain_synthesis(
+            study_name=args.study_name,
+            ledger_db_path=Path(args.ledger_db) if args.ledger_db else None,
+            observatory_db_path=Path(args.observatory_db) if args.observatory_db else None,
+            export_packet_path=Path(args.export_lens_packet) if args.export_lens_packet else None,
+            export_manifest_path=Path(args.output_manifest) if args.output_manifest else None,
+            export_observatory_dir=Path(args.export_observatory_bundle) if args.export_observatory_bundle else None,
+            repeat_trial_count=max(3, int(args.trials)),
+        )
+        ep = rep.manifest.emergent_phenomena_summary or {}
+        print("=== V3 BRAIN MANIFEST: REFLECTIVE AGENTIC DOMAIN SYNTHESIS ===")
+        print(f"Study Name:        {rep.manifest.study_name}")
+        print(f"Model Used:        {rep.manifest.model_used} (thinking_level={rep.manifest.thinking_level})")
+        print(f"Prefix Tokens:     {rep.manifest.context_frame['prefix_token_count']} (>= 4096 implicit cache)")
+        print(f"V3 Brain Merkle:   {rep.manifest.v3_brain_merkle_root}")
+        print(f"Lyapunov Delta V:  {rep.manifest.rsi_self_train_synthesis['lyapunov_delta_v']:.4f}")
+        print(f"Delta Anchor:      +{rep.manifest.rsi_self_train_synthesis['delta_anchor_score']:.4f}")
+        print(f"Mahalanobis SVD r: {rep.manifest.hippocampus_dream_consolidation['mahalanobis_isometry_r']:.4f}")
+        print(
+            f"Emergent Tools:    {len(rep.manifest.substrate_tool_executions)} executions "
+            f"({ep.get('awakened_subsystems_count', 0)}/12 subsystems awakened)"
+        )
+        print(
+            f"Causal Emergence:  Swarm Delta EI=+{float(ep.get('causal_emergence_swarm_delta_ei_bits', 0.0)):.4f} bits, "
+            f"Riemannian Delta EI=+{float(ep.get('causal_emergence_riemannian_delta_ei_bits', 0.0)):.4f} bits"
+        )
+        print(f"Verified:          {rep.manifest.v3_brain_manifest_verified}")
+        if args.output_json:
+            p_json = Path(args.output_json)
+            p_json.parent.mkdir(parents=True, exist_ok=True)
+            p_json.write_text(json.dumps(rep.to_dict(), indent=2, default=str) + "\n", encoding="utf-8")
 
     else:
         parser.print_help()

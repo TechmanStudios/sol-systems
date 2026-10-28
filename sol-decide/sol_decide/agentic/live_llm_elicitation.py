@@ -1985,11 +1985,19 @@ class LiveGeminiMoAElicitor:
         client: Optional[Any] = None,
         require_human_approval_above_cost_m: float = 500.0,
         thinking_level: Optional[str] = None,
+        max_output_tokens: Optional[int] = 32768,
+        background: bool = False,
+        poll_interval_s: float = 0.05,
+        max_wait_s: float = 120.0,
     ):
         _load_env_safely()
         self.model = model
         self._client = client
-        self.thinking_level = thinking_level
+        self.thinking_level = thinking_level or ("high" if str(model).startswith("gemini-4") else None)
+        self.max_output_tokens = max_output_tokens
+        self.background = bool(background)
+        self.poll_interval_s = float(poll_interval_s)
+        self.max_wait_s = float(max_wait_s)
         self.elicitor = SevenGiantsElicitor()
         self.ablator = SensitivityAblator(sweep_steps=25)
         self.adversary = DialecticalAdversary(max_strain_trials=24, strain_magnitude=0.05)
@@ -2002,6 +2010,65 @@ class LiveGeminiMoAElicitor:
             model_used=self.model,
             thinking_level=self.thinking_level or "adaptive",
         )
+
+    def _build_generation_config(self) -> Dict[str, Any]:
+        gen_config: Dict[str, Any] = {"thinking_summaries": "auto"}
+        if self.thinking_level:
+            gen_config["thinking_level"] = self.thinking_level
+        if self.max_output_tokens:
+            gen_config["max_output_tokens"] = max(int(self.max_output_tokens), 32768 if str(self.model).startswith("gemini-4") else 4096)
+        return gen_config
+
+    def _create_and_resolve_interaction(self, client: Any, **create_kwargs: Any) -> Any:
+        """Create a Gemini interaction and poll client.interactions.get if background/in_progress."""
+        import time as _time
+
+        if self.background and "background" not in create_kwargs:
+            create_kwargs["background"] = True
+        interaction = client.interactions.create(**create_kwargs)
+        if hasattr(client.interactions, "get"):
+            status = str(getattr(interaction, "status", "") or "").lower()
+            deadline = _time.time() + max(0.1, float(self.max_wait_s))
+            while status in ("in_progress", "queued", "running", "pending", "processing") and _time.time() < deadline:
+                _time.sleep(max(0.005, float(self.poll_interval_s)))
+                interaction = client.interactions.get(id=interaction.id)
+                status = str(getattr(interaction, "status", "") or "").lower()
+        return interaction
+
+    @staticmethod
+    def _extract_interaction_output_text(interaction: Any) -> str:
+        """Concatenate multi-hop model_output steps if present, falling back to interaction.output_text."""
+        steps = getattr(interaction, "outputs", None) or getattr(interaction, "steps", None) or []
+        chunks: List[str] = []
+        for step in steps:
+            step_type = getattr(step, "type", None) or (step.get("type") if isinstance(step, dict) else None)
+            if step_type in ("model_output", "text", "output_text"):
+                raw_content = getattr(step, "content", None) if not isinstance(step, dict) else step.get("content")
+                raw_text = getattr(step, "text", None) if not isinstance(step, dict) else step.get("text")
+                if isinstance(raw_content, (list, tuple)):
+                    for item in raw_content:
+                        if isinstance(item, str):
+                            chunks.append(item)
+                        elif isinstance(item, dict):
+                            if item.get("type", "text") in ("text", "output_text", None):
+                                item_txt = item.get("text") or item.get("content") or ""
+                                if isinstance(item_txt, str) and item_txt:
+                                    chunks.append(item_txt)
+                        else:
+                            if getattr(item, "type", "text") in ("text", "output_text", None):
+                                item_txt = getattr(item, "text", None)
+                                if isinstance(item_txt, str) and item_txt:
+                                    chunks.append(item_txt)
+                elif isinstance(raw_text, str) and raw_text:
+                    chunks.append(raw_text)
+                elif isinstance(raw_content, str) and raw_content:
+                    chunks.append(raw_content)
+        direct_text = getattr(interaction, "output_text", None)
+        if chunks:
+            joined = "".join(chunks)
+            if not direct_text or len(joined) >= len(str(direct_text)):
+                return joined
+        return str(direct_text or "")
 
     def _get_client(self) -> Any:
         if self._client is not None:
@@ -2050,9 +2117,9 @@ class LiveGeminiMoAElicitor:
                     summaries.append(summary_obj.strip())
 
         usage = getattr(interaction, "usage", None)
-        in_tok = int(getattr(usage, "total_input_tokens", 0) or 0) if usage else 0
-        th_tok = int(getattr(usage, "total_thought_tokens", 0) or 0) if usage else 0
-        out_tok = int(getattr(usage, "total_output_tokens", 0) or 0) if usage else 0
+        in_tok = int(getattr(usage, "total_input_tokens", 0) or getattr(usage, "input_tokens", 0) or 0) if usage else 0
+        th_tok = int(getattr(usage, "total_thought_tokens", 0) or getattr(usage, "thought_tokens", 0) or 0) if usage else 0
+        out_tok = int(getattr(usage, "total_output_tokens", 0) or getattr(usage, "output_tokens", 0) or 0) if usage else 0
         tot_tok = int(getattr(usage, "total_tokens", 0) or (in_tok + th_tok + out_tok)) if usage else 0
         ratio = round(float(th_tok) / float(max(out_tok, 1)), 4) if out_tok > 0 else 0.0
 
@@ -2080,11 +2147,10 @@ class LiveGeminiMoAElicitor:
         capturing cryptographic thought signatures, summaries, and token telemetry.
         """
         client = self._get_client()
-        gen_config: Dict[str, Any] = {"thinking_summaries": "auto"}
-        if self.thinking_level:
-            gen_config["thinking_level"] = self.thinking_level
+        gen_config = self._build_generation_config()
 
-        interaction = client.interactions.create(
+        interaction = self._create_and_resolve_interaction(
+            client,
             model=self.model,
             system_instruction=self.SYSTEM_INSTRUCTION,
             input=mission_prompt,
@@ -2095,7 +2161,8 @@ class LiveGeminiMoAElicitor:
                 "schema": MultiAgentTradeStudySpec.model_json_schema(),
             },
         )
-        spec = MultiAgentTradeStudySpec.model_validate_json(interaction.output_text)
+        raw_text = self._extract_interaction_output_text(interaction)
+        spec = MultiAgentTradeStudySpec.model_validate_json(raw_text)
         interaction_id = getattr(interaction, "id", "int_local") or "int_local"
         self.last_reasoning_telemetry = self._extract_reasoning_telemetry(
             interaction=interaction,
@@ -2455,9 +2522,7 @@ class LiveGeminiMoAElicitor:
         )
 
         client = self._get_client()
-        gen_config: Dict[str, Any] = {"thinking_summaries": "auto"}
-        if self.thinking_level:
-            gen_config["thinking_level"] = self.thinking_level
+        gen_config = self._build_generation_config()
 
         create_kwargs: Dict[str, Any] = {
             "model": self.model,
@@ -2473,8 +2538,9 @@ class LiveGeminiMoAElicitor:
         if previous_interaction_id and not previous_interaction_id.startswith("int_"):
             create_kwargs["previous_interaction_id"] = previous_interaction_id
 
-        interaction = client.interactions.create(**create_kwargs)
-        repair_spec = QuarantineRepairProposalSpec.model_validate_json(interaction.output_text)
+        interaction = self._create_and_resolve_interaction(client, **create_kwargs)
+        raw_text = self._extract_interaction_output_text(interaction)
+        repair_spec = QuarantineRepairProposalSpec.model_validate_json(raw_text)
         repair_interaction_id = getattr(interaction, "id", "int_repair_local") or "int_repair_local"
         repair_telemetry = self._extract_reasoning_telemetry(
             interaction=interaction,
@@ -2749,9 +2815,7 @@ class LiveGeminiMoAElicitor:
         ]
 
         client = self._get_client()
-        gen_config: Dict[str, Any] = {"thinking_summaries": "auto"}
-        if self.thinking_level:
-            gen_config["thinking_level"] = self.thinking_level
+        gen_config = self._build_generation_config()
 
         proposals: List[SpecialistSubsystemProposalSpec] = []
         interaction_ids: List[str] = []
@@ -2777,7 +2841,8 @@ class LiveGeminiMoAElicitor:
                 f"Return a `SpecialistSubsystemProposalSpec` with `specialist_role='{cfg['role']}'` and "
                 f"`subsystem_option_id='{cfg['subsystem_option_id']}'`."
             )
-            interaction = client.interactions.create(
+            interaction = self._create_and_resolve_interaction(
+                client,
                 model=self.model,
                 system_instruction=self.SPECIALIST_SUBSYSTEM_SYSTEM_INSTRUCTION,
                 input=sub_prompt,
@@ -2788,7 +2853,8 @@ class LiveGeminiMoAElicitor:
                     "schema": SpecialistSubsystemProposalSpec.model_json_schema(),
                 },
             )
-            spec_obj = SpecialistSubsystemProposalSpec.model_validate_json(interaction.output_text)
+            raw_text = self._extract_interaction_output_text(interaction)
+            spec_obj = SpecialistSubsystemProposalSpec.model_validate_json(raw_text)
             int_id = getattr(interaction, "id", f"int_sub_{idx}") or f"int_sub_{idx}"
             rt = self._extract_reasoning_telemetry(
                 interaction=interaction,
@@ -3132,9 +3198,7 @@ class LiveGeminiMoAElicitor:
         )
 
         client = self._get_client()
-        gen_config: Dict[str, Any] = {"thinking_summaries": "auto"}
-        if self.thinking_level:
-            gen_config["thinking_level"] = self.thinking_level
+        gen_config = self._build_generation_config()
 
         create_kwargs: Dict[str, Any] = {
             "model": self.model,
@@ -3150,8 +3214,9 @@ class LiveGeminiMoAElicitor:
         if previous_interaction_id and not previous_interaction_id.startswith("int_"):
             create_kwargs["previous_interaction_id"] = previous_interaction_id
 
-        interaction = client.interactions.create(**create_kwargs)
-        neg_spec = HodgeHarmonicNegotiationSpec.model_validate_json(interaction.output_text)
+        interaction = self._create_and_resolve_interaction(client, **create_kwargs)
+        raw_text = self._extract_interaction_output_text(interaction)
+        neg_spec = HodgeHarmonicNegotiationSpec.model_validate_json(raw_text)
         neg_int_id = getattr(interaction, "id", "int_h1_negotiation") or "int_h1_negotiation"
         neg_telemetry = self._extract_reasoning_telemetry(
             interaction=interaction,
@@ -3369,6 +3434,10 @@ class LiveGeminiMoAElicitor:
             hodge_report=hodge_c1,
             h1_resolution_record=h1_record,
         )
+
+
+LiveGeminiMultiAgentElicitor = LiveGeminiMoAElicitor
+
 
 
 

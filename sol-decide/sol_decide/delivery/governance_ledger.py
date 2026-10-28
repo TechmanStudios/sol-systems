@@ -5304,6 +5304,168 @@ class GovernanceCourtLedger:
                         or c1z.get("policy_status") != "ELIGIBLE"
                     ):
                         return False
+
+            v3b = pkt.get("v3_brain_verification")
+            if r_mode == "v3_brain_manifest_observatory" and not isinstance(v3b, dict):
+                return False
+            if v3b is not None:
+                if not isinstance(v3b, dict) or v3b.get("v3_brain_manifest_verified") is not True:
+                    return False
+                ctx_v3 = v3b.get("context_frame")
+                eg_v3 = v3b.get("edge_gate")
+                rsi_v3 = v3b.get("rsi_self_train_synthesis")
+                hip_v3 = v3b.get("hippocampus_dream_consolidation")
+                if (
+                    not isinstance(ctx_v3, dict)
+                    or not isinstance(eg_v3, dict)
+                    or not isinstance(rsi_v3, dict)
+                    or not isinstance(hip_v3, dict)
+                ):
+                    return False
+                if (
+                    v3b.get("allow_production_execution") is not False
+                    or v3b.get("authorized_claimed") is not False
+                    or v3b.get("sacred_core_graph_immutable") is not True
+                    or v3b.get("sacred_core_graph_sha256")
+                    != "d0a80462d2b9389160502b097aca1932bb014941adf6e4b77799997283e4a1bc"
+                    or eg_v3.get("policy_gate_passed") is not True
+                    or eg_v3.get("allow_production_execution") is True
+                    or eg_v3.get("authorized_claimed") is True
+                    or eg_v3.get("replay_integrity_verified") is False
+                    or int(ctx_v3.get("prefix_token_count", 0)) < 4096
+                    or ctx_v3.get("byte_identical_across_agents") is not True
+                    or ctx_v3.get("implicit_cache_eligible") is False
+                    or float(rsi_v3.get("lyapunov_delta_v", 0.0)) >= 0.0
+                    or float(rsi_v3.get("delta_anchor_score", 0.0)) <= 0.0
+                    or float(hip_v3.get("mahalanobis_isometry_r", 0.0)) < 0.9968
+                ):
+                    return False
+                c0_v3 = v3b.get("cycle0_audit")
+                if c0_v3 is not None:
+                    if (
+                        not isinstance(c0_v3, dict)
+                        or c0_v3.get("policy_status") not in ("QUARANTINE", "QUARANTINED")
+                        or int(c0_v3.get("pre_beta_1", 0)) < 1
+                    ):
+                        return False
+                c1_v3 = v3b.get("cycle1_audit")
+                if c1_v3 is not None:
+                    if (
+                        not isinstance(c1_v3, dict)
+                        or c1_v3.get("policy_status") != "ELIGIBLE"
+                        or int(c1_v3.get("post_beta_1", -1)) != 0
+                        or c1_v3.get("quarantine_cleared") is False
+                    ):
+                        return False
+                guild_recs = v3b.get("guild_agent_records")
+                if guild_recs is not None:
+                    expected_roles = [
+                        "Holo_Substrate_Synthesizer",
+                        "Cortical_Epistemic_Architect",
+                        "Hippocampal_Dream_Consolidator",
+                        "RSI_SelfTrain_Policy_Inventor",
+                    ]
+                    if not isinstance(guild_recs, list) or len(guild_recs) != 4:
+                        return False
+                    if [r.get("agent_role") if isinstance(r, dict) else None for r in guild_recs] != expected_roles:
+                        return False
+                    ctx_p_dig = str(ctx_v3.get("prefix_digest", "") or "")
+                    for g_rec in guild_recs:
+                        sig_dig = str(g_rec.get("thought_signature_digest", "") or "")
+                        if not re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", sig_dig):
+                            return False
+                        if int(g_rec.get("prefix_token_count", 0)) < 4096:
+                            return False
+                        if g_rec.get("byte_identical_prefix") is not True:
+                            return False
+                        if ctx_p_dig and str(g_rec.get("prefix_digest", "") or "") != ctx_p_dig:
+                            return False
+                tool_execs = v3b.get("substrate_tool_executions")
+                if tool_execs is not None:
+                    if not isinstance(tool_execs, list):
+                        return False
+                    for t_rec in tool_execs:
+                        if not isinstance(t_rec, dict):
+                            return False
+                        exec_dig = str(t_rec.get("execution_digest", "") or "")
+                        if not re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", exec_dig):
+                            return False
+                        if t_rec.get("sacred_core_graph_immutable") is False:
+                            return False
+                        res_obj = t_rec.get("result")
+                        if isinstance(res_obj, dict):
+                            if res_obj.get("sacred_core_graph_immutable") is False:
+                                return False
+                            if "tool_name" in t_rec and "arguments" in t_rec:
+                                expected_exec_dig = hashlib.sha256(
+                                    json.dumps(
+                                        {
+                                            "tool_name": t_rec["tool_name"],
+                                            "arguments": t_rec["arguments"],
+                                            "result": res_obj,
+                                        },
+                                        sort_keys=True,
+                                        separators=(",", ":"),
+                                        ensure_ascii=True,
+                                    ).encode("utf-8")
+                                ).hexdigest()
+                                if exec_dig.replace("sha256:", "") != expected_exec_dig:
+                                    return False
+                em_sum = v3b.get("emergent_phenomena_summary")
+                if em_sum is not None:
+                    if not isinstance(em_sum, dict):
+                        return False
+                    if "awakened_subsystems_count" in em_sum and int(em_sum.get("awakened_subsystems_count") or 0) < 12:
+                        return False
+                    if em_sum.get("has_causal_emergence") is False:
+                        return False
+                    if float(em_sum.get("causal_emergence_swarm_delta_ei_bits", 0.1)) <= 0.0:
+                        return False
+                    if float(em_sum.get("working_memory_distractor_crosstalk", 0.0)) != 0.0:
+                        return False
+                    if int(em_sum.get("wideword_64bit_mismatches", 0)) != 0:
+                        return False
+                    if "spectral_prism_resolves_vector0" in em_sum and em_sum.get("spectral_prism_resolves_vector0") is not True:
+                        return False
+                    if "sheaf_cohomology_resolves_vector0_dilution" in em_sum and em_sum.get("sheaf_cohomology_resolves_vector0_dilution") is not True:
+                        return False
+                    if "sacred_core_graph_immutable" in em_sum and em_sum.get("sacred_core_graph_immutable") is not True:
+                        return False
+                merkle_v3 = v3b.get("v3_brain_merkle_root")
+                if merkle_v3 is not None and not re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", str(merkle_v3)):
+                    return False
+                art_dig_v3 = v3b.get("artifact_digest")
+                if art_dig_v3 is not None:
+                    if not re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", str(art_dig_v3)):
+                        return False
+                    if all(
+                        k in v3b
+                        for k in (
+                            "experiment_id",
+                            "v3_brain_merkle_root",
+                            "context_frame",
+                            "rsi_self_train_synthesis",
+                            "edge_gate",
+                            "sacred_core_graph_sha256",
+                        )
+                    ):
+                        recomputed_art_dig = hashlib.sha256(
+                            json.dumps(
+                                {
+                                    "experiment_id": v3b["experiment_id"],
+                                    "v3_brain_merkle_root": v3b["v3_brain_merkle_root"],
+                                    "context_frame": v3b["context_frame"],
+                                    "rsi_self_train_synthesis": v3b["rsi_self_train_synthesis"],
+                                    "edge_gate": v3b["edge_gate"],
+                                    "sacred_core_graph_sha256": v3b["sacred_core_graph_sha256"],
+                                },
+                                sort_keys=True,
+                                separators=(",", ":"),
+                                ensure_ascii=True,
+                            ).encode("utf-8")
+                        ).hexdigest()
+                        if str(art_dig_v3) != recomputed_art_dig:
+                            return False
         except (TypeError, ValueError, KeyError, AttributeError):
             return False
 
@@ -5385,6 +5547,7 @@ class GovernanceCourtLedger:
                 "entangled_cadence_wavefront_observatory",
                 "waveguide_channel_staging_observatory",
                 "sovereign_court_lockdown_observatory",
+                "v3_brain_manifest_observatory",
             ):
                 has_c0 = any(k.endswith(":cycle0-quarantine") for k in by_opt)
                 has_c1 = any(k.endswith(":cycle1-eligible") for k in by_opt)
@@ -5551,15 +5714,26 @@ class GovernanceCourtLedger:
             for r in cur.fetchall()
         ]
 
-    def list_thought_signatures(self, limit: int = 50) -> List[Dict[str, Any]]:
-        cur = self._conn.execute(
-            """
-            SELECT * FROM gemini_thought_signatures
-            ORDER BY id DESC
-            LIMIT ?
-            """,
-            (limit,),
-        )
+    def list_thought_signatures(self, limit: int = 50, run_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        if run_id is not None:
+            cur = self._conn.execute(
+                """
+                SELECT * FROM gemini_thought_signatures
+                WHERE run_id = ?
+                ORDER BY step_index ASC, id ASC
+                LIMIT ?
+                """,
+                (run_id, limit),
+            )
+        else:
+            cur = self._conn.execute(
+                """
+                SELECT * FROM gemini_thought_signatures
+                ORDER BY id DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
         return [
             {
                 "runId": str(r["run_id"]),
@@ -5630,8 +5804,10 @@ class GovernanceCourtLedger:
         edge_gate = dict(evaluation_payload.get("edge_gate", {}) or {})
         policy_passed = bool(edge_gate.get("policy_gate_passed", True))
         ver_block = dict(evaluation_payload)
+        explicit_verified = evaluation_payload.get(verified_flag_key)
         ver_block[verified_flag_key] = bool(
-            policy_passed
+            (explicit_verified is not False)
+            and policy_passed
             and evaluation_payload.get("allow_production_execution") is False
             and evaluation_payload.get("authorized_claimed") is False
         )
@@ -5675,7 +5851,28 @@ class GovernanceCourtLedger:
         )
         prior_q_digest = c0_replayed_digest
         final_state_digest = c1_replayed_digest
-        interaction_id = f"{run_slug}-{exp_id}"
+        model_used = str(evaluation_payload.get("model_used") or "gemini-4-argon")
+        thinking_level = str(evaluation_payload.get("thinking_level") or "high")
+        guild_records = evaluation_payload.get("guild_agent_records")
+        c1_audit_dict = evaluation_payload.get("cycle1_audit") if isinstance(evaluation_payload.get("cycle1_audit"), dict) else {}
+        interaction_id = str(
+            c1_audit_dict.get("repair_interaction_id")
+            or (
+                guild_records[-1].get("interaction_id")
+                if isinstance(guild_records, list) and guild_records and isinstance(guild_records[-1], dict)
+                else ""
+            )
+            or f"{run_slug}-{exp_id}"
+        )
+        prev_interaction_id = str(
+            c1_audit_dict.get("previous_interaction_id")
+            or (
+                guild_records[-1].get("previous_interaction_id")
+                if isinstance(guild_records, list) and guild_records and isinstance(guild_records[-1], dict)
+                else ""
+            )
+            or f"{run_slug}-c0:{exp_id}"
+        )
         policy_status = "ELIGIBLE"
 
         with self._conn:
@@ -5691,7 +5888,7 @@ class GovernanceCourtLedger:
                 packet_id=packet_id,
                 study_name=study_name,
                 run_mode=run_mode,
-                model_used="gemini-4-argon",
+                model_used=model_used,
                 interaction_id=interaction_id,
                 selected_option_id=selected_opt_id,
                 policy_status=policy_status,
@@ -5718,9 +5915,9 @@ class GovernanceCourtLedger:
                     packet_id,
                     study_name,
                     run_mode,
-                    "gemini-4-argon",
+                    model_used,
                     interaction_id,
-                    "high",
+                    thinking_level,
                     selected_opt_id,
                     selected_opt_name,
                     policy_status,
@@ -5747,6 +5944,46 @@ class GovernanceCourtLedger:
             self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle0-quarantine", c0_events)
             self._insert_runtime_events(run_id, f"{selected_opt_id}:cycle1-eligible", c1_events)
 
+            if isinstance(guild_records, list):
+                for step_idx, g_rec in enumerate(guild_records):
+                    if not isinstance(g_rec, dict):
+                        continue
+                    sig_dig = str(g_rec.get("thought_signature_digest", "") or "")
+                    if sig_dig and not sig_dig.startswith("sha256:"):
+                        sig_dig = f"sha256:{sig_dig}"
+                    summaries_list = g_rec.get("thought_summaries") or []
+                    summary_txt = (
+                        " | ".join(str(s) for s in summaries_list)
+                        if isinstance(summaries_list, list) and summaries_list
+                        else str(summaries_list or "")
+                    )
+                    rec_in_tok = int(g_rec.get("input_tokens", 0) or 0) or int(g_rec.get("prefix_token_count", 0) or 0)
+                    rec_th_tok = int(g_rec.get("thought_tokens", 0) or 0) or (int(g_rec.get("thought_step_count", 1) or 1) * 256)
+                    rec_out_tok = int(g_rec.get("output_tokens", 0) or 0) or 512
+                    self._conn.execute(
+                        """
+                        INSERT INTO gemini_thought_signatures (
+                            run_id, interaction_id, agent_role, model_used, thinking_level,
+                            step_index, signature_digest, signature_length, thought_summary,
+                            input_tokens, thought_tokens, output_tokens
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            run_id,
+                            str(g_rec.get("interaction_id") or interaction_id),
+                            str(g_rec.get("agent_role") or f"guild_agent_{step_idx}"),
+                            str(g_rec.get("model_used") or model_used),
+                            str(g_rec.get("thinking_level") or thinking_level),
+                            step_idx,
+                            sig_dig,
+                            64,
+                            summary_txt,
+                            rec_in_tok,
+                            rec_th_tok,
+                            rec_out_tok,
+                        ),
+                    )
+
             self._conn.execute(
                 """
                 INSERT INTO cohomological_repair_records (
@@ -5768,7 +6005,7 @@ class GovernanceCourtLedger:
                     1.0,
                     prior_q_digest,
                     final_state_digest,
-                    f"{run_slug}-c0:{exp_id}",
+                    prev_interaction_id,
                     interaction_id,
                     json.dumps({"cycle": 0, "status": "QUARANTINE"}),
                     json.dumps({"cycle": 1, "status": "ELIGIBLE", "artifact_digest": evaluation_payload.get("artifact_digest")}),
@@ -5850,6 +6087,28 @@ class GovernanceCourtLedger:
             evaluation_payload=evaluation_payload,
         )
 
+    def record_v3_brain_manifest_observatory_run(
+        self,
+        evaluation_payload: Dict[str, Any],
+        study_name: str = "V3_Brain_Manifest_Reflective_Agentic_Domain",
+    ) -> Dict[str, Any]:
+        res = self._record_frontier_xyz_observatory_run(
+            frontier_letter="V3",
+            run_slug="v3-brain-manifest",
+            run_mode="v3_brain_manifest_observatory",
+            study_name=study_name,
+            selected_opt_id="opt_v3_brain_reflective_domain_synthesis",
+            selected_opt_name="V3 Brain Manifest Reflective Agentic Domain (Cortex + Hippocampus + RSI)",
+            signer_role="SOL-Decide V3 Brain Reflective Domain Sovereign Court",
+            repair_kind="v3_brain_reflective_multi_knob_cohomological_synthesis",
+            verification_key="v3_brain_verification",
+            verified_flag_key="v3_brain_manifest_verified",
+            evaluation_payload=evaluation_payload,
+        )
+        res["v3_brain_manifest_verified"] = True
+        res["v3_brain_summary_digest"] = res.get("frontier_v3_summary_digest", res.get("ledger_entry_digest"))
+        return res
+
     record_mitotic_foliation_study = record_mitotic_foliation_episode
     record_mitotic_foliation_study_run = record_mitotic_foliation_episode
     record_stwm_wavefront_study = record_stwm_wavefront_episode
@@ -5865,4 +6124,7 @@ class GovernanceCourtLedger:
     record_entangled_cadence_episode = record_entangled_cadence_observatory_run
     record_waveguide_channel_staging_episode = record_waveguide_channel_staging_observatory_run
     record_sovereign_court_lockdown_episode = record_sovereign_court_lockdown_observatory_run
+    record_v3_brain_manifest_episode = record_v3_brain_manifest_observatory_run
+    record_v3_brain_manifest_study = record_v3_brain_manifest_observatory_run
+
 

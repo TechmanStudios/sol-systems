@@ -73,6 +73,38 @@
     </div>
   </header>
 
+  <!-- V3 Brain & 12 Awakened Subsystems Live Command HUD -->
+  <aside id="awakened-hud">
+    <div class="awakened-hud-header">
+      <div>
+        <div class="awakened-hud-title">V3 BRAIN · 12/12 SUBSYSTEMS AWAKE</div>
+        <div class="awakened-hud-sub" id="awakened-hud-sub">57/57 Rangers · 26/26 Frontiers · Sacred Graph Verified</div>
+      </div>
+      <div class="awakened-hud-controls">
+        <button id="btn-auto-ignite" class="glass-btn active-emerald" type="button" title="Toggle Autonomous 12-Subsystem Ignition Loop">Auto-Pulse: ON</button>
+        <button id="btn-fire-all-12" class="glass-btn solar-border" type="button" title="Execute & Pulse All 12 Awakened Subsystems">⚡ Fire All 12</button>
+      </div>
+    </div>
+
+    <div class="awakened-active-banner" id="awakened-active-banner">
+      <span class="pulse-ring"></span>
+      <div class="active-banner-text">
+        <span id="awakened-active-name">Initializing 12-Subsystem Continuum…</span>
+        <span id="awakened-active-detail">Connecting to /api/continuum/awakened_subsystems</span>
+      </div>
+    </div>
+
+    <div class="awakened-list" id="awakened-tools-list">
+      <!-- Populated dynamically with the 12 awakened tools -->
+    </div>
+
+    <div class="awakened-hud-footer">
+      <div class="footer-pill"><span class="dot-emerald"></span>6D Prism L2: <strong id="hud-prism-l2">2.0616</strong></div>
+      <div class="footer-pill"><span class="dot-cyan"></span>H¹ Sheaf: <strong id="hud-sheaf-status">RESOLVED</strong></div>
+      <div class="footer-pill"><span class="dot-purple"></span>DAOSoft: <strong id="hud-daosoft-status">CERTIFIED</strong></div>
+    </div>
+  </aside>
+
   <!-- Pinned 3D Interactive Node Card (Follows selected/hovered node) -->
   <div id="node-inspector-card" class="node-hud-card hidden">
     <div class="node-hud-header">

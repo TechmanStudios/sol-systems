@@ -445,6 +445,7 @@ def replay_persisted_runtime_events(ledger_db: Path, run_id: str | None = None) 
                 "entangled_cadence_wavefront_observatory",
                 "waveguide_channel_staging_observatory",
                 "sovereign_court_lockdown_observatory",
+                "v3_brain_manifest_observatory",
             ):
                 has_c0 = any(k.endswith(":cycle0-quarantine") for k in by_opt)
                 has_c1 = any(k.endswith(":cycle1-eligible") for k in by_opt)
@@ -714,6 +715,7 @@ def assess_continuum_observatory(
     fx = cand_source_pkt.get("frontier_x_verification")
     fy = cand_source_pkt.get("frontier_y_verification")
     fz = cand_source_pkt.get("frontier_z_verification")
+    v3b = cand_source_pkt.get("v3_brain_verification")
     cand_cond = candidate_run.get("conditions", {}) if isinstance(candidate_run.get("conditions"), dict) else {}
 
     def _d(val: object) -> dict:
@@ -1531,6 +1533,28 @@ def assess_continuum_observatory(
                 "summary_digest": cand_cond.get("frontier_z_summary_digest"),
             }
         ),
+        "v3_brain_manifest_verified": (
+            bool(
+                v3b.get("v3_brain_manifest_verified") is True
+                and v3b.get("allow_production_execution") is False
+                and v3b.get("authorized_claimed") is False
+                and v3b.get("sacred_core_graph_immutable") is True
+                and _i(_d(v3b.get("context_frame")).get("prefix_token_count"), 0) >= 4096
+                and _f(_d(v3b.get("rsi_self_train_synthesis")).get("lyapunov_delta_v"), 0.0) < 0.0
+                and _f(_d(v3b.get("rsi_self_train_synthesis")).get("delta_anchor_score"), 0.0) > 0.0
+                and _f(_d(v3b.get("hippocampus_dream_consolidation")).get("mahalanobis_isometry_r"), 0.0) >= 0.9968
+                and _i(_d(v3b.get("emergent_phenomena_summary")).get("awakened_subsystems_count"), 12) >= 12
+                and _d(v3b.get("emergent_phenomena_summary")).get("spectral_prism_resolves_vector0", True) is True
+                and _d(v3b.get("emergent_phenomena_summary")).get("sheaf_cohomology_resolves_vector0_dilution", True) is True
+            )
+            if isinstance(v3b, dict)
+            else bool(cand_cond.get("v3_brain_manifest_verified", False))
+        ),
+        "v3_brain_summary_digest": (
+            v3b.get("v3_brain_summary_digest") or v3b.get("v3_brain_merkle_root") or v3b.get("artifact_digest")
+            if isinstance(v3b, dict)
+            else cand_cond.get("v3_brain_summary_digest")
+        ),
     }
 
     drift_breakdown = {
@@ -1573,6 +1597,8 @@ def assess_continuum_observatory(
         "review_status": exp["review_status"],
         "comparability": comp["comparability"],
         "outcome": outcome,
+        "v3_brain_manifest_verified": frontier_verification_summary["v3_brain_manifest_verified"],
+        "v3_brain_summary_digest": frontier_verification_summary["v3_brain_summary_digest"],
         "warnings": comp["warnings"],
         "counts": counts,
         "cycle_drift_breakdown": drift_breakdown,

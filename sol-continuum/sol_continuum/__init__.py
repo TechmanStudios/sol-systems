@@ -47,10 +47,31 @@ from .harmonizer import (
     FrontierXYZCapstoneHarmonizer,
     FrontierXYZCapstoneReport,
 )
+from .reflective_domain import (
+    REFLECTIVE_GUILD_AGENT_ROLES,
+    SACRED_DEFAULT_GRAPH_SHA256,
+    HolographicContextEncoder,
+    HolographicSubstrateSnapshot,
+    verify_sacred_core_graph_sha256,
+)
+from .exciton_snowball_bridge import (
+    ExcitonSnowballBridgeReport,
+    ExcitonSnowballContinuumBridge,
+)
+from .dormant_clusters_awakening import (
+    audit_synthesis_counterexamples_and_daosoft_bridge,
+    execute_phonon_multiplexing_and_analog_primitives,
+    probe_jeans_cosmology_and_basin_stability,
+    query_kb_hippocampus_and_compile_concepts,
+    run_exciton_snowball_and_paper_synthesis,
+    run_rsi_inventor_and_level_chambers,
+)
 
 __all__ = [
     "COMMAND_PROTOCOL_VERBS",
     "EXPECTED_CORE_GRAPH_SHA256",
+    "REFLECTIVE_GUILD_AGENT_ROLES",
+    "SACRED_DEFAULT_GRAPH_SHA256",
     "SKILL_DIMENSIONS",
     "ChangeObservatoryBridge",
     "CircuitToWideWordLoweringAdapter",
@@ -62,10 +83,14 @@ __all__ = [
     "ContinuumReasoningTelemetry",
     "EntangledCadenceReport",
     "EntangledCadenceWavefrontEngine",
+    "ExcitonSnowballBridgeReport",
+    "ExcitonSnowballContinuumBridge",
     "FrontierNAutopoieticHarmonizer",
     "FrontierNAutopoieticReport",
     "FrontierXYZCapstoneHarmonizer",
     "FrontierXYZCapstoneReport",
+    "HolographicContextEncoder",
+    "HolographicSubstrateSnapshot",
     "LuminaLibraryObservatoryOrchestrator",
     "LuminaObservatoryEpisodeRecord",
     "LuminaRangerObservatoryProposalSpec",
@@ -77,9 +102,17 @@ __all__ = [
     "SovereignCourtLockdownReport",
     "WaveguideChannelStagingEngine",
     "WaveguideChannelStagingReport",
+    "audit_synthesis_counterexamples_and_daosoft_bridge",
     "build_sol_edge_cycle_events",
+    "execute_phonon_multiplexing_and_analog_primitives",
+    "probe_jeans_cosmology_and_basin_stability",
+    "query_kb_hippocampus_and_compile_concepts",
+    "run_exciton_snowball_and_paper_synthesis",
+    "run_rsi_inventor_and_level_chambers",
     "verify_core_graph_immutability",
+    "verify_sacred_core_graph_sha256",
 ]
+
 
 
 

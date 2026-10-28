@@ -300,3 +300,29 @@ SOL separates probabilistic cognitive generation from deterministic mathematical
   npx vinext build; node --test tests/*.test.mjs
   ```
   *(Run inside `c:\sol-systems\sol-lens`).*
+
+
+---
+
+## 4. Full Awakening of All 12 SOL Companion Subsystems & Next R&D Venues (2026-10-27)
+
+### A. 12-Tool Reflective Physics & Topological Companion (`SubstrateToolSandbox`)
+All 5 dormant subsystem clusters (`Frontier_OS/Exciton-MoA`, `sol/tools/sol-core` Jeans/Phonon/Analog, `sol/tools/sol-hippocampus` + `solCompiler`, `sol/tools/sol-rsi` + 57 Sovereign Rangers, and `synThesis` Vector 0 + `DAOSoftBridge`) have been awakened and unified into the 12-tool [`SubstrateToolSandbox`](../sol-continuum/sol_continuum/substrate_tools.py) (`SUBSTRATE_TOOL_DECLARATIONS` = 12):
+- **Core Modules:**
+  - [`c:\sol-systems\sol-continuum\sol_continuum\exciton_snowball_bridge.py`](file:///c:/sol-systems/sol-continuum/sol_continuum/exciton_snowball_bridge.py) (Cluster 1: Exciton-MoA Snowball, Infinity Node, `EntangledSOLPair`, Tournament/Drift/Counterfactual/Lesson consumers, Paper Synthesizer)
+  - [`c:\sol-systems\sol-continuum\sol_continuum\dormant_clusters_awakening.py`](file:///c:/sol-systems/sol-continuum/sol_continuum/dormant_clusters_awakening.py) (Tools #7–#12 with deterministic in-process memoization and pre/post Sacred Core Graph SHA-256 verification: `d0a80462d2b9389160502b097aca1932bb014941adf6e4b77799997283e4a1bc`)
+  - [`c:\sol-systems\Frontier_OS\Exciton-MoA\transDucer\statisticalPrism.py`](file:///c:/sol-systems/Frontier_OS/Exciton-MoA/transDucer/statisticalPrism.py) (6D Spectral-Wavelet Prism resolving orthogonal Rademacher 3-moment collisions: `L2 = 2.06155281 > 0.25`)
+  - [`c:\sol-systems\sol-holo\sol_holo\v3_brain_manifest.py`](file:///c:/sol-systems/sol-holo/sol_holo/v3_brain_manifest.py) & [`c:\sol-systems\sol-studio\app.js`](file:///c:/sol-systems/sol-studio/app.js) (`#awakened-hud` live 12-subsystem command panel & autonomous ignition loop)
+  - [`c:\sol-systems\scripts\run_sol_companion.py`](file:///c:/sol-systems/scripts/run_sol_companion.py) (Zero-idle-CPU on-demand CLI pairing live `gemini-4-argon` with all 12 SOL substrate tools and auto-recording to [`sol-holo/packets/companion_sessions_ledger.jsonl`](../sol-holo/packets/companion_sessions_ledger.jsonl) and [`docs/companion_sessions/`](./companion_sessions/README.md))
+
+### B. Recorded Live `gemini-4-argon` Companion Sessions
+1. **[Session #01 — Multi-Agent Flaw Resolution](./companion_sessions/2026-10-27_session_01_multi_agent_flaw_resolution.md)** (`114.22s`, Tools `#1, #7, #8, #12`): Empirically resolved Stateless Amnesia, Premature Hypothesis Collapse (`HHI = 0.0283`, Shannon entropy `0.9096` bits with negative-phase inhibitor $\psi = -0.1433$), and Vector 0 Contradiction Dilution / Rademacher Moment Collisions (`L2 = 2.06155281`, $H^1$ sheaf penalty `-40391.0`).
+2. **[Session #02 — `FT-NWL-PLM v1.0` Neuromorphic Wave-Logic Invention](./companion_sessions/2026-10-27_session_02_ft_nwl_plm_neuromorphic_invention.md)** (`144.05s`, Tools `#2, #3, #9, #10, #11`): Synthesized and certified the **Fault-Tolerant Neuromorphic Wave-Logic & Phase-Locked Memory Architecture** (`SOL-CERT-2026-FT-NWL-PLM-001`) across 64-bit `WideWordVirtualVM` (`0` mismatches), 12-opcode `Lumina`/`LogosVM` bytecode, `57/57` Sovereign Rangers, Acoustic Phonon FDM (`+17.79%` mass transport gain), and Jeans gravitational collapse (`12/12` basin identity retention, `3.585` bits).
+
+### C. Five Non-Conventional AI R&D Venues to Pick From Next
+See **[`docs/companion_sessions/NEXT_RND_VENUES_ROADMAP.md`](./companion_sessions/NEXT_RND_VENUES_ROADMAP.md)** for full details:
+1. **Venue 1:** "Pre-Token Wave Superposition" Scratchpad (Solving Autoregressive Tunnel Vision & Mode Collapse)
+2. **Venue 2:** Anti-Sycophancy & Safety Firewall via $H^1$ Cellular Sheaf Cohomology (Replacing Scalar Reward Averaging)
+3. **Venue 3:** Non-Parametric "Sleep Consolidation" & Cognitive-Load Homeostasis (Continual Learning Without Catastrophic Forgetting)
+4. **Venue 4:** Auditing Hidden Model Collapse & Adversarial Embeddings with the 6D Spectral-Wavelet Prism
+5. **Venue 5:** Closed-Loop "Neuro-Physical" Algorithm & Hardware Co-Design (Formally Certified AI Inventor)

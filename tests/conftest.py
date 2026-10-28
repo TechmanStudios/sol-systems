@@ -20,6 +20,18 @@ for rel_dir in (
     if rel_dir.exists() and path_str not in sys.path:
         sys.path.insert(0, path_str)
 
+for extra_dir in (
+    root_dir / "Frontier_OS" / "Exciton-MoA",
+    root_dir / "sol" / "tools" / "sol-core",
+    root_dir / "sol" / "tools" / "sol-hippocampus",
+    root_dir / "sol" / "tools" / "sol-rsi",
+    root_dir / "sol" / "tools" / "sol-llm",
+    root_dir / "sol" / "solCompiler",
+):
+    extra_str = str(extra_dir)
+    if extra_dir.exists() and extra_str not in sys.path:
+        sys.path.append(extra_str)
+
 # Prevent pytest conftest package-name collision with submodule `sol/tests/conftest.py`
 sys.modules.pop("tests.conftest", None)
 sys.modules.pop("tests", None)

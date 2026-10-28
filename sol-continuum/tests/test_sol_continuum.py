@@ -1180,3 +1180,134 @@ def test_frontier_xyz_capstone_engines_and_harmonizer() -> None:
     ok, sha = verify_core_graph_immutability()
     assert ok is True
     assert sha == EXPECTED_CORE_GRAPH_SHA256
+
+
+def test_dormant_clusters_awakening_all_five_clusters_and_vector0_remediation() -> None:
+    """
+    Verify all 5 clusters of awakened dormant subsystems (Tools #7-#12) in `sol_continuum`:
+      - Cluster 1: Exciton-MoA Snowballing Research Agent + 6D Spectral Prism + H^1 Sheaf Cohomology (Vector 0 remediation)
+      - Cluster 2a: Jeans Cosmology & SynthSpawner + Basin Stability + Vectorized CSR Kernel + 4-Core Tensor Flow
+      - Cluster 2b: Phonon Multiplexing + Phonon Speed Limit + Analog Circuit Primitives + Astable/Heartbeat Oscillators
+      - Cluster 3: Hippocampus KBIndex + Concept Compiler + Experiment/Self-Train Ledgers + Adaptive Cognitive Load
+      - Cluster 4: RSI Outer Loop + Agentic Inventor + Level 1/3/11 Chambers + FrontierBridge + 57 Sovereign Rangers
+      - Cluster 5: Synthesis Counterexample Suites + 6D Spectral Prism + Sheaf Cohomology Prover + DAOSoft Bridge
+    """
+    from sol_continuum import (
+        EXPECTED_CORE_GRAPH_SHA256,
+        ExcitonSnowballContinuumBridge,
+        audit_synthesis_counterexamples_and_daosoft_bridge,
+        execute_phonon_multiplexing_and_analog_primitives,
+        probe_jeans_cosmology_and_basin_stability,
+        query_kb_hippocampus_and_compile_concepts,
+        run_exciton_snowball_and_paper_synthesis,
+        run_rsi_inventor_and_level_chambers,
+        verify_core_graph_immutability,
+    )
+
+    # 1. Cluster 1: Exciton-MoA Snowballing Bridge + Vector 0 Spectral Prism
+    bridge = ExcitonSnowballContinuumBridge(repo_root=_SOL_SYSTEMS_ROOT)
+    bridge_rep = bridge.run_bridge_campaign(cadence_mode="pulse", pair_cycles=2, steps_per_cycle=4)
+    assert bridge_rep.spectral_prism_verification["legacy_3moment_l2_distance"] == 0.0
+    assert bridge_rep.spectral_prism_verification["spectral_6d_l2_distance"] > 2.0
+    assert bridge_rep.spectral_prism_verification["spectral_prism_distinguishes_orthogonal_vectors"] is True
+    assert bridge_rep.paper_synthesis_summary["claim_count"] >= 1
+    assert bridge_rep.sacred_core_graph_immutable is True
+
+    t7 = run_exciton_snowball_and_paper_synthesis(
+        repo_root=_SOL_SYSTEMS_ROOT, cadence_mode="daily", pair_cycles=1
+    )
+    assert t7["spectral_prism_verification"]["spectral_prism_distinguishes_orthogonal_vectors"] is True
+    assert t7["sacred_core_graph_immutable"] is True
+
+    # 2. Cluster 2a: Jeans Cosmology, Basin Stability, Intuition, Vectorized CSR Kernel & Tensor Flow
+    t8 = probe_jeans_cosmology_and_basin_stability(
+        repo_root=_SOL_SYSTEMS_ROOT,
+        jcrit_condition="medium",
+        growth_steps=40,
+        probe_node_limit=8,
+    )
+    assert t8["basin_stability_probe"]["probed_node_count"] == 8
+    assert t8["vectorized_csr_kernel_parity"]["node_count"] == 140
+    assert t8["vectorized_csr_kernel_parity"]["parity_passed"] is True
+    assert t8["tensor_flow_shadow_op"]["passed_gates"] is True
+    assert t8["sacred_core_graph_immutable"] is True
+
+    # 3. Cluster 2b: Phonon Multiplexing, Speed Limit, Circuit Primitives & Oscillators
+    t9 = execute_phonon_multiplexing_and_analog_primitives(
+        repo_root=_SOL_SYSTEMS_ROOT,
+        damping_profile=2.0,
+        phonon_period=10.0,
+    )
+    assert t9["phonon_fdm_multiplexing"]["selectivity_verified"] is True
+    assert t9["circuit_primitives_probe"]["iton_score"] > 0.0
+    assert t9["oscillator_Verification"]["oscillation_sustained"] is True
+    assert t9["js_analog_hardware_parity"]["gap_sweep_16g_js"]["exists"] is True
+    assert t9["js_analog_hardware_parity"]["cross_language_mjs_py_parity"]["parity_verified"] is True
+    assert t9["js_analog_hardware_parity"]["cross_language_mjs_py_parity"]["rho_max_id_matches"] is True
+    assert t9["sacred_core_graph_immutable"] is True
+
+    # 4. Cluster 3: KB Index, Concept Compiler, Ledgers & Continuity
+    t10 = query_kb_hippocampus_and_compile_concepts(
+        repo_root=_SOL_SYSTEMS_ROOT,
+        query_text="",
+        max_compiled_nodes=24,
+    )
+    assert t10["kb_hippocampus_search"]["total_chunks_indexed"] > 0
+    assert t10["compiled_concept_graph"]["node_count"] >= 1
+    assert len(t10["continuity_and_cognitive_load"]["next_damping_window"]) == 2
+    assert t10["sacred_core_graph_immutable"] is True
+
+    # 5. Cluster 4: RSI Outer Loop, Agentic Inventor, Level Chambers, FrontierBridge & 57 Rangers
+    t11 = run_rsi_inventor_and_level_chambers(
+        repo_root=_SOL_SYSTEMS_ROOT,
+        inventor_task="full_adder",
+        patrol_all_rangers=True,
+    )
+    assert t11["rsi_outer_loop"]["composite_fitness"] > 0.0
+    assert t11["agentic_inventor_logos_vm"]["full_adder"]["passed"] is True
+    assert t11["level_chambers_and_experts"]["level11_pll_locked"] is True
+    assert t11["sovereign_rangers_patrol"]["rangers_patrolled_count"] == 57
+    assert t11["sacred_core_graph_immutable"] is True
+
+    # 6. Cluster 5: Synthesis Counterexamples, 6D Spectral Prism, Sheaf Cohomology & DAOSoft Bridge
+    t12 = audit_synthesis_counterexamples_and_daosoft_bridge(repo_root=_SOL_SYSTEMS_ROOT)
+    assert t12["synthesis_frontier_audit"]["continuous_time_invariance_verified"] is True
+    assert t12["vector0_prism_counterexample_original"]["fingerprints_identical_3moment"] is True
+    assert t12["vector0_prism_counterexample_resolution"]["spectral_prism_distinguishes_orthogonal_vectors"] is True
+    assert t12["vector0_lens_counterexample_resolution"]["contradiction_detected_and_penalized"] is True
+    assert t12["daosoft_sheaf_bridge_roundtrip"]["betti_1"] == 0
+    assert t12["sacred_core_graph_immutable"] is True
+
+    # 7. Edge cases for 6D StatisticalPrism (empty, 1-element, constant, NaN/Inf embeddings)
+    import warnings
+    import networkx as nx
+    import numpy as np
+    from sol_continuum.dormant_clusters_awakening import _load_module_by_path
+
+    prism_mod = _load_module_by_path(
+        "exciton_statistical_prism",
+        _SOL_SYSTEMS_ROOT / "Frontier_OS" / "Exciton-MoA" / "transDucer" / "statisticalPrism.py",
+    )
+    g_dummy = nx.Graph()
+    g_dummy.add_node("node_0000", coords=[0.0, 0.0, 0.0], resonance_accumulator=0.0)
+    prism = prism_mod.StatisticalPrism(g_dummy)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        warnings.simplefilter("always")
+        for edge_arr in (
+            np.array([]),
+            np.array([5.0]),
+            np.array([3.0, 3.0, 3.0, 3.0]),
+            np.array([1.0, np.nan, -1.0, np.inf]),
+        ):
+            fp6 = prism.extract_spectral_prism_fingerprint(edge_arr)
+            fp3 = prism.extract_moments(edge_arr)
+            assert fp6.shape == (6,) and bool(np.all(np.isfinite(fp6)))
+            assert fp3.shape == (3,) and bool(np.all(np.isfinite(fp3)))
+        assert len(caught_warnings) == 0
+
+    ok_post, sha_post = verify_core_graph_immutability()
+    assert ok_post is True
+    assert sha_post == EXPECTED_CORE_GRAPH_SHA256
+
+
+
