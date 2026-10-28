@@ -40,12 +40,13 @@ def _sha256_hex(payload: str | bytes) -> str:
 
 
 def verify_sacred_core_graph_sha256(repo_root: Path | None = None) -> tuple[bool, str]:
-    """Verify normalized LF SHA-256 of `sol/tools/sol-core/default_graph.json`."""
+    """Verify the graph's normalized LF SHA-256; unavailable files are unverified."""
     root = repo_root or Path(__file__).resolve().parents[2]
     graph_path = root / "sol" / "tools" / "sol-core" / "default_graph.json"
-    if not graph_path.exists():
-        return True, SACRED_DEFAULT_GRAPH_SHA256
-    raw_bytes = graph_path.read_bytes().replace(b"\r\n", b"\n")
+    try:
+        raw_bytes = graph_path.read_bytes().replace(b"\r\n", b"\n")
+    except OSError:
+        return False, ""
     digest = hashlib.sha256(raw_bytes).hexdigest()
     return (digest == SACRED_DEFAULT_GRAPH_SHA256), digest
 
