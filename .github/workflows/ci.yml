@@ -77,14 +77,22 @@ jobs:
         env:
           PYTHONUTF8: "1"
         run: |
-          python -m pytest --import-mode=importlib tests sol/tests/test_circuit_metric_evaluation.py sol-continuum/tests/test_sol_continuum.py sol-change/tests sol-decide/tests sol-holo/tests/test_sol_holo.py -k "not live" -q --junitxml=integration-results.xml
+          python -m pytest --import-mode=importlib tests sol/tests/test_circuit_metric_evaluation.py sol-continuum/tests sol-change/tests sol-decide/tests sol-holo/tests/test_sol_holo.py sol-holo/tests/test_standalone_imports.py -k "not live" -q --junitxml=integration-results.xml
+
+      - name: Run offline V3 Brain integration suite
+        env:
+          PYTHONUTF8: "1"
+        run: |
+          python -m pytest --import-mode=importlib sol-holo/tests/test_v3_brain_manifest.py -q --junitxml=v3-brain-results.xml
 
       - name: Upload JUnit report
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: integration-results-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: integration-results.xml
+          path: |
+            integration-results.xml
+            v3-brain-results.xml
           if-no-files-found: ignore
 
   lint-submodules:
