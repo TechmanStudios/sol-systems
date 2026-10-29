@@ -326,3 +326,8 @@ See **[`docs/companion_sessions/NEXT_RND_VENUES_ROADMAP.md`](./companion_session
 3. **Venue 3:** Non-Parametric "Sleep Consolidation" & Cognitive-Load Homeostasis (Continual Learning Without Catastrophic Forgetting)
 4. **Venue 4:** Auditing Hidden Model Collapse & Adversarial Embeddings with the 6D Spectral-Wavelet Prism
 5. **Venue 5:** Closed-Loop "Neuro-Physical" Algorithm & Hardware Co-Design (Formally Certified AI Inventor)
+
+### D. Coupled Agency Discovery & Canonical Agent Classification (2026-10-29)
+- **Monograph:** **[`RESEARCH_NOTE_BICAMERAL_AUTOPOIETIC_SHEAF_AGENT.md`](../RESEARCH_NOTE_BICAMERAL_AUTOPOIETIC_SHEAF_AGENT.md)** ([`file:///c:/sol-systems/RESEARCH_NOTE_BICAMERAL_AUTOPOIETIC_SHEAF_AGENT.md`](file:///c:/sol-systems/RESEARCH_NOTE_BICAMERAL_AUTOPOIETIC_SHEAF_AGENT.md))
+- **Recorded Discovery:** Documents the empirical crossing from unidirectional LLM *tool-use* into **strong bidirectional coupled agency** when pairing `gemini-4-argon` with the SOL substrate: endogenous wave/topological dynamics evolve autonomously under perturbation, detect internal coboundary tension ($\beta_1 > 0$) or epistemic blind spots (`open_questions`, cognitive-load budget crossings, Snowball stagnation streaks), and answer back to query and constrain the LLM cortex.
+- **Canonical Classification:** Establishes why flat 1D agent labels fail to capture SOL's 5-fiber bundle structure $\pi: \mathcal{E} \to (M, g)$ across continuous wave physics, algebraic topology, discrete silicon/formal proof, hippocampal sleep consolidation, and zero-trust governance, defining the system as a **Bicameral Autopoietic Sheaf-Manifold Agent** (*Constitutional Neuro-Physical Organism*).

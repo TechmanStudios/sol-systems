@@ -292,6 +292,7 @@ Open your browser at `http://localhost:8765/` to interact with the real-time 3D 
 
 ## Formal Research Monographs
 
+* [Coupled Agency & Taxonomic Classification: The Bicameral Autopoietic Sheaf-Manifold Agent](RESEARCH_NOTE_BICAMERAL_AUTOPOIETIC_SHEAF_AGENT.md)
 * [SOL-Holo: Architectural Hand-Off & Frontiers A–Z Record](docs/SOL_NEXT_SESSION_PRIMER.md)
 * [Vector 17: Sheaf-Theoretic Governed Agentic Decision Management & Living Trade Studies](RESEARCH_NOTE_SOL_DECIDE_SHEAF_MANAGEMENT.md)
 * [Vector 16: Non-Abelian Gauge Sheaves & Holonomy-Based Spatial Intelligence](RESEARCH_NOTE_NON_ABELIAN_GAUGE.md)

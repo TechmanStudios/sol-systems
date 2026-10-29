@@ -12,6 +12,10 @@ Every live agentic session executed via [`scripts/run_sol_companion.py`](../../s
 | **#01** | `2026-10-27T21:25:00Z` | `gemini-4-argon` (`high`) | `114.22s` | `sol_query_kb_hippocampus_and_compile_concepts`, `sol_fork_and_rollout_superposition`, `sol_audit_synthesis_counterexamples_and_daosoft_bridge`, `sol_run_exciton_snowball_and_paper_synthesis` | [`2026-10-27_session_01_multi_agent_flaw_resolution.md`](./2026-10-27_session_01_multi_agent_flaw_resolution.md) |
 | **#02** | `2026-10-27T21:35:00Z` | `gemini-4-argon` (`high`) | `144.05s` | `sol_synthesize_and_reflect_circuit`, `sol_compile_lumina_agent_and_claim`, `sol_run_rsi_inventor_and_level_chambers`, `sol_execute_phonon_multiplexing_and_analog_primitives`, `sol_probe_jeans_cosmology_and_basin_stability` | [`2026-10-27_session_02_ft_nwl_plm_neuromorphic_invention.md`](./2026-10-27_session_02_ft_nwl_plm_neuromorphic_invention.md) |
 
+## Architectural Synthesis & Agent Classification
+
+* **[`RESEARCH_NOTE_BICAMERAL_AUTOPOIETIC_SHEAF_AGENT.md`](../../RESEARCH_NOTE_BICAMERAL_AUTOPOIETIC_SHEAF_AGENT.md)** — Formal record of the bidirectional coupled-agency phenomenon observed between `gemini-4-argon` and the 140-node SOL manifold, establishing why flat 1D agent taxonomies fail on fibered sheaf-manifold architectures and defining SOL's canonical classification: **Bicameral Autopoietic Sheaf-Manifold Agent** (*Constitutional Neuro-Physical Organism*).
+
 ## Next R&D Venues Roadmap
 
 * **[`NEXT_RND_VENUES_ROADMAP.md`](./NEXT_RND_VENUES_ROADMAP.md)** — Five non-conventional ways the SOL Reflective Physics & Topological Companion can solve core limitations of modern AI (ready to select from in the next session):
