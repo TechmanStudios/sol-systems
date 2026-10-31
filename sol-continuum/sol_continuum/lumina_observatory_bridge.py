@@ -17,9 +17,9 @@ import hashlib
 import json
 import re
 import sys
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 from pydantic import BaseModel, Field
@@ -63,27 +63,30 @@ from coding_library.sovereign_domain.frontier_bridge import (
     FrontierClosedLoopController,
 )
 from coding_library.sovereign_domain.rangers.court_ranger import CourtRanger
-from coding_library.sovereign_domain.rangers.entangled_feedback_ranger import EntangledFeedbackRanger
-from coding_library.sovereign_domain.rangers.fault_matrix_ranger import FaultMatrixRanger
-from coding_library.sovereign_domain.rangers.finalization_ranger import FinalizationRanger
+from coding_library.sovereign_domain.rangers.entangled_feedback_ranger import (
+    EntangledFeedbackRanger,
+)
+from coding_library.sovereign_domain.rangers.fault_matrix_ranger import (
+    FaultMatrixRanger,
+)
+from coding_library.sovereign_domain.rangers.finalization_ranger import (
+    FinalizationRanger,
+)
 from coding_library.sovereign_domain.rangers.mass_ranger import MassRanger
 from coding_library.sovereign_domain.rangers.micro_isa_ranger import MicroISARanger
 from coding_library.sovereign_domain.rangers.phase_ranger import PhaseRanger
-from coding_library.sovereign_domain.rangers.wideword_program_ranger import WideWordProgramRanger
-
-from Frontier_OS.core.hippocampal_sink import HippocampalMemorySink
+from coding_library.sovereign_domain.rangers.wideword_program_ranger import (
+    WideWordProgramRanger,
+)
 from observatory.continuum import ADAPTER_VERSION
-from sol.kernel.synthesis.circuit_synthesizer import RiemannianCircuitSynthesizer
-from sol.kernel.synthesis.circuit_topology import CircuitNodeType, SelfAssembledCircuit
-from sol_edge.contracts import PolicyStatus
-from sol_edge.runtime.events import RuntimeEvent
-
 from sol_backend_capability_contract import (
     BackendCapabilityReport,
     build_backend_capability_matrix,
     summarize_backend_capability_matrix,
     validate_capability_matrix,
 )
+from sol_edge.contracts import PolicyStatus
+from sol_edge.runtime.events import RuntimeEvent
 from sol_entangled_feedback_loop import (
     EntangledFeedbackLoopPolicy,
     build_entangled_feedback_loop,
@@ -97,7 +100,6 @@ from sol_entangled_stability_controller import (
     validate_entangled_control_bounds,
 )
 from sol_entangled_wavefront_calibration import (
-    EntangledCalibrationBaseline,
     EntangledCalibrationObservation,
     EntangledCalibrationPolicy,
     EntangledCalibrationReport,
@@ -182,12 +184,15 @@ from sol_wideword_computation_validation import (
 )
 from sol_wideword_fabric import (
     attach_interlane_prefix_carry,
-    build_hierarchical_waveguide_plan,
     build_wideword_fabric,
     validate_fabric_topology,
     validate_wideword_arithmetic_fabric,
 )
 from sol_wideword_waveguide_program import validate_program_against_micro_isa
+
+from Frontier_OS.core.hippocampal_sink import HippocampalMemorySink
+from sol.kernel.synthesis.circuit_synthesizer import RiemannianCircuitSynthesizer
+from sol.kernel.synthesis.circuit_topology import CircuitNodeType, SelfAssembledCircuit
 
 from .autopoietic_organism import FrontierNAutopoieticHarmonizer
 from .continuum_network import (
@@ -195,7 +200,6 @@ from .continuum_network import (
     ContinuumReasoningTelemetry,
     build_sol_edge_cycle_events,
 )
-
 
 COMMAND_PROTOCOL_VERBS: tuple[str, ...] = (
     "PROPOSE",
@@ -221,27 +225,27 @@ class CircuitToWideWordLoweringAdapter:
     `WideWordVirtualVM` (`lane_fabric_vm`) and `OracleWideWordVM` with zero mismatches.
     """
 
-    def __init__(self, synthesizer: Optional[RiemannianCircuitSynthesizer] = None) -> None:
+    def __init__(self, synthesizer: RiemannianCircuitSynthesizer | None = None) -> None:
         self.synthesizer = synthesizer or RiemannianCircuitSynthesizer()
 
     def build_hybrid_v1_program(
         self,
-        circuit: Optional[SelfAssembledCircuit] = None,
+        circuit: SelfAssembledCircuit | None = None,
         input_bits: tuple[int, ...] = (1, 1, 1),
         enable_waveguide_channel_state: bool = False,
-    ) -> tuple[SelfAssembledCircuit, List[Any], Dict[str, str]]:
+    ) -> tuple[SelfAssembledCircuit, list[Any], dict[str, str]]:
         if circuit is None:
             circuit = self.synthesizer.synthesize_canonical("FULL_ADDER").circuit
 
         # Topologically order circuit nodes
         visited: set[str] = set()
-        topo_order: List[str] = []
+        topo_order: list[str] = []
 
         def _visit(nid: str) -> None:
             if nid in visited:
                 return
             visited.add(nid)
-            for src, dst in circuit.edges.keys():
+            for src, dst in circuit.edges:
                 if dst == nid:
                     _visit(src)
             topo_order.append(nid)
@@ -253,22 +257,21 @@ class CircuitToWideWordLoweringAdapter:
 
         # Compute last consumer index in topo_order for liveness-aware register reuse
         topo_idx_map = {nid: idx for idx, nid in enumerate(topo_order)}
-        last_use_idx: Dict[str, int] = {nid: idx for idx, nid in enumerate(topo_order)}
-        for src, dst in circuit.edges.keys():
+        last_use_idx: dict[str, int] = {nid: idx for idx, nid in enumerate(topo_order)}
+        for src, dst in circuit.edges:
             if src in topo_idx_map and dst in topo_idx_map:
-                if topo_idx_map[dst] > last_use_idx[src]:
-                    last_use_idx[src] = topo_idx_map[dst]
+                last_use_idx[src] = max(last_use_idx[src], topo_idx_map[dst])
         for out_id in circuit.output_node_ids:
             if out_id in last_use_idx:
                 last_use_idx[out_id] = len(topo_order)
 
         # Allocate circuit DAG nodes from R8..R15 first (with R4..R7 overflow and memory spill
         # at 0x100+ if >12 nodes are simultaneously live) so R0..R3 remain free for scratch.
-        free_regs: List[str] = [f"R{i}" for i in range(8, 16)] + [f"R{i}" for i in range(4, 8)]
-        active_node_reg: Dict[str, str] = {}
-        spilled_node_addr: Dict[str, int] = {}
-        node_to_reg: Dict[str, str] = {}
-        program_v1: List[Any] = []
+        free_regs: list[str] = [f"R{i}" for i in range(8, 16)] + [f"R{i}" for i in range(4, 8)]
+        active_node_reg: dict[str, str] = {}
+        spilled_node_addr: dict[str, int] = {}
+        node_to_reg: dict[str, str] = {}
+        program_v1: list[Any] = []
 
         def _alloc_reg(protected_nodes: set[str]) -> str:
             if free_regs:
@@ -295,7 +298,7 @@ class CircuitToWideWordLoweringAdapter:
 
         for step_idx, nid in enumerate(topo_order):
             node = circuit.nodes[nid]
-            parents = [src for src, dst in circuit.edges.keys() if dst == nid]
+            parents = [src for src, dst in circuit.edges if dst == nid]
             reg = _alloc_reg(set(parents))
 
             if node.node_type == CircuitNodeType.INPUT:
@@ -403,10 +406,10 @@ class CircuitToWideWordLoweringAdapter:
 
     def lower_and_execute_circuit(
         self,
-        circuit: Optional[SelfAssembledCircuit] = None,
+        circuit: SelfAssembledCircuit | None = None,
         input_bits: tuple[int, ...] = (1, 1, 1),
         enable_waveguide_channel_state: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         circuit_obj, v1_program, node_to_reg = self.build_hybrid_v1_program(
             circuit=circuit,
             input_bits=input_bits,
@@ -423,10 +426,12 @@ class CircuitToWideWordLoweringAdapter:
         }
 
         # 1. Validate 32-bit and 64-bit WideWordFabricTopology & prefix-carry plans
-        from sol_hierarchical_waveguide_fabric import build_hierarchical_waveguide_topology
+        from sol_hierarchical_waveguide_fabric import (
+            build_hierarchical_waveguide_topology,
+        )
         from sol_wideword_fabric import WideWordFabricExecutionPlan
 
-        fabric_reports: Dict[str, Any] = {}
+        fabric_reports: dict[str, Any] = {}
         for width in (32, 64):
             topo = build_wideword_fabric(width)
             topo_valid = validate_fabric_topology(topo)
@@ -452,15 +457,15 @@ class CircuitToWideWordLoweringAdapter:
         # 2. Lower v1 candidate program to v0 and execute on 32-bit and 64-bit WideWordVirtualVM + OracleWideWordVM
         from sol_micro_isa_v1_candidates import V1_CANDIDATE_OPCODES
 
-        vm_executions: Dict[str, Any] = {}
-        lowering_reports: Dict[str, Any] = {}
+        vm_executions: dict[str, Any] = {}
+        lowering_reports: dict[str, Any] = {}
         exec_report_32 = None
         program_trace_32 = None
-        v0_insts_32: List[Any] = []
+        v0_insts_32: list[Any] = []
 
         for width in (32, 64):
-            v0_insts: List[Any] = []
-            lowering_meta: List[Dict[str, Any]] = []
+            v0_insts: list[Any] = []
+            lowering_meta: list[dict[str, Any]] = []
             label_counter = 0
             safety_checks_passed = True
 
@@ -610,6 +615,253 @@ class CircuitToWideWordLoweringAdapter:
             },
         }
 
+    def verify_exhaustively_bit_sliced(
+        self,
+        circuit: SelfAssembledCircuit,
+        spec: Any | None = None,
+        width: int = 64,
+    ) -> dict[str, Any]:
+        """
+        Exhaustively verifies all 2^k truth-table rows of `circuit` by bit-slicing up to
+        `width` (default 64) truth-table rows into each WideWord register lane and executing
+        canonical Micro-ISA v0 programs across both `WideWordVirtualVM` (`lane_fabric_vm`)
+        and `OracleWideWordVM` in ceil(2^k / width) passes.
+        """
+        import itertools
+
+        if width not in (32, 64):
+            raise ValueError(f"Unsupported WideWord bit-slice width: {width}")
+
+        k = len(circuit.input_node_ids)
+        if spec is not None and hasattr(spec, "table") and spec.table:
+            all_rows: list[tuple[int, ...]] = [tuple(int(b) & 1 for b in r) for r in spec.table]
+            expected_map: dict[tuple[int, ...], tuple[int, ...]] = {
+                tuple(int(b) & 1 for b in r): tuple(int(v) & 1 for v in out)
+                for r, out in spec.table.items()
+            }
+        else:
+            all_rows = list(itertools.product((0, 1), repeat=k))
+            expected_map = {}
+            for row in all_rows:
+                ev = circuit.evaluate(
+                    {nid: float(row[idx]) for idx, nid in enumerate(circuit.input_node_ids)}
+                )
+                expected_map[row] = tuple(int(ev.binary_outputs[oid]) for oid in circuit.output_node_ids)
+
+        # Topological order + liveness table (computed once across all bit-slice batches)
+        visited: set[str] = set()
+        topo_order: list[str] = []
+
+        def _visit(nid: str) -> None:
+            if nid in visited:
+                return
+            visited.add(nid)
+            for src, dst in circuit.edges:
+                if dst == nid:
+                    _visit(src)
+            topo_order.append(nid)
+
+        for out_id in circuit.output_node_ids:
+            _visit(out_id)
+        for nid in circuit.nodes:
+            _visit(nid)
+
+        topo_idx_map = {nid: idx for idx, nid in enumerate(topo_order)}
+        last_use_idx: dict[str, int] = {nid: idx for idx, nid in enumerate(topo_order)}
+        for src, dst in circuit.edges:
+            if src in topo_idx_map and dst in topo_idx_map and topo_idx_map[dst] > last_use_idx[src]:
+                last_use_idx[src] = topo_idx_map[dst]
+        for out_id in circuit.output_node_ids:
+            if out_id in last_use_idx:
+                last_use_idx[out_id] = len(topo_order)
+
+        total_rows = len(all_rows)
+        batch_reports: list[dict[str, Any]] = []
+        row_mismatches: list[dict[str, Any]] = []
+        total_trace_mismatches = 0
+
+        for batch_idx, start in enumerate(range(0, total_rows, width)):
+            batch_rows = all_rows[start : start + width]
+            batch_len = len(batch_rows)
+            active_lanes_mask = (1 << batch_len) - 1
+
+            packed_inputs: list[int] = []
+            for in_idx in range(k):
+                w_val = 0
+                for lane, row in enumerate(batch_rows):
+                    if row[in_idx]:
+                        w_val |= 1 << lane
+                packed_inputs.append(w_val)
+
+            free_regs: list[str] = [f"R{i}" for i in range(8, 16)] + [f"R{i}" for i in range(4, 8)]
+            active_node_reg: dict[str, str] = {}
+            spilled_node_addr: dict[str, int] = {}
+            prog_v0: list[Any] = []
+
+            def _alloc_reg(
+                protected_nodes: set[str],
+                _free_regs: list[str] = free_regs,
+                _active_node_reg: dict[str, str] = active_node_reg,
+                _spilled_node_addr: dict[str, int] = spilled_node_addr,
+                _prog_v0: list[Any] = prog_v0,
+            ) -> str:
+                if _free_regs:
+                    return _free_regs.pop(0)
+                victim = next(
+                    (u for u in _active_node_reg if u not in protected_nodes),
+                    next(iter(_active_node_reg)),
+                )
+                victim_reg = _active_node_reg.pop(victim)
+                if victim not in _spilled_node_addr:
+                    addr = 0x100 + len(_spilled_node_addr)
+                    _spilled_node_addr[victim] = addr
+                    _prog_v0.append(WideWordProgramInstruction("MOV", "R2", addr))
+                    _prog_v0.append(WideWordProgramInstruction("STORE", victim_reg, "R2"))
+                return victim_reg
+
+            def _load_parent(
+                parent_id: str,
+                scratch_reg: str,
+                _active_node_reg: dict[str, str] = active_node_reg,
+                _spilled_node_addr: dict[str, int] = spilled_node_addr,
+                _prog_v0: list[Any] = prog_v0,
+            ) -> str:
+                if parent_id in _active_node_reg:
+                    return _active_node_reg[parent_id]
+                addr = _spilled_node_addr[parent_id]
+                _prog_v0.append(WideWordProgramInstruction("MOV", "R2", addr))
+                _prog_v0.append(WideWordProgramInstruction("LOAD", scratch_reg, "R2"))
+                return scratch_reg
+
+            for step_idx, nid in enumerate(topo_order):
+                node = circuit.nodes[nid]
+                parents = [src for src, dst in circuit.edges if dst == nid]
+                reg = _alloc_reg(set(parents))
+
+                if node.node_type == CircuitNodeType.INPUT:
+                    in_idx = circuit.input_node_ids.index(nid) if nid in circuit.input_node_ids else 0
+                    word_imm = packed_inputs[in_idx] if in_idx < len(packed_inputs) else 0
+                    prog_v0.append(WideWordProgramInstruction("MOV", reg, word_imm))
+                elif not parents:
+                    prog_v0.append(WideWordProgramInstruction("MOV", reg, 0))
+                elif node.node_type == CircuitNodeType.INVERTER:
+                    src0 = _load_parent(parents[0], "R3")
+                    prog_v0.append(WideWordProgramInstruction("NOT", reg, src0))
+                    if batch_len < width:
+                        prog_v0.append(WideWordProgramInstruction("AND", reg, reg, active_lanes_mask))
+                elif len(parents) == 1:
+                    src0 = _load_parent(parents[0], "R3")
+                    prog_v0.append(WideWordProgramInstruction("MOV", reg, src0))
+                else:
+                    if node.node_type in (CircuitNodeType.LENS_AND, CircuitNodeType.LENS):
+                        gate_op = "AND"
+                    elif node.node_type in (CircuitNodeType.LENS_OR, CircuitNodeType.BASIN):
+                        gate_op = "OR"
+                    elif node.node_type == CircuitNodeType.INTERFERENCE:
+                        gate_op = "XOR"
+                    else:
+                        gate_op = "MOV"
+
+                    if gate_op == "MOV":
+                        src0 = _load_parent(parents[0], "R3")
+                        prog_v0.append(WideWordProgramInstruction("MOV", reg, src0))
+                    else:
+                        src0 = _load_parent(parents[0], "R1")
+                        src1 = _load_parent(parents[1], "R3")
+                        prog_v0.append(WideWordProgramInstruction(gate_op, reg, src0, src1))
+                        for extra_p in parents[2:]:
+                            src_extra = _load_parent(extra_p, "R3")
+                            prog_v0.append(WideWordProgramInstruction(gate_op, reg, reg, src_extra))
+
+                active_node_reg[nid] = reg
+                for u in list(active_node_reg.keys()):
+                    if last_use_idx.get(u, 0) <= step_idx:
+                        freed = active_node_reg.pop(u)
+                        if freed not in free_regs:
+                            free_regs.append(freed)
+
+            for out_idx, out_id in enumerate(circuit.output_node_ids):
+                if out_id in active_node_reg:
+                    out_reg = active_node_reg[out_id]
+                else:
+                    out_reg = "R3"
+                    prog_v0.append(WideWordProgramInstruction("MOV", "R2", spilled_node_addr[out_id]))
+                    prog_v0.append(WideWordProgramInstruction("LOAD", out_reg, "R2"))
+                prog_v0.append(WideWordProgramInstruction("MOV", "R2", 0x200 + out_idx))
+                prog_v0.append(WideWordProgramInstruction("STORE", out_reg, "R2"))
+
+            prog_v0.append(WideWordProgramInstruction("HALT"))
+
+            vm = WideWordVirtualVM(width)
+            exec_report = vm.run_program_with_backend(prog_v0, "lane_fabric_vm")
+            vm.last_program = prog_v0
+            trace_mismatches = vm.compare_program_trace_to_oracle()
+            total_trace_mismatches += len(trace_mismatches)
+
+            oracle_vm = OracleWideWordVM(width)
+            oracle_vm.run_program(prog_v0)
+
+            vm_out_words = [
+                int(vm.memory.get(0x200 + out_idx, 0)) & active_lanes_mask
+                for out_idx in range(len(circuit.output_node_ids))
+            ]
+            oracle_out_words = [
+                int(oracle_vm.memory.get(0x200 + out_idx, 0)) & active_lanes_mask
+                for out_idx in range(len(circuit.output_node_ids))
+            ]
+
+            batch_mismatch_count = 0
+            for lane, row in enumerate(batch_rows):
+                vm_tuple = tuple((w >> lane) & 1 for w in vm_out_words)
+                oracle_tuple = tuple((w >> lane) & 1 for w in oracle_out_words)
+                exp_tuple = expected_map[row]
+                if vm_tuple != exp_tuple or oracle_tuple != exp_tuple:
+                    batch_mismatch_count += 1
+                    if len(row_mismatches) < 16:
+                        row_mismatches.append(
+                            {
+                                "row": list(row),
+                                "expected": list(exp_tuple),
+                                "wideword_vm": list(vm_tuple),
+                                "oracle_vm": list(oracle_tuple),
+                            }
+                        )
+
+            batch_reports.append(
+                {
+                    "batch_index": batch_idx,
+                    "lanes_used": batch_len,
+                    "active_lanes_mask_hex": format_hex(active_lanes_mask, width),
+                    "instruction_count": len(prog_v0),
+                    "spilled_nodes": len(spilled_node_addr),
+                    "oracle_trace_match": bool(exec_report.oracle_match and len(trace_mismatches) == 0),
+                    "output_words_hex": {
+                        oid: format_hex(vm_out_words[idx], width)
+                        for idx, oid in enumerate(circuit.output_node_ids)
+                    },
+                    "row_mismatches": batch_mismatch_count,
+                }
+            )
+
+        total_row_mismatch_count = sum(int(b["row_mismatches"]) for b in batch_reports)
+        is_verified = bool(total_row_mismatch_count == 0 and total_trace_mismatches == 0)
+        return {
+            "circuit_id": circuit.circuit_id,
+            "circuit_name": circuit.name,
+            "width": width,
+            "num_inputs": k,
+            "num_outputs": len(circuit.output_node_ids),
+            "total_rows_verified": total_rows,
+            "batches_executed": len(batch_reports),
+            "total_row_mismatches": total_row_mismatch_count,
+            "row_mismatches": total_row_mismatch_count,
+            "total_oracle_trace_mismatches": total_trace_mismatches,
+            "exhaustively_verified": is_verified,
+            "exhaustive_verified": is_verified,
+            "batch_reports": batch_reports,
+            "sample_mismatches": row_mismatches,
+        }
+
 
 
 class LuminaRangerObservatoryProposalSpec(BaseModel):
@@ -630,7 +882,7 @@ class LuminaRangerObservatoryProposalSpec(BaseModel):
     parliament_architecture_proposal: str = Field(
         description="Joint design proposal from Architecture Council, Wave Fabric Guild, and Compiler Council."
     )
-    ranger_patrol_directives: List[str] = Field(
+    ranger_patrol_directives: list[str] = Field(
         description="Specific field inspection directives for PhaseRanger, MassRanger, CourtRanger, and FinalizationRanger."
     )
     bounded_phase_nudge_rad: float = Field(
@@ -675,7 +927,7 @@ class LuminaSovereignAuditResult:
     state_digest: str
     events: tuple[RuntimeEvent, ...] = field(default=())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "cycle_index": self.cycle_index,
             "designation": self.designation,
@@ -719,47 +971,47 @@ class LuminaObservatoryEpisodeRecord:
     target_level: int
     candidate_component_name: str
     parliament_architecture_proposal: str
-    ranger_patrol_directives: List[str]
+    ranger_patrol_directives: list[str]
     constitutional_lesson_law: str
     observatory_hypothesis: str
-    command_protocol_trace: List[Dict[str, Any]]
-    ranger_mission: Dict[str, Any]
-    cycle0_phase_packet: Dict[str, Any]
-    cycle1_phase_packet: Dict[str, Any]
-    cycle1_court_packet: Dict[str, Any]
-    cycle1_finalization_packet: Dict[str, Any]
+    command_protocol_trace: list[dict[str, Any]]
+    ranger_mission: dict[str, Any]
+    cycle0_phase_packet: dict[str, Any]
+    cycle1_phase_packet: dict[str, Any]
+    cycle1_court_packet: dict[str, Any]
+    cycle1_finalization_packet: dict[str, Any]
     cycle0_audit: LuminaSovereignAuditResult
     cycle1_audit: LuminaSovereignAuditResult
-    library_verified_components: List[str]
-    staged_component_record: Dict[str, Any]
-    lesson_law_record: Dict[str, Any]
-    sovereign_domain_summary: Dict[str, Any]
+    library_verified_components: list[str]
+    staged_component_record: dict[str, Any]
+    lesson_law_record: dict[str, Any]
+    sovereign_domain_summary: dict[str, Any]
     observatory_comparability: str
     observatory_outcome: str
     observatory_review_status: str
-    observatory_warnings: List[str]
-    observatory_metric_deltas: Dict[str, Dict[str, Any]]
+    observatory_warnings: list[str]
+    observatory_metric_deltas: dict[str, dict[str, Any]]
     experiment_bundle_dir: str
     observatory_db_registered: bool
     hippocampal_episode_id: str
-    sol_lens_packet: Dict[str, Any]
-    baseline_sol_lens_packet: Dict[str, Any]
-    observatory_experiment_archive: Dict[str, Any]
+    sol_lens_packet: dict[str, Any]
+    baseline_sol_lens_packet: dict[str, Any]
+    observatory_experiment_archive: dict[str, Any]
     observatory_markdown_report: str
-    reasoning_telemetry: Optional[ContinuumReasoningTelemetry] = None
-    cycle1_wideword_packet: Dict[str, Any] = field(default_factory=dict)
-    cycle1_micro_isa_packet: Dict[str, Any] = field(default_factory=dict)
-    cycle0_fault_matrix_packet: Dict[str, Any] = field(default_factory=dict)
-    cycle1_entangled_feedback_packet: Dict[str, Any] = field(default_factory=dict)
-    wideword_fabric_report: Dict[str, Any] = field(default_factory=dict)
-    micro_isa_v1_lowering_report: Dict[str, Any] = field(default_factory=dict)
-    fault_matrix_report: Dict[str, Any] = field(default_factory=dict)
-    multimanifold_atomic_commit_report: Dict[str, Any] = field(default_factory=dict)
-    sovereign_runtime_report: Dict[str, Any] = field(default_factory=dict)
-    frontier_l_verification: Dict[str, Any] = field(default_factory=dict)
-    frontier_n_verification: Dict[str, Any] = field(default_factory=dict)
+    reasoning_telemetry: ContinuumReasoningTelemetry | None = None
+    cycle1_wideword_packet: dict[str, Any] = field(default_factory=dict)
+    cycle1_micro_isa_packet: dict[str, Any] = field(default_factory=dict)
+    cycle0_fault_matrix_packet: dict[str, Any] = field(default_factory=dict)
+    cycle1_entangled_feedback_packet: dict[str, Any] = field(default_factory=dict)
+    wideword_fabric_report: dict[str, Any] = field(default_factory=dict)
+    micro_isa_v1_lowering_report: dict[str, Any] = field(default_factory=dict)
+    fault_matrix_report: dict[str, Any] = field(default_factory=dict)
+    multimanifold_atomic_commit_report: dict[str, Any] = field(default_factory=dict)
+    sovereign_runtime_report: dict[str, Any] = field(default_factory=dict)
+    frontier_l_verification: dict[str, Any] = field(default_factory=dict)
+    frontier_n_verification: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "study_name": self.study_name,
             "experiment_id": self.experiment_id,
@@ -831,13 +1083,13 @@ class SolEdgeLuminaSovereignGate:
         mission: RangerMission,
         phase_packet: SovereignPacket,
         court_gate_result: PromotionGateResult,
-        finalization_packet: Optional[SovereignPacket],
+        finalization_packet: SovereignPacket | None,
         bounded_phase_nudge_rad: float,
         bounded_damping_delta: float,
         sacred_physics_mutated: bool,
         lesson_recorded: bool,
         observatory_comparability: str,
-        run_id: Optional[str] = None,
+        run_id: str | None = None,
     ) -> LuminaSovereignAuditResult:
         ev = phase_packet.evidence or {}
         active_delta = float(ev.get("active_delta") or 0.0)
@@ -969,11 +1221,11 @@ class LuminaLibraryObservatoryOrchestrator:
 
     def __init__(
         self,
-        library_agent: Optional[LuminaLibraryAgent] = None,
-        sovereign_domain: Optional[SovereignDomain] = None,
-        observatory_bridge: Optional[ChangeObservatoryBridge] = None,
-        memory_sink: Optional[HippocampalMemorySink] = None,
-        lowering_adapter: Optional[CircuitToWideWordLoweringAdapter] = None,
+        library_agent: LuminaLibraryAgent | None = None,
+        sovereign_domain: SovereignDomain | None = None,
+        observatory_bridge: ChangeObservatoryBridge | None = None,
+        memory_sink: HippocampalMemorySink | None = None,
+        lowering_adapter: CircuitToWideWordLoweringAdapter | None = None,
     ) -> None:
         self.library_agent = library_agent or LuminaLibraryAgent()
         self.sovereign_domain = sovereign_domain or SovereignDomain(
@@ -1037,8 +1289,8 @@ def calibrate_wideword_pdm_lanes(
         self,
         *,
         study_name: str = "Lumina_Ranger_Corps_Observatory_Sovereignty_v1",
-        options: Optional[List[Dict[str, Any]]] = None,
-        gemini_client: Optional[Any] = None,
+        options: list[dict[str, Any]] | None = None,
+        gemini_client: Any | None = None,
         model: str = "gemini-4-argon",
         register_in_observatory_db: bool = True,
         persist_library_staging: bool = False,
@@ -1056,10 +1308,10 @@ def calibrate_wideword_pdm_lanes(
             ]
 
         interaction_id = "mock-lumina-ranger-observatory-001"
-        proposal: Optional[LuminaRangerObservatoryProposalSpec] = None
-        thought_sig_digests: List[str] = []
-        thought_sig_lengths: List[int] = []
-        thought_summaries_list: List[str] = []
+        proposal: LuminaRangerObservatoryProposalSpec | None = None
+        thought_sig_digests: list[str] = []
+        thought_sig_lengths: list[int] = []
+        thought_summaries_list: list[str] = []
         in_tokens = 450
         th_tokens = 720
         out_tokens = 340
@@ -1248,7 +1500,7 @@ def calibrate_wideword_pdm_lanes(
             for fc in pw_fault_matrix.cases[:6]
         ]
         rollback_proof_report = run_pipeline_wavefront_rollback_proof(rollback_cases)
-        setattr(rollback_proof_report, "success", bool(rollback_proof_report.passed_proof))
+        rollback_proof_report.success = bool(rollback_proof_report.passed_proof)
 
         cycle0_fault_matrix_packet = self.fault_matrix_ranger.observe_fault_matrix(
             relocation_fault_report=reloc_fault_report,
@@ -1263,7 +1515,7 @@ def calibrate_wideword_pdm_lanes(
         ).hexdigest()[:12]
         self.promotion_court.submit_packet(cycle0_fault_matrix_packet)
 
-        fault_matrix_report_dict: Dict[str, Any] = {
+        fault_matrix_report_dict: dict[str, Any] = {
             "pipeline_wavefront_fault_matrix": {
                 "total_cases": int(pw_fault_summary["total_cases"]),
                 "passed_cases": int(pw_fault_summary["passed_cases"]),
@@ -1466,26 +1718,7 @@ def calibrate_wideword_pdm_lanes(
             )
         ]
         fb_report = run_shadow_entangled_feedback_loop(fb_loop, fb_observations)
-        setattr(
-            fb_report,
-            "metadata",
-            {
-                "calibration_baseline": True,
-                "calibration_baseline_present": True,
-                "rollback_snapshots_present": True,
-                "rollback_ready": True,
-                "phase_drift_before": 0.22,
-                "phase_drift_after": 0.018,
-                "cadence_drift_before": 0.08,
-                "cadence_drift_after": 0.012,
-                "carrier_phase_error_before": 0.07,
-                "carrier_phase_error_after": 0.011,
-                "crosstalk_before": 0.09,
-                "crosstalk_after": 0.019,
-                "boundary_reflection_before": 0.06,
-                "boundary_reflection_after": 0.010,
-            },
-        )
+        fb_report.metadata = {"calibration_baseline": True, "calibration_baseline_present": True, "rollback_snapshots_present": True, "rollback_ready": True, "phase_drift_before": 0.22, "phase_drift_after": 0.018, "cadence_drift_before": 0.08, "cadence_drift_after": 0.012, "carrier_phase_error_before": 0.07, "carrier_phase_error_after": 0.011, "crosstalk_before": 0.09, "crosstalk_after": 0.019, "boundary_reflection_before": 0.06, "boundary_reflection_after": 0.01}
         fb_stable = evaluate_feedback_loop_stability(fb_report)
         fb_atomic_ready = validate_feedback_stability_for_atomic_commit(fb_report)
 
@@ -1559,7 +1792,7 @@ def calibrate_wideword_pdm_lanes(
         ).hexdigest()[:12]
         self.promotion_court.submit_packet(cycle1_entangled_feedback_packet)
 
-        multimanifold_commit_dict: Dict[str, Any] = {
+        multimanifold_commit_dict: dict[str, Any] = {
             "coordination_group": ["M1", "M2", "M3"],
             "boundaries_valid": bool(boundaries_valid),
             "quorum": {
@@ -1608,7 +1841,7 @@ def calibrate_wideword_pdm_lanes(
         )
         rt_cmd_result = execute_shadow_quantum_wavefront_calibration_command(sovereign_rt, rt_cmd)
         rt_summary_report = summarize_sovereign_runtime(sovereign_rt)
-        sovereign_runtime_dict: Dict[str, Any] = {
+        sovereign_runtime_dict: dict[str, Any] = {
             "runtime_id": rt_summary_report.runtime_id,
             "mode": sovereign_rt.mode,
             "allow_production_execution": bool(rt_policy.allow_production_execution),
@@ -1734,7 +1967,7 @@ def calibrate_wideword_pdm_lanes(
         )
 
         # Build structured 8-verb Command Protocol trace (LuminaRangerCorps.md §8)
-        command_protocol_trace: List[Dict[str, Any]] = [
+        command_protocol_trace: list[dict[str, Any]] = [
             {
                 "verb": "PROPOSE",
                 "actor": "Parliament of Resonators (Architecture Council + Wave Fabric Guild + Compiler Council)",
@@ -1812,7 +2045,7 @@ def calibrate_wideword_pdm_lanes(
             },
         ]
 
-        frontier_l_verification: Dict[str, Any] = {
+        frontier_l_verification: dict[str, Any] = {
             "circuit_to_wideword_lowering": {
                 "circuit_summary": lowering_bundle["circuit_summary"],
                 "node_register_map": lowering_bundle["node_register_map"],
@@ -1921,7 +2154,7 @@ def calibrate_wideword_pdm_lanes(
             "verdict": baseline_verdict,
             "claimed_evaluation_match": True,
         }
-        baseline_packet: Dict[str, Any] = {
+        baseline_packet: dict[str, Any] = {
             "schema": "techman.sol-lens.proof-packet/v0.2",
             "packet_id": f"pkt-lumina-baseline-{hashlib.sha256(study_name.encode('utf-8')).hexdigest()[:10]}",
             "generated_at": executed_at_base,
@@ -2126,7 +2359,7 @@ def calibrate_wideword_pdm_lanes(
             "lesson_law": lesson_record,
         }
 
-        candidate_packet: Dict[str, Any] = {
+        candidate_packet: dict[str, Any] = {
             "schema": "techman.sol-lens.proof-packet/v0.2",
             "packet_id": f"pkt-lumina-candidate-{hashlib.sha256((study_name + interaction_id).encode('utf-8')).hexdigest()[:10]}",
             "generated_at": executed_at_cand,
@@ -2194,7 +2427,7 @@ def calibrate_wideword_pdm_lanes(
         bundle = archive_res["bundle"]
         comparison = bundle["comparison"]
 
-        metric_deltas: Dict[str, Dict[str, Any]] = {}
+        metric_deltas: dict[str, dict[str, Any]] = {}
         for row in comparison.get("metrics", []):
             crit = row.get("criterion", {})
             cid = crit.get("id", "unknown")

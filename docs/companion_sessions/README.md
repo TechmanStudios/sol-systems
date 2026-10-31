@@ -11,6 +11,7 @@ Every live agentic session executed via [`scripts/run_sol_companion.py`](../../s
 | :---: | :---: | :---: | :---: | :--- | :--- |
 | **#01** | `2026-10-27T21:25:00Z` | `gemini-4-argon` (`high`) | `114.22s` | `sol_query_kb_hippocampus_and_compile_concepts`, `sol_fork_and_rollout_superposition`, `sol_audit_synthesis_counterexamples_and_daosoft_bridge`, `sol_run_exciton_snowball_and_paper_synthesis` | [`2026-10-27_session_01_multi_agent_flaw_resolution.md`](./2026-10-27_session_01_multi_agent_flaw_resolution.md) |
 | **#02** | `2026-10-27T21:35:00Z` | `gemini-4-argon` (`high`) | `144.05s` | `sol_synthesize_and_reflect_circuit`, `sol_compile_lumina_agent_and_claim`, `sol_run_rsi_inventor_and_level_chambers`, `sol_execute_phonon_multiplexing_and_analog_primitives`, `sol_probe_jeans_cosmology_and_basin_stability` | [`2026-10-27_session_02_ft_nwl_plm_neuromorphic_invention.md`](./2026-10-27_session_02_ft_nwl_plm_neuromorphic_invention.md) |
+| **#03** | `2026-10-30T15:37:42Z` | `gemini-4-argon` (`high`) | `534.79s` | `sol_compile_lumina_agent_and_claim`, `sol_synthesize_and_reflect_circuit`, `sol_run_rsi_inventor_and_level_chambers`, `sol_execute_phonon_multiplexing_and_analog_primitives` | [`2026-10-30_session_03_venue5_pure_wave_neuro_physical_codesign.md`](./2026-10-30_session_03_venue5_pure_wave_neuro_physical_codesign.md) |
 
 ## Architectural Synthesis & Agent Classification
 
@@ -18,10 +19,11 @@ Every live agentic session executed via [`scripts/run_sol_companion.py`](../../s
 
 ## Next R&D Venues Roadmap
 
-* **[`NEXT_RND_VENUES_ROADMAP.md`](./NEXT_RND_VENUES_ROADMAP.md)** — Five non-conventional ways the SOL Reflective Physics & Topological Companion can solve core limitations of modern AI (ready to select from in the next session):
+* **[`NEXT_RND_VENUES_ROADMAP.md`](./NEXT_RND_VENUES_ROADMAP.md)** — Five non-conventional ways the SOL Reflective Physics & Topological Companion can solve core limitations of modern AI:
   1. **Venue 1:** "Pre-Token Wave Superposition" Scratchpad (Solving Autoregressive Tunnel Vision & Mode Collapse)
   2. **Venue 2:** Anti-Sycophancy & Safety Firewall via $H^1$ Cellular Sheaf Cohomology (Replacing Scalar Reward Averaging)
   3. **Venue 3:** Non-Parametric "Sleep Consolidation" & Cognitive-Load Homeostasis (Continual Learning Without Catastrophic Forgetting)
   4. **Venue 4:** Auditing Hidden Model Collapse & Adversarial Embeddings with the 6D Spectral-Wavelet Prism
-  5. **Venue 5:** Closed-Loop "Neuro-Physical" Algorithm & Hardware Co-Design (Formally Certified AI Inventor)
+  5. **Venue 5 `[EXECUTED — SOL-CERT v2]`:** Closed-Loop "Neuro-Physical" Algorithm & Hardware Co-Design (Formally Certified AI Inventor — see [Session #03](./2026-10-30_session_03_venue5_pure_wave_neuro_physical_codesign.md))
+
 

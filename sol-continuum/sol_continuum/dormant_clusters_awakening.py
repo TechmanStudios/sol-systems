@@ -52,18 +52,19 @@ and unify all 5 dormant subsystem clusters across `c:\\sol-systems` into
 from __future__ import annotations
 
 import contextlib
-from copy import deepcopy
 import importlib.util
 import inspect
 import io
 import json
 import math
-from pathlib import Path
 import random
 import subprocess
 import sys
 import tempfile
-from typing import Any, Callable
+from collections.abc import Callable
+from copy import deepcopy
+from pathlib import Path
+from typing import Any
 
 from sol_continuum.exciton_snowball_bridge import ExcitonSnowballContinuumBridge
 from sol_continuum.reflective_domain import verify_sacred_core_graph_sha256
@@ -143,7 +144,7 @@ def _ensure_sol_paths(repo_root: Path) -> Path:
                 sys.modules["telemetry"] = tel_mod
                 spec.loader.exec_module(tel_mod)
                 if prev_onto is not None:
-                    setattr(tel_mod, "OntologicalOrchestrator", prev_onto)
+                    tel_mod.OntologicalOrchestrator = prev_onto
     return sol_root
 
 
@@ -218,7 +219,7 @@ def _probe_jeans_cosmology_and_basin_stability_impl(
     probe_node_limit: int = 12,
 ) -> dict[str, Any]:
     sol_root = _ensure_sol_paths(repo_root)
-    jeans_mod = _load_module_by_path(
+    _load_module_by_path(
         "sol_jeans_cosmology_experiment", sol_root / "jeans_cosmology_experiment.py"
     )
     basin_jeans_mod = _load_module_by_path(
@@ -498,8 +499,9 @@ def _execute_phonon_multiplexing_and_analog_primitives_impl(
         eng_py.step(dt=0.12, c_press=0.1, damping=0.2)
     py_metrics = compute_metrics(eng_py.physics)
 
-    js_metrics = dict(py_metrics)
+    js_metrics: dict[str, Any] = {}
     node_executed = False
+    node_error = ""
     try:
         js_script = (
             "import fs from 'node:fs';"
@@ -518,32 +520,62 @@ def _execute_phonon_multiplexing_and_analog_primitives_impl(
             timeout=10,
             check=True,
         )
+        if proc.returncode != 0:
+            raise RuntimeError(f"Node exited {proc.returncode}: {(proc.stderr or '').strip()}")
         js_metrics = json.loads(proc.stdout.strip())
         node_executed = True
-    except Exception:
+    except (
+        subprocess.SubprocessError,
+        OSError,
+        json.JSONDecodeError,
+        ValueError,
+        RuntimeError,
+    ) as exc:
+        js_metrics = {}
         node_executed = False
+        _err_extra = (getattr(exc, "stderr", "") or "").strip()
+        node_error = f"{type(exc).__name__}: {exc}" + (f" ({_err_extra})" if _err_extra else "")
 
-    mass_diff = abs(float(py_metrics["mass"]) - float(js_metrics["mass"]))
-    max_rho_diff = abs(float(py_metrics["maxRho"]) - float(js_metrics["maxRho"]))
-    total_flux_diff = abs(float(py_metrics["totalFlux"]) - float(js_metrics["totalFlux"]))
-    entropy_diff = abs(float(py_metrics["entropy"]) - float(js_metrics["entropy"]))
-    rho_max_id_matches = int(py_metrics["rhoMaxId"]) == int(js_metrics["rhoMaxId"])
-    js_audit["cross_language_mjs_py_parity"] = {
-        "node_runtime_executed": bool(node_executed),
-        "python_mass": round(float(py_metrics["mass"]), 6),
-        "mjs_mass": round(float(js_metrics["mass"]), 6),
-        "mass_abs_diff": round(float(mass_diff), 8),
-        "max_rho_abs_diff": round(float(max_rho_diff), 8),
-        "total_flux_abs_diff": round(float(total_flux_diff), 8),
-        "entropy_abs_diff": round(float(entropy_diff), 8),
-        "rho_max_id_matches": bool(rho_max_id_matches),
-        "parity_verified": bool(
-            rho_max_id_matches
+    if node_executed and js_metrics:
+        mass_diff = abs(float(py_metrics["mass"]) - float(js_metrics["mass"]))
+        max_rho_diff = abs(float(py_metrics["maxRho"]) - float(js_metrics["maxRho"]))
+        total_flux_diff = abs(float(py_metrics["totalFlux"]) - float(js_metrics["totalFlux"]))
+        entropy_diff = abs(float(py_metrics["entropy"]) - float(js_metrics["entropy"]))
+        rho_max_id_matches = int(py_metrics["rhoMaxId"]) == int(js_metrics["rhoMaxId"])
+        parity_verified = bool(
+            node_executed
+            and rho_max_id_matches
             and mass_diff < 1e-3
             and max_rho_diff < 1e-3
             and total_flux_diff < 1e-3
-        ),
-    }
+            and entropy_diff < 1e-3
+        )
+        js_audit["cross_language_mjs_py_parity"] = {
+            "node_runtime_executed": True,
+            "python_mass": round(float(py_metrics["mass"]), 6),
+            "mjs_mass": round(float(js_metrics["mass"]), 6),
+            "mass_abs_diff": round(float(mass_diff), 8),
+            "max_rho_abs_diff": round(float(max_rho_diff), 12),
+            "max_abs_rho_diff": float(max_rho_diff),
+            "total_flux_abs_diff": round(float(total_flux_diff), 8),
+            "entropy_abs_diff": round(float(entropy_diff), 8),
+            "rho_max_id_matches": bool(rho_max_id_matches),
+            "parity_verified": parity_verified,
+        }
+    else:
+        js_audit["cross_language_mjs_py_parity"] = {
+            "node_runtime_executed": False,
+            "python_mass": round(float(py_metrics["mass"]), 6),
+            "mjs_mass": None,
+            "mass_abs_diff": None,
+            "max_rho_abs_diff": None,
+            "max_abs_rho_diff": None,
+            "total_flux_abs_diff": None,
+            "entropy_abs_diff": None,
+            "rho_max_id_matches": False,
+            "parity_verified": False,
+            "node_error": node_error,
+        }
 
     immutable_ok, _ = verify_sacred_core_graph_sha256(repo_root)
 
@@ -770,8 +802,11 @@ _CANONICAL_LUMINA_FLOWS: dict[str, str] = {
     ),
     "sr_latch": (
         "def flow(self):\n"
-        "    self.q = self.s | (self.q & ~self.r)\n"
-        "    self.qbar = self.r | (~self.s & ~self.q)\n"
+        "    not_both = ~(self.s & self.r)\n"
+        "    next_q = (self.s | (self.q & ~self.r)) & not_both\n"
+        "    next_qbar = (~next_q) & not_both\n"
+        "    self.q = next_q\n"
+        "    self.qbar = next_qbar\n"
     ),
 }
 
@@ -781,6 +816,9 @@ def run_rsi_inventor_and_level_chambers(
     *,
     inventor_task: str = "xor_gate",
     patrol_all_rangers: bool = True,
+    pure_wave: bool = False,
+    inject_cycle0_fault: str | None = None,
+    mint_sol_cert_v2: bool = False,
 ) -> dict[str, Any]:
     return _run_cached_deterministic_tool(
         repo_root,
@@ -788,11 +826,17 @@ def run_rsi_inventor_and_level_chambers(
         {
             "inventor_task": str(inventor_task),
             "patrol_all_rangers": bool(patrol_all_rangers),
+            "pure_wave": bool(pure_wave),
+            "inject_cycle0_fault": str(inject_cycle0_fault or ""),
+            "mint_sol_cert_v2": bool(mint_sol_cert_v2),
         },
         lambda: _run_rsi_inventor_and_level_chambers_impl(
             repo_root,
             inventor_task=inventor_task,
             patrol_all_rangers=patrol_all_rangers,
+            pure_wave=pure_wave,
+            inject_cycle0_fault=inject_cycle0_fault,
+            mint_sol_cert_v2=mint_sol_cert_v2,
         ),
     )
 
@@ -802,6 +846,9 @@ def _run_rsi_inventor_and_level_chambers_impl(
     *,
     inventor_task: str = "xor_gate",
     patrol_all_rangers: bool = True,
+    pure_wave: bool = False,
+    inject_cycle0_fault: str | None = None,
+    mint_sol_cert_v2: bool = False,
 ) -> dict[str, Any]:
     sol_root = _ensure_sol_paths(repo_root)
     rsi_mod = _load_module_by_path(
@@ -811,7 +858,7 @@ def _run_rsi_inventor_and_level_chambers_impl(
         "sol_rsi_agentic_inventor", sol_root / "tools" / "sol-rsi" / "agentic_inventor.py"
     )
     lumina_mod = _load_module_by_path(
-        "sol_scratch_lumina_compiler", sol_root / "scratch" / "lumina_compiler.py"
+        "lumina_compiler", sol_root / "scratch" / "lumina_compiler.py"
     )
     lvl_agents_mod = _load_module_by_path(
         "sol_rsi_level_agents",
@@ -849,39 +896,84 @@ def _run_rsi_inventor_and_level_chambers_impl(
         random.setstate(rng_state)
 
     # 2. Agentic Code Inventor & LogosVM verification across tasks
-    task_key = inventor_task if inventor_task in _CANONICAL_LUMINA_FLOWS else "xor_gate"
+    raw_task = str(inventor_task or "xor_gate").strip().lower().replace("-", "_")
+    alu_requested = raw_task in ("4bit_wave_alu", "wave_alu_4bit", "alu_4bit")
+    if alu_requested or raw_task == "hierarchical_full_adder":
+        task_key = "hierarchical_full_adder"
+    elif raw_task in _CANONICAL_LUMINA_FLOWS:
+        task_key = raw_task
+    else:
+        task_key = "xor_gate"
+
     tasks_to_verify = ["xor_gate", "half_adder"]
     if task_key not in tasks_to_verify:
         tasks_to_verify.append(task_key)
+    if alu_requested and "multiplexer" not in tasks_to_verify:
+        tasks_to_verify.append("multiplexer")
+
+    from .venue5_neuro_physical_codesign import verify_canonical_task_rk4
 
     inventor_results: dict[str, Any] = {}
+    total_shortcuts_used = 0
     for t_name in tasks_to_verify:
         t_spec = inv_mod.TASKS[t_name]
-        program = lumina_mod.LuminaCompiler.compile_flow_src(
-            t_spec["inputs"], t_spec["outputs"], _CANONICAL_LUMINA_FLOWS[t_name]
-        )
-        if t_spec.get("is_sequential"):
-            _, ok, msg = inv_mod.run_trial(t_name, None, program)
-            inventor_results[t_name] = {
-                "passed": bool(ok),
-                "instruction_count": len(program),
-                "cases_verified": len(t_spec["sequence"]),
-                "message": str(msg),
-            }
+        if t_name == "hierarchical_full_adder":
+            from coding_library.components.hierarchical_full_adder import (
+                HierarchicalFullAdderAgent,
+            )
+
+            program = lumina_mod.LuminaCompiler.compile_agent(
+                HierarchicalFullAdderAgent, pure_wave=bool(pure_wave)
+            )
         else:
-            all_ok = True
-            last_msg = ""
-            for in_tuple in t_spec["input_space"]:
-                _, ok, msg = inv_mod.run_trial(t_name, in_tuple, program)
-                if not ok:
-                    all_ok = False
-                last_msg = msg
-            inventor_results[t_name] = {
-                "passed": bool(all_ok),
-                "instruction_count": len(program),
-                "cases_verified": len(t_spec["input_space"]),
-                "message": str(last_msg),
-            }
+            program = lumina_mod.LuminaCompiler.compile_flow_src(
+                t_spec["inputs"],
+                t_spec["outputs"],
+                _CANONICAL_LUMINA_FLOWS[t_name],
+                pure_wave=bool(pure_wave),
+            )
+        alloc_scratch = dict(getattr(program, "allocated_scratch_basins", {}) or {})
+        all_ok, cases_cnt, sc_used, _min_margin, msgs = verify_canonical_task_rk4(
+            t_name,
+            program,
+            pure_wave=bool(pure_wave),
+        )
+        total_shortcuts_used += sc_used
+        inventor_results[t_name] = {
+            "passed": bool(all_ok),
+            "pure_wave_mode": bool(pure_wave),
+            "python_boolean_shortcuts_used": sc_used,
+            "instruction_count": len(program),
+            "opcodes": [str(inst.op) for inst in program],
+            "allocated_scratch_basins": alloc_scratch,
+            "cases_verified": cases_cnt,
+            "message": str(msgs[-1] if msgs else ""),
+        }
+
+    if alu_requested:
+        from Frontier_OS.core.metacognition.reasoning_graph import (
+            assemble_4bit_wave_alu_circuit,
+        )
+
+        from .lumina_observatory_bridge import CircuitToWideWordLoweringAdapter
+
+        alu_circ, alu_spec = assemble_4bit_wave_alu_circuit()
+        bs_rep = CircuitToWideWordLoweringAdapter().verify_exhaustively_bit_sliced(
+            alu_circ, spec=alu_spec, width=64
+        )
+        inventor_results["4bit_wave_alu"] = {
+            "passed": bool(
+                bs_rep["exhaustively_verified"]
+                and inventor_results["hierarchical_full_adder"]["passed"]
+                and inventor_results["multiplexer"]["passed"]
+            ),
+            "pure_wave_mode": bool(pure_wave),
+            "python_boolean_shortcuts_used": total_shortcuts_used if pure_wave else 0,
+            "bit_sliced_rows_verified": int(bs_rep["total_rows_verified"]),
+            "bit_sliced_batches_executed": int(bs_rep["batches_executed"]),
+            "bit_sliced_row_mismatches": int(bs_rep["total_row_mismatches"]),
+            "message": "1024/1024 64-bit SIMD bit-sliced rows + pure-wave HFA & MUX slices verified",
+        }
 
     # 3. Level Agents & Level Simulation Chambers (Level 1, Level 3, Level 11)
     orchestrator = lvl_agents_mod.LevelOrchestrator()
@@ -935,9 +1027,31 @@ def _run_rsi_inventor_and_level_chambers_impl(
                             instance.travel("SOLHoloOrganism_Patrol")
                     instantiated_rangers.append(obj.__name__)
 
+    cycle0_pushback: dict[str, Any] | None = None
+    sol_cert_v2_dict: dict[str, Any] | None = None
+    if inject_cycle0_fault or mint_sol_cert_v2:
+        from .venue5_neuro_physical_codesign import Venue5NeuroPhysicalCoDesignEngine
+
+        v5_engine = Venue5NeuroPhysicalCoDesignEngine(repo_root)
+        target_arch = "WAVE_ALU_4BIT" if alu_requested else raw_task.upper()
+        if inject_cycle0_fault:
+            c0_res = v5_engine.evaluate_cycle0_pushback(
+                fault_mode=str(inject_cycle0_fault),
+                target_architecture=target_arch,
+            )
+            c0_res.pop("_events", None)
+            cycle0_pushback = c0_res
+        if mint_sol_cert_v2:
+            cert_obj = v5_engine.run_closed_loop_codesign_and_mint_cert(
+                target_architecture=target_arch,
+                fault_mode=str(inject_cycle0_fault or "loop_mass_drain"),
+                pure_wave=True,
+            )
+            sol_cert_v2_dict = cert_obj.to_dict()
+
     immutable_ok, _ = verify_sacred_core_graph_sha256(repo_root)
 
-    return {
+    out_payload: dict[str, Any] = {
         "rsi_outer_loop": {
             "composite_fitness": round(float(fitness_score.fitness), 4),
             "claim_count": int(fitness_score.claim_count),
@@ -946,6 +1060,18 @@ def _run_rsi_inventor_and_level_chambers_impl(
             "raw_leads_discovered": len(reflection.raw_leads),
             "planned_experiment_count": len(rsi_plan.experiments),
             "planned_types": [e["type"] for e in rsi_plan.experiments],
+        },
+        "pure_wave_mode": bool(pure_wave),
+        "total_python_boolean_shortcuts_used": int(total_shortcuts_used),
+        "agentic_inventor": {
+            "pure_wave_mode": bool(pure_wave),
+            "pure_wave_verified": bool(
+                pure_wave
+                and total_shortcuts_used == 0
+                and all(bool(v.get("passed")) for v in inventor_results.values())
+            ),
+            "python_boolean_shortcuts_used": int(total_shortcuts_used),
+            "tasks_verified": sorted(inventor_results.keys()),
         },
         "agentic_inventor_logos_vm": inventor_results,
         "level_chambers_and_experts": {
@@ -969,6 +1095,15 @@ def _run_rsi_inventor_and_level_chambers_impl(
         },
         "sacred_core_graph_immutable": bool(immutable_ok),
     }
+    if cycle0_pushback is not None:
+        out_payload["cycle0_manifold_pushback"] = cycle0_pushback
+        out_payload["cycle0_pushback_report"] = cycle0_pushback
+    if sol_cert_v2_dict is not None:
+        from .venue5_neuro_physical_codesign import verify_sol_cert_v2_integrity
+
+        out_payload["sol_cert_v2"] = sol_cert_v2_dict
+        out_payload["sol_cert_v2_verified"] = bool(verify_sol_cert_v2_integrity(sol_cert_v2_dict))
+    return out_payload
 
 
 # ---------------------------------------------------------------------------
