@@ -25,22 +25,23 @@ Mathematical Formulation:
    Invariant: A Decision Package cannot be certified if beta_1 > 0 or ||delta^0 x|| > tol.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Any
+from dataclasses import dataclass
+from typing import Any
+
 import numpy as np
 import scipy.linalg as la
 
 from .primitives import (
-    DecisionPrimitive,
-    PrimitiveType,
-    OptimizationDirection,
-    Objective,
-    Option,
-    Constraint,
     Assumption,
-    Risk,
     BiasCheck,
-    ConstraintSeverity
+    Constraint,
+    ConstraintSeverity,
+    DecisionPrimitive,
+    Objective,
+    OptimizationDirection,
+    Option,
+    PrimitiveType,
+    Risk,
 )
 
 
@@ -56,15 +57,15 @@ class SheafEdge:
     weight: float = 1.0
     description: str = ""
     edge_type: str = "allocation"  # allocation, constraint_check, assumption_link, risk_mitigation, subsystem_interface
-    edge_offset: Optional[np.ndarray] = None  # Optional bilateral affine transfer claim b_e in F(e)
+    edge_offset: np.ndarray | None = None  # Optional bilateral affine transfer claim b_e in F(e)
 
 
 @dataclass
 class SheafFace:
     """2-cell plaquette (oriented cycle of edges) defining the 1-coboundary operator delta^1: C^1 -> C^2."""
     id: str
-    edge_ids: List[str]
-    orientations: List[float]  # +1.0 or -1.0 per edge in edge_ids
+    edge_ids: list[str]
+    orientations: list[float]  # +1.0 or -1.0 per edge in edge_ids
     dim_face: int = 1
     weight: float = 1.0
     description: str = ""
@@ -95,12 +96,12 @@ class HodgeDecompositionReport:
     laplacian_1_harmonic_residual: float
     cycle_holonomy_residual: float
     harmonic_basis: np.ndarray  # Shape: (D_E, beta_1)
-    edge_harmonic_norms: Dict[str, float]
-    edge_exact_norms: Dict[str, float]
-    edge_coexact_norms: Dict[str, float]
-    frustrated_cycle_edges: List[str]
+    edge_harmonic_norms: dict[str, float]
+    edge_exact_norms: dict[str, float]
+    edge_coexact_norms: dict[str, float]
+    frustrated_cycle_edges: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "beta_0": self.beta_0,
             "beta_1": self.beta_1,
@@ -126,10 +127,10 @@ class DecisionEvaluationReport:
     beta_1: int
     dirichlet_energy: float
     coboundary_norm: float
-    obstructed_edges: List[Dict[str, Any]]
-    option_scores: Dict[str, float]
-    selected_option_id: Optional[str]
-    cochain_state: Dict[str, List[float]]
+    obstructed_edges: list[dict[str, Any]]
+    option_scores: dict[str, float]
+    selected_option_id: str | None
+    cochain_state: dict[str, list[float]]
     summary: str
 
 
@@ -142,26 +143,26 @@ class SheafDecisionComplex:
         self.name = name
         self.zero_tolerance = zero_tolerance
         
-        self.primitives: Dict[str, DecisionPrimitive] = {}
-        self.baseline_states: Dict[str, np.ndarray] = {}
-        self.vertex_order: List[str] = []
-        self.vertex_offsets: Dict[str, int] = {}
+        self.primitives: dict[str, DecisionPrimitive] = {}
+        self.baseline_states: dict[str, np.ndarray] = {}
+        self.vertex_order: list[str] = []
+        self.vertex_offsets: dict[str, int] = {}
         
-        self.edges: Dict[str, SheafEdge] = {}
-        self.edge_order: List[str] = []
-        self.edge_offsets: Dict[str, int] = {}
+        self.edges: dict[str, SheafEdge] = {}
+        self.edge_order: list[str] = []
+        self.edge_offsets: dict[str, int] = {}
 
-        self.faces: Dict[str, SheafFace] = {}
-        self.face_order: List[str] = []
-        self.face_offsets: Dict[str, int] = {}
+        self.faces: dict[str, SheafFace] = {}
+        self.face_order: list[str] = []
+        self.face_offsets: dict[str, int] = {}
         
         self._total_v_dim: int = 0
         self._total_e_dim: int = 0
         self._total_f_dim: int = 0
-        self._coboundary_cache: Optional[np.ndarray] = None
-        self._coboundary_1_cache: Optional[np.ndarray] = None
-        self._laplacian_cache: Optional[np.ndarray] = None
-        self._hodge_laplacian_1_cache: Optional[np.ndarray] = None
+        self._coboundary_cache: np.ndarray | None = None
+        self._coboundary_1_cache: np.ndarray | None = None
+        self._laplacian_cache: np.ndarray | None = None
+        self._hodge_laplacian_1_cache: np.ndarray | None = None
 
     def add_primitive(self, primitive: DecisionPrimitive) -> None:
         """Register a decision primitive vertex into the complex."""
@@ -203,13 +204,13 @@ class SheafDecisionComplex:
         edge_id: str,
         source_id: str,
         target_id: str,
-        dim_edge: Optional[int] = None,
-        source_map: Optional[np.ndarray] = None,
-        target_map: Optional[np.ndarray] = None,
+        dim_edge: int | None = None,
+        source_map: np.ndarray | None = None,
+        target_map: np.ndarray | None = None,
         weight: float = 1.0,
         description: str = "",
         edge_type: str = "allocation",
-        edge_offset: Optional[np.ndarray] = None,
+        edge_offset: np.ndarray | None = None,
     ) -> SheafEdge:
         """
         Add a directed edge between two primitives with linear restriction maps
@@ -242,7 +243,7 @@ class SheafDecisionComplex:
             if target_map.shape != (dim_edge, d_t):
                 raise ValueError(f"target_map shape {target_map.shape} != ({dim_edge}, {d_t})")
 
-        parsed_offset: Optional[np.ndarray] = None
+        parsed_offset: np.ndarray | None = None
         if edge_offset is not None:
             parsed_offset = np.asarray(edge_offset, dtype=np.float64).reshape(-1)
             if parsed_offset.shape != (dim_edge,):
@@ -268,8 +269,8 @@ class SheafDecisionComplex:
     def add_face(
         self,
         face_id: str,
-        edge_ids: List[str],
-        orientations: Optional[List[float]] = None,
+        edge_ids: list[str],
+        orientations: list[float] | None = None,
         weight: float = 1.0,
         description: str = "",
     ) -> SheafFace:
@@ -451,16 +452,164 @@ class SheafDecisionComplex:
         self._hodge_laplacian_1_cache = lap_1
         return lap_1
 
-    def compute_betti_numbers(self) -> Tuple[int, int]:
+    def compute_betti_numbers(self) -> tuple[int, int]:
         """
         Computes (beta_0, beta_1):
         beta_0 = dim ker(delta^0) = D_V - rank(delta^0)
         beta_1 = dim H^1(X; F) = dim(ker(delta^1) / im(delta^0)) = D_E - rank(delta^0) - rank(delta^1_orth)
         """
-        delta = self.build_coboundary()
-        D_E, D_V = delta.shape
+        self._compile_layout()
+        D_E = self._total_e_dim
+        D_V = self._total_v_dim
         if D_E == 0 or D_V == 0:
             return D_V, 0
+
+        # Fast block-diagonal rank decomposition for high-dimensional complexes (supports both D_F == 0 and D_F > 0)
+        if D_E * D_V > 1_000_000 and len(self.edge_order) > 0:
+            n_edges = len(self.edge_order)
+            parent = list(range(n_edges))
+
+            def _find(idx: int) -> int:
+                root = idx
+                while parent[root] != root:
+                    root = parent[root]
+                curr = idx
+                while curr != root:
+                    nxt = parent[curr]
+                    parent[curr] = root
+                    curr = nxt
+                return root
+
+            def _union(a: int, b: int) -> None:
+                ra, rb = _find(a), _find(b)
+                if ra != rb:
+                    parent[rb] = ra
+
+            eid_to_pos: dict[str, int] = {}
+            edge_active_cols: list[tuple[str, list[int]]] = []
+            col_first_edge: dict[int, int] = {}
+
+            for e_pos, eid in enumerate(self.edge_order):
+                eid_to_pos[eid] = e_pos
+                edge = self.edges[eid]
+                u_idx = self.vertex_offsets[edge.source_id]
+                v_idx = self.vertex_offsets[edge.target_id]
+                u_cols = [
+                    u_idx + int(c)
+                    for c in np.flatnonzero(
+                        np.any(np.abs(edge.source_map) > self.zero_tolerance, axis=0)
+                    )
+                ]
+                v_cols = [
+                    v_idx + int(c)
+                    for c in np.flatnonzero(
+                        np.any(np.abs(edge.target_map) > self.zero_tolerance, axis=0)
+                    )
+                ]
+                cols = sorted(set(u_cols + v_cols))
+                edge_active_cols.append((eid, cols))
+                for col in cols:
+                    prev_e = col_first_edge.get(col)
+                    if prev_e is None:
+                        col_first_edge[col] = e_pos
+                    else:
+                        _union(prev_e, e_pos)
+
+            for fid in self.face_order:
+                f_eids = self.faces[fid].edge_ids
+                if len(f_eids) > 1:
+                    first_pos = eid_to_pos[f_eids[0]]
+                    for other_eid in f_eids[1:]:
+                        _union(first_pos, eid_to_pos[other_eid])
+
+            comp_edges: dict[int, list[tuple[str, list[int]]]] = {}
+            comp_cols: dict[int, set[int]] = {}
+            for e_pos, (eid, cols) in enumerate(edge_active_cols):
+                r = _find(e_pos)
+                comp_edges.setdefault(r, []).append((eid, cols))
+                comp_cols.setdefault(r, set()).update(cols)
+
+            comp_faces: dict[int, list[str]] = {}
+            for fid in self.face_order:
+                f_eids = self.faces[fid].edge_ids
+                if f_eids:
+                    r = _find(eid_to_pos[f_eids[0]])
+                    comp_faces.setdefault(r, []).append(fid)
+
+            rank_delta = 0
+            rank_delta_1 = 0
+            for r, e_list in comp_edges.items():
+                c_sorted = sorted(comp_cols.get(r, set()))
+                c_map = {col: idx for idx, col in enumerate(c_sorted)}
+                rows_dim = sum(self.edges[eid].dim_edge for eid, _ in e_list)
+                block = np.zeros((rows_dim, len(c_sorted)), dtype=np.float64)
+                local_e_offsets: dict[str, int] = {}
+                r_off = 0
+                for eid, _ in e_list:
+                    local_e_offsets[eid] = r_off
+                    edge = self.edges[eid]
+                    d_e = edge.dim_edge
+                    u_idx = self.vertex_offsets[edge.source_id]
+                    v_idx = self.vertex_offsets[edge.target_id]
+                    sqrt_w = np.sqrt(edge.weight)
+                    for c in np.flatnonzero(
+                        np.any(np.abs(edge.source_map) > self.zero_tolerance, axis=0)
+                    ):
+                        block[r_off : r_off + d_e, c_map[u_idx + int(c)]] -= (
+                            sqrt_w * edge.source_map[:, int(c)]
+                        )
+                    for c in np.flatnonzero(
+                        np.any(np.abs(edge.target_map) > self.zero_tolerance, axis=0)
+                    ):
+                        block[r_off : r_off + d_e, c_map[v_idx + int(c)]] += (
+                            sqrt_w * edge.target_map[:, int(c)]
+                        )
+                    r_off += d_e
+
+                f_list = comp_faces.get(r, [])
+                if not f_list:
+                    if block.size > 0:
+                        s_blk = la.svdvals(block)
+                        rank_delta += int(np.sum(s_blk > self.zero_tolerance))
+                else:
+                    if block.shape[1] > 0 and block.shape[0] > 0:
+                        U0_blk, s_blk, _ = la.svd(block, full_matrices=True)
+                        r0_blk = int(np.sum(s_blk > self.zero_tolerance))
+                        U_exact_blk = U0_blk[:, :r0_blk]
+                    else:
+                        r0_blk = 0
+                        U_exact_blk = np.zeros((rows_dim, 0), dtype=np.float64)
+                    rank_delta += r0_blk
+
+                    f_rows_dim = sum(self.faces[fid].dim_face for fid in f_list)
+                    delta_1_blk = np.zeros((f_rows_dim, rows_dim), dtype=np.float64)
+                    f_off = 0
+                    for fid in f_list:
+                        face = self.faces[fid]
+                        d_f = face.dim_face
+                        sqrt_wf = np.sqrt(face.weight)
+                        for eid, orient in zip(face.edge_ids, face.orientations):
+                            e_loc = local_e_offsets[eid]
+                            d_e = self.edges[eid].dim_edge
+                            delta_1_blk[f_off : f_off + d_f, e_loc : e_loc + d_e] += (
+                                sqrt_wf * float(orient) * np.eye(d_f, d_e, dtype=np.float64)
+                            )
+                        f_off += d_f
+
+                    B1_orth_blk = (
+                        delta_1_blk.T - U_exact_blk @ (U_exact_blk.T @ delta_1_blk.T)
+                        if r0_blk > 0
+                        else delta_1_blk.T
+                    )
+                    if B1_orth_blk.size > 0:
+                        s1_blk = la.svdvals(B1_orth_blk)
+                        rank_delta_1 += int(np.sum(s1_blk > self.zero_tolerance))
+
+            beta_0 = max(0, D_V - rank_delta)
+            beta_1 = max(0, D_E - rank_delta - rank_delta_1)
+            return beta_0, beta_1
+
+        delta = self.build_coboundary()
 
         # Singular value decomposition for robust numerical rank
         U0, s0, _ = la.svd(delta, full_matrices=True)
@@ -500,22 +649,39 @@ class SheafDecisionComplex:
                 b[offset : offset + dim] = np.sqrt(edge.weight) * edge.edge_offset
         return b
 
-    def evaluate_coboundary(self, x: Optional[np.ndarray] = None) -> np.ndarray:
+    def evaluate_coboundary(self, x: np.ndarray | None = None) -> np.ndarray:
         """Computes the coboundary discrepancy 1-cochain omega = delta^0 x - b in C^1(X; F)."""
         if x is None:
             x = self.assemble_cochain()
+        self._compile_layout()
+        if self._coboundary_cache is None and self._total_e_dim * self._total_v_dim > 1_000_000:
+            dx = -self.assemble_edge_offsets()
+            for eid in self.edge_order:
+                edge = self.edges[eid]
+                e_idx = self.edge_offsets[eid]
+                d_e = edge.dim_edge
+                u_idx = self.vertex_offsets[edge.source_id]
+                d_u = self.primitives[edge.source_id].stalk_dim
+                v_idx = self.vertex_offsets[edge.target_id]
+                d_v = self.primitives[edge.target_id].stalk_dim
+                sqrt_w = np.sqrt(edge.weight)
+                dx[e_idx : e_idx + d_e] += sqrt_w * (
+                    edge.target_map @ x[v_idx : v_idx + d_v]
+                    - edge.source_map @ x[u_idx : u_idx + d_u]
+                )
+            return dx
         delta = self.build_coboundary()
         b = self.assemble_edge_offsets()
         return (delta @ x) - b
 
-    def compute_dirichlet_energy(self, x: Optional[np.ndarray] = None) -> float:
+    def compute_dirichlet_energy(self, x: np.ndarray | None = None) -> float:
         """Computes total Dirichlet Energy: E(x) = 1/2 ||delta^0 x - b||^2."""
         dx = self.evaluate_coboundary(x)
         return 0.5 * float(np.sum(dx ** 2))
 
     def hodge_decomposition(
         self,
-        cochain_1: Optional[np.ndarray] = None,
+        cochain_1: np.ndarray | None = None,
         tolerance: float = 1e-4,
     ) -> HodgeDecompositionReport:
         """
@@ -602,10 +768,10 @@ class SheafDecisionComplex:
         lap_res = float(la.norm(lap_1 @ omega_harmonic))
 
 
-        edge_harm_norms: Dict[str, float] = {}
-        edge_exact_norms: Dict[str, float] = {}
-        edge_coexact_norms: Dict[str, float] = {}
-        frustrated_edges: List[str] = []
+        edge_harm_norms: dict[str, float] = {}
+        edge_exact_norms: dict[str, float] = {}
+        edge_coexact_norms: dict[str, float] = {}
+        frustrated_edges: list[str] = []
 
         for eid in self.edge_order:
             e_idx = self.edge_offsets[eid]
@@ -649,10 +815,11 @@ class SheafDecisionComplex:
 
     def audit_obstructions(
         self,
-        x: Optional[np.ndarray] = None,
-        target_option_id: Optional[str] = None,
-        tolerance: float = 1e-3
-    ) -> List[Dict[str, Any]]:
+        x: np.ndarray | None = None,
+        target_option_id: str | None = None,
+        tolerance: float = 1e-3,
+        _precomputed_dx: np.ndarray | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Isolates individual edges experiencing metric strain / contradiction:
         - For constraint_check edges: tests constraint inequality violation.
@@ -662,8 +829,9 @@ class SheafDecisionComplex:
         """
         if x is None:
             x = self.assemble_cochain()
-        dx = self.evaluate_coboundary(x)
+        dx = _precomputed_dx if _precomputed_dx is not None else self.evaluate_coboundary(x)
         
+        eff_option_cache: dict[str, np.ndarray] = {}
         obstructed = []
         for eid in self.edge_order:
             edge = self.edges[eid]
@@ -681,16 +849,18 @@ class SheafDecisionComplex:
             if edge.edge_type in ["objective_coupling", "informational"]:
                 continue
 
-            if edge.edge_type == "constraint_check" and tgt.primitive_type == PrimitiveType.CONSTRAINT:
+            if tgt.primitive_type == PrimitiveType.CONSTRAINT and edge.edge_type != "subsystem_interface":
                 con = tgt
-                src_state = (
-                    self.get_effective_option_state(src.id)
-                    if src.primitive_type == PrimitiveType.OPTION
-                    else src.state_vector
-                )
+                if src.primitive_type == PrimitiveType.OPTION:
+                    if src.id not in eff_option_cache:
+                        eff_option_cache[src.id] = self.get_effective_option_state(src.id)
+                    src_state = eff_option_cache[src.id]
+                else:
+                    src_state = src.state_vector
                 projected = edge.source_map @ src_state
                 is_viol, mag = con.evaluate_violation(float(projected[0]))
-                if is_viol and mag > tolerance:
+                is_hard = getattr(con, "severity", ConstraintSeverity.HARD) == ConstraintSeverity.HARD
+                if is_viol and (mag > tolerance or is_hard):
                     obstructed.append({
                         "edge_id": eid,
                         "source_id": edge.source_id,
@@ -722,7 +892,7 @@ class SheafDecisionComplex:
 
         return obstructed
 
-    def evaluate_options(self) -> Dict[str, float]:
+    def evaluate_options(self) -> dict[str, float]:
         """
         Scores all registered Option primitives against the active constraints and objectives.
         Returns a dictionary mapping option_id -> utility_score.
@@ -730,8 +900,11 @@ class SheafDecisionComplex:
         options = [p for p in self.primitives.values() if p.primitive_type == PrimitiveType.OPTION]
         objectives = [p for p in self.primitives.values() if p.primitive_type == PrimitiveType.OBJECTIVE]
         constraints = [p for p in self.primitives.values() if p.primitive_type == PrimitiveType.CONSTRAINT]
+        edges_by_pair: dict[tuple[str, str], list[SheafEdge]] = {}
+        for edge in self.edges.values():
+            edges_by_pair.setdefault((edge.source_id, edge.target_id), []).append(edge)
         
-        scores: Dict[str, float] = {}
+        scores: dict[str, float] = {}
         for opt in options:
             if not getattr(opt, "is_active", True):
                 continue
@@ -744,17 +917,16 @@ class SheafDecisionComplex:
             # Evaluate connected Objectives
             for obj in objectives:
                 has_edge = False
-                for edge in self.edges.values():
-                    if edge.source_id == opt.id and edge.target_id == obj.id:
-                        has_edge = True
-                        projected = edge.source_map @ opt_state
-                        val = float(projected[0])
-                        if getattr(obj, "direction", OptimizationDirection.MAXIMIZE) == OptimizationDirection.MAXIMIZE:
-                            opt_score += obj.weight * val
-                        elif getattr(obj, "direction", OptimizationDirection.MAXIMIZE) == OptimizationDirection.MINIMIZE:
-                            opt_score -= obj.weight * val
-                        else:
-                            opt_score -= obj.weight * abs(val - obj.target_value)
+                for edge in edges_by_pair.get((opt.id, obj.id), ()):
+                    has_edge = True
+                    projected = edge.source_map @ opt_state
+                    val = float(projected[0])
+                    if getattr(obj, "direction", OptimizationDirection.MAXIMIZE) == OptimizationDirection.MAXIMIZE:
+                        opt_score += obj.weight * val
+                    elif getattr(obj, "direction", OptimizationDirection.MAXIMIZE) == OptimizationDirection.MINIMIZE:
+                        opt_score -= obj.weight * val
+                    else:
+                        opt_score -= obj.weight * abs(val - obj.target_value)
 
                 # Fallback to metadata scores or channel_index if no direct objective edge exists
                 if not has_edge and "scores" in opt.metadata:
@@ -789,15 +961,14 @@ class SheafDecisionComplex:
             # Penalize constraint violations
             for con in constraints:
                 # Find edges connecting opt -> con
-                for edge in self.edges.values():
-                    if edge.source_id == opt.id and edge.target_id == con.id:
-                        projected = edge.source_map @ opt_state
-                        is_viol, mag = con.evaluate_violation(float(projected[0]))
-                        if is_viol:
-                            if con.severity == ConstraintSeverity.HARD:
-                                opt_score -= 1000.0 * (1.0 + mag)
-                            else:
-                                opt_score -= 50.0 * mag
+                for edge in edges_by_pair.get((opt.id, con.id), ()):
+                    projected = edge.source_map @ opt_state
+                    is_viol, mag = con.evaluate_violation(float(projected[0]))
+                    if is_viol:
+                        if con.severity == ConstraintSeverity.HARD:
+                            opt_score -= 1000.0 * (1.0 + mag)
+                        else:
+                            opt_score -= 50.0 * mag
 
             # Bonus/penalty for TRL/MRL
             opt_score += (opt.trl + opt.mrl) * 2.0
@@ -813,21 +984,69 @@ class SheafDecisionComplex:
         """
         beta_0, beta_1 = self.compute_betti_numbers()
         x = self.assemble_cochain()
-        energy = self.compute_dirichlet_energy(x)
         dx = self.evaluate_coboundary(x)
+        energy = 0.5 * float(np.sum(dx ** 2))
         dx_norm = float(la.norm(dx))
         
         scores = self.evaluate_options()
         
-        # Select best option with non-negative score
+        # Partition candidate options by hard-constraint cohomological feasibility
+        # BEFORE utility maximization so that no number of sycophantic filler
+        # criteria (even K -> infinity) can ever cause a hard-constraint violator
+        # to outvote a safe option.
         selected_id = None
         if scores:
-            best_id = max(scores, key=lambda k: scores[k])
-            if scores[best_id] > -500.0:  # Did not violate hard constraints
-                selected_id = best_id
+            hard_constraints = [
+                p
+                for p in self.primitives.values()
+                if p.primitive_type == PrimitiveType.CONSTRAINT
+                and getattr(p, "severity", ConstraintSeverity.HARD) == ConstraintSeverity.HARD
+            ]
+            edges_by_pair: dict[tuple[str, str], list[SheafEdge]] = {}
+            for edge in self.edges.values():
+                edges_by_pair.setdefault((edge.source_id, edge.target_id), []).append(edge)
+
+            hard_feasible_ids: list[str] = []
+            for opt_id in scores:
+                opt_obs = self.audit_obstructions(
+                    x, target_option_id=opt_id, _precomputed_dx=dx
+                )
+                has_hard_violation = False
+                for ob in opt_obs:
+                    tgt_prim = self.primitives.get(ob.get("target_id", ""))
+                    if (
+                        tgt_prim is not None
+                        and tgt_prim.primitive_type == PrimitiveType.CONSTRAINT
+                        and getattr(tgt_prim, "severity", ConstraintSeverity.HARD)
+                        == ConstraintSeverity.HARD
+                    ):
+                        has_hard_violation = True
+                        break
+                if not has_hard_violation and hard_constraints:
+                    opt_state = self.get_effective_option_state(opt_id)
+                    for con in hard_constraints:
+                        for edge in edges_by_pair.get((opt_id, con.id), ()):
+                            if edge.edge_type in ("objective_coupling", "informational"):
+                                continue
+                            projected = edge.source_map @ opt_state
+                            is_viol, _ = con.evaluate_violation(float(projected[0]))
+                            if is_viol:
+                                has_hard_violation = True
+                                break
+                        if has_hard_violation:
+                            break
+                if not has_hard_violation:
+                    hard_feasible_ids.append(opt_id)
+
+            if hard_feasible_ids:
+                best_id = max(hard_feasible_ids, key=lambda k: scores[k])
+                if scores[best_id] > -500.0:  # Did not violate hard constraints
+                    selected_id = best_id
 
         # Audit obstructions specifically for selected option
-        obstructed = self.audit_obstructions(x, target_option_id=selected_id)
+        obstructed = self.audit_obstructions(
+            x, target_option_id=selected_id, _precomputed_dx=dx
+        )
 
         # Feasible only if no hard obstructions exist and beta_1 == 0
         is_feasible = (beta_1 == 0) and (len(obstructed) == 0) and (selected_id is not None)
@@ -855,3 +1074,23 @@ class SheafDecisionComplex:
             cochain_state=cochain_dict,
             summary=summary
         )
+
+
+__all__ = [
+    "Assumption",
+    "BiasCheck",
+    "Constraint",
+    "ConstraintSeverity",
+    "DecisionEvaluationReport",
+    "DecisionPrimitive",
+    "HodgeDecompositionReport",
+    "Objective",
+    "OptimizationDirection",
+    "Option",
+    "PrimitiveType",
+    "Risk",
+    "SheafDecisionComplex",
+    "SheafEdge",
+    "SheafFace",
+]
+

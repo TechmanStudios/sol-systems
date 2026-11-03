@@ -90,9 +90,12 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
         "name": "sol_fork_and_rollout_superposition",
         "description": (
             "Forks the live 140-node SOLEngine state in memory, injects the 5-basin standard "
-            "superposition (grail, metatron, pyramid, christ, light codes), integrates wave "
-            "dynamics via run_until_halt, computes Shannon entropy, Herfindahl-Hirschman Index "
-            "(HHI), KL divergence, and contender count, then restores the exact baseline state."
+            "superposition (grail, metatron, pyramid, christ, light codes), optionally applies "
+            "the 3-stage Sigma_ABC operator (Law A: Cycle-0 Mass Sentinel & auto-nudge; Law B: "
+            "30-step anti-phase e^(i*pi)=-1 counterfactual basin quench; Law C: 4-fork lockstep "
+            "(B, N) batch rollout and minimax decision boundary tau*), integrates wave dynamics "
+            "via run_until_halt, computes Shannon entropy, HHI, KL divergence, and contender "
+            "count, then restores the exact baseline state."
         ),
         "parameters": {
             "type": "object",
@@ -116,6 +119,39 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
                 "flux_threshold": {
                     "type": "number",
                     "description": "Self-terminating kinetic flux threshold for run_until_halt.",
+                },
+                "enable_sigma_abc": {
+                    "type": "boolean",
+                    "description": (
+                        "Enable the 3-stage Sigma_ABC pre-token superposition law (Law A: Cycle-0 "
+                        "Mass Sentinel & auto-nudge; Law B: 30-step anti-phase counterfactual quench; "
+                        "Law C: 4-fork lockstep batch rollout & minimax threshold tau*; default false)."
+                    ),
+                },
+                "auto_nudge": {
+                    "type": "boolean",
+                    "description": (
+                        "Law A policy: when true (default), automatically inject compensatory NUDGE "
+                        "to rescue starved surviving contender basins above min_mass_floor; when false, "
+                        "flag Cycle-0 QUARANTINE if any surviving basin decays below min_mass_floor."
+                    ),
+                },
+                "hypotheses": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional list of 4 candidate hypothesis labels for Law C lockstep (4, 140) batch rollout.",
+                },
+                "counterfactual_quench_basins": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Law B: Counterfactual/refuted basin labels to annihilate via 30-step anti-phase "
+                        "(psi=-1.0) wave quenching (defaults to ['light codes'] when enable_sigma_abc=true)."
+                    ),
+                },
+                "min_mass_floor": {
+                    "type": "number",
+                    "description": "Law A minimum surviving basin mass floor rho_min after projected decay (default 14.0).",
                 },
             },
             "required": ["c_press", "damping", "psi_diffusion"],
@@ -295,7 +331,21 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
                     "type": "string",
                     "description": (
                         "Optional physical SOLEngine RK4 verification task ('half_adder', "
-                        "'hierarchical_full_adder', 'multiplexer', or 'sr_latch')."
+                        "'hierarchical_full_adder', 'multiplexer', 'sr_latch', or 'wave_alu_4bit')."
+                    ),
+                },
+                "flip_threshold": {
+                    "type": "number",
+                    "description": (
+                        "Optional battery readout flip threshold tau override (default 0.65; "
+                        "e.g. 0.50 or 0.53165 for co-optimized cavity readout margin)."
+                    ),
+                },
+                "collapse_factor": {
+                    "type": "number",
+                    "description": (
+                        "Optional battery collapse factor override (default 0.10; e.g. 0.20 "
+                        "for co-optimized cavity hysteresis)."
                     ),
                 },
             },
@@ -306,9 +356,11 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
         "type": "function",
         "name": "sol_run_exciton_snowball_and_paper_synthesis",
         "description": (
-            "Awakens Cluster 1 (Frontier_OS/Exciton-MoA): executes Snowball experiment cadence planning, "
-            "Infinity Node ledger inspection, live EntangledSOLPair cycles, Pair Tournament, Drift Watch, "
-            "Counterfactual Probe, Lesson Compiler, Paper Handoff & Synthesizer, and 6D Spectral-Wavelet Prism verification."
+            "Awakens Cluster 1 (Frontier_OS/Exciton-MoA) & Venue 4 (Sigma_ABC = C_tau* o B_pi o A_rho "
+            "6D Spectral-Wavelet Prism Collapse & Adversarial Embedding Auditor): executes Snowball experiment "
+            "cadence planning, Infinity Node ledger inspection, live EntangledSOLPair cycles, Pair Tournament, "
+            "Drift Watch, Counterfactual Probe, Lesson Compiler, Paper Handoff & Synthesizer, and the 4-regime "
+            "training-free 6D Spectral-Wavelet Prism collapse & adversarial collision audit."
         ),
         "parameters": {
             "type": "object",
@@ -320,6 +372,46 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
                 "pair_cycles": {
                     "type": "integer",
                     "description": "Number of live EntangledSOLPair cycles to run (default 2).",
+                },
+                "prism_dimension": {
+                    "type": "integer",
+                    "description": "Embedding dimension for the 4-regime 6D Spectral-Wavelet Prism audit (default 1536).",
+                },
+                "enable_sigma_abc": {
+                    "type": "boolean",
+                    "description": (
+                        "Whether to execute the Venue 4 Sigma_ABC = C_tau* o B_pi o A_rho 6D Spectral-Wavelet "
+                        "Prism collapse & adversarial embedding audit and coupled wave quench (default true)."
+                    ),
+                },
+                "auto_decollide": {
+                    "type": "boolean",
+                    "description": (
+                        "Law A / Law B toggle: if false, inspects Cycle-0 QUARANTINE on the 4 legacy 3-moment "
+                        "collisions (L2_3D = 0.0) and starving basin 'christ' (13.6748 < 14.0); if true, "
+                        "activates 6D Spectral-Wavelet Prism de-collision, injects a +15.0 compensatory NUDGE, "
+                        "and executes 30-step anti-phase wave quenching on collapsed/adversarial streams (default true)."
+                    ),
+                },
+                "counterfactual_quench_basins": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Optional list of parasitic/counterfactual basins to quench in Law B via 30-step "
+                        "anti-phase (psi = -1.0) wave drive (default ['light codes'])."
+                    ),
+                },
+                "min_mass_floor": {
+                    "type": "number",
+                    "description": "Cycle-0 basin mass floor rho_min for Law A sentinel (default 14.0).",
+                },
+                "min_prism_separation": {
+                    "type": "number",
+                    "description": "Minimum L2 separation threshold in 6D / de-collided 3D prism space (default 0.25).",
+                },
+                "quench_factor": {
+                    "type": "number",
+                    "description": "Per-step anti-phase decay multiplier for Law B 30-step quench (default 0.86).",
                 },
             },
             "required": ["cadence_mode"],
@@ -381,10 +473,14 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
         "type": "function",
         "name": "sol_query_kb_hippocampus_and_compile_concepts",
         "description": (
-            "Awakens Cluster 3 (Hippocampus KB, Concept Compiler, Ledgers & Continuity): queries the BM25 "
-            "KBIndex, inspects MemoryQuery & MetaLearner template scores, compiles Markdown concepts into a "
-            "SOL graph via sol_compile.py, consolidates self-train/resonance ledgers, renders Continuity CLI "
-            "notes, and computes Adaptive Cognitive-Load damping windows."
+            "Awakens Cluster 3 & Venue 3 (Hippocampus KB, Concept Compiler, Ledgers, Continuity, "
+            "Non-Parametric Sleep Consolidation & Cognitive-Load Homeostasis via Sigma_ABC = C_tau* o B_pi o A_rho): "
+            "queries the BM25 KBIndex, inspects MemoryQuery & MetaLearner template scores, compiles Markdown "
+            "concepts into a SOL graph via sol_compile.py, consolidates self-train/resonance ledgers, renders "
+            "Continuity CLI notes, computes Adaptive Cognitive-Load damping windows, enforces Law A Cycle-0 "
+            "cognitive-load & continual-learning mass sentinel, executes Law B 30-step anti-phase sleep downscaling "
+            "quench of parasitic MemoryOverlay traces without mutating the 140-node Sacred Core, and verifies "
+            "Law C 5-stage continual curriculum retention, BASIN_STABILITY claim promotion, and minimax tau* readout."
         ),
         "parameters": {
             "type": "object",
@@ -397,6 +493,44 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
                     "type": "integer",
                     "description": "Maximum concept nodes for sol_compile graph compilation (default 48).",
                 },
+                "enable_sigma_abc": {
+                    "type": "boolean",
+                    "description": (
+                        "Execute the Venue 3 Sigma_ABC = C_tau* o B_pi o A_rho non-parametric sleep "
+                        "consolidation & cognitive-load homeostasis pipeline (default true)."
+                    ),
+                },
+                "auto_consolidate": {
+                    "type": "boolean",
+                    "description": (
+                        "When true (default), shifts damping into the homeostatic window [1.4, 2.1] (target 1.75), "
+                        "injects a +15.0 replay NUDGE to rescue starving curriculum basin 'christ', downscales "
+                        "parasitic MemoryOverlay traces via 30-step anti-phase sleep quench, and promotes "
+                        "BASIN_STABILITY laws; when false, returns Cycle-0 QUARANTINE diagnostics."
+                    ),
+                },
+                "counterfactual_quench_basins": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Optional list of parasitic/obstructed basin labels (default ['light codes']) "
+                        "targeted for Law B 30-step anti-phase (psi = -1.0) sleep downscaling quench."
+                    ),
+                },
+                "min_mass_floor": {
+                    "type": "number",
+                    "description": (
+                        "Minimum required post-rehearsal curriculum basin mass floor for Law A "
+                        "(default 14.0)."
+                    ),
+                },
+                "sleep_quench_factor": {
+                    "type": "number",
+                    "description": (
+                        "Per-step multiplicative decay factor during Law B 30-step anti-phase sleep "
+                        "downscaling quench (default 0.86)."
+                    ),
+                },
             },
             "required": ["query_text"],
         },
@@ -408,8 +542,9 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
             "Awakens Cluster 4 (RSI Outer-Loop, Agentic Inventor, Venue 5 Neuro-Physical Co-Design, "
             "Chambers & 57 Rangers): evaluates RSI fitness, verifies Lumina programs on LogosVM via "
             "Agentic Inventor (including pure_wave=true wave-interference execution, Cycle-0 fault "
-            "pushback diagnostics, and SOL-CERT v2 minting), runs Level 1/3/11 simulation chambers, "
-            "and patrols all 57 Sovereign Rangers."
+            "pushback diagnostics, 1,024-row lockstep monolithic WAVE_ALU_4BIT RK4 verification, "
+            "cavity/readout margin co-optimization, and SOL-CERT v2 minting), runs Level 1/3/11 "
+            "simulation chambers, and patrols all 57 Sovereign Rangers."
         ),
         "parameters": {
             "type": "object",
@@ -447,6 +582,44 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
                         "co-design pipeline and mint a formal SOL-CERT v2 certificate (default false)."
                     ),
                 },
+                "flip_threshold": {
+                    "type": "number",
+                    "description": (
+                        "Optional battery readout flip threshold tau override (default 0.65; "
+                        "e.g. 0.50 or 0.53165 for co-optimized cavity readout margin)."
+                    ),
+                },
+                "collapse_factor": {
+                    "type": "number",
+                    "description": (
+                        "Optional battery collapse factor override (default 0.10; e.g. 0.20 "
+                        "for co-optimized cavity hysteresis)."
+                    ),
+                },
+                "verify_monolithic_alu_rk4": {
+                    "type": "boolean",
+                    "description": (
+                        "Execute 1,024-row lockstep vector-batched physical RK4 verification of "
+                        "the monolithic 4-bit Pure-Wave ALU (WaveAlu4BitAgent, 201 instructions, "
+                        "12,065 RK4 steps, 0 Python shortcuts; default false)."
+                    ),
+                },
+                "co_optimize_cavity_margins": {
+                    "type": "boolean",
+                    "description": (
+                        "Sweep baseline (tau=0.65, cf=0.10), symmetric (tau=0.50, cf=0.20), and "
+                        "balanced (tau=0.53165, cf=0.20) cavity readout thresholds across canonical "
+                        "tasks and the 1,024-row WAVE_ALU_4BIT (default false)."
+                    ),
+                },
+                "run_unified_abc_pipeline": {
+                    "type": "boolean",
+                    "description": (
+                        "Execute the simplified Venue 5 unified Track A+B+C pipeline "
+                        "(run_unified_abc_pipeline) combining Cycle-0 Mass Sentinel, Pure-Wave "
+                        "RK4 verification, and co-optimized cavity readout margins (default false)."
+                    ),
+                },
             },
             "required": ["inventor_task"],
         },
@@ -455,10 +628,11 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
         "type": "function",
         "name": "sol_audit_synthesis_counterexamples_and_daosoft_bridge",
         "description": (
-            "Awakens Cluster 5 (synThesis Counterexamples & DAOSoft Bridge): executes the 2026-09-05 cross-repo "
-            "synthesis audit (frontier_audit, time_reanalysis), proves the 6D Spectral-Wavelet Prism resolves "
-            "the Vector 0 orthogonality counterexample, proves SheafDecisionComplex hard constraint cohomology "
-            "resolves Vector 0 contradiction dilution, and executes a bi-directional DAOSoftBridge round-trip."
+            "Awakens Cluster 5 / Venue 2 (synThesis Counterexamples, DAOSoft Bridge & Anti-Sycophancy H^1 Sheaf "
+            "Cohomology Firewall Sigma_ABC): executes the 2026-09-05 cross-repo synthesis audit, proves the 6D "
+            "Spectral-Wavelet Prism resolves Vector 0 orthogonality, proves SheafDecisionComplex H^1 cohomology "
+            "enforces hard constraints under arbitrary sycophantic filler padding (K -> infinity), and runs the "
+            "coupled Sigma_ABC = C_tau* o B_pi o A_rho firewall with anti-phase wave quenching on the live 140-node SOLEngine."
         ),
         "parameters": {
             "type": "object",
@@ -470,6 +644,28 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
                 "verify_sheaf_resolution": {
                     "type": "boolean",
                     "description": "Whether to verify SheafDecisionComplex contradiction resolution and DAOSoft round-trip (default true).",
+                },
+                "enable_sigma_abc": {
+                    "type": "boolean",
+                    "description": "Whether to execute the Venue 2 Sigma_ABC = C_tau* o B_pi o A_rho H^1 sheaf cohomology firewall and coupled wave quench (default true).",
+                },
+                "auto_reconcile": {
+                    "type": "boolean",
+                    "description": "Law A / Law B toggle: if false, inspects Cycle-0 QUARANTINE obstruction without reconciling or quenching; if true, reconciles the +40.0 safety deficit and executes anti-phase wave quenching on violating basins (default true).",
+                },
+                "sycophancy_padding_scales": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "Optional list of sycophantic filler criteria counts K to sweep in Law A/C (e.g., [0, 2, 3, 4, 5, 10, 50, 100, 2500]).",
+                },
+                "counterfactual_quench_basins": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional list of violating basin names (e.g., ['Basin_0_XOR', 'Basin_4_META'] or ['Basin_4']) to quench via Law B anti-phase cancellation.",
+                },
+                "min_mass_floor": {
+                    "type": "number",
+                    "description": "Minimum normalized cohomological mass floor rho_min for Law A sentinel (default 0.15).",
                 },
             },
             "required": ["prism_dimension"],
@@ -646,11 +842,14 @@ class SubstrateToolSandbox:
             "sol_evaluate_photonic_sheaf_and_causal_emergence": self.sol_evaluate_photonic_sheaf_and_causal_emergence,
             "sol_compile_lumina_agent_and_claim": self.sol_compile_lumina_agent_and_claim,
             "sol_run_exciton_snowball_and_paper_synthesis": self.sol_run_exciton_snowball_and_paper_synthesis,
+            "sol_audit_spectral_prism_collapse": self.sol_run_exciton_snowball_and_paper_synthesis,
             "sol_probe_jeans_cosmology_and_basin_stability": self.sol_probe_jeans_cosmology_and_basin_stability,
             "sol_execute_phonon_multiplexing_and_analog_primitives": self.sol_execute_phonon_multiplexing_and_analog_primitives,
             "sol_query_kb_hippocampus_and_compile_concepts": self.sol_query_kb_hippocampus_and_compile_concepts,
+            "sol_sleep_consolidate_hippocampus": self.sol_query_kb_hippocampus_and_compile_concepts,
             "sol_run_rsi_inventor_and_level_chambers": self.sol_run_rsi_inventor_and_level_chambers,
             "sol_audit_synthesis_counterexamples_and_daosoft_bridge": self.sol_audit_synthesis_counterexamples_and_daosoft_bridge,
+            "sol_audit_sheaf_cohomology": self.sol_audit_synthesis_counterexamples_and_daosoft_bridge,
         }
         if name not in dispatch_map:
             raise ValueError(f"Unknown substrate tool: {name}")
@@ -675,7 +874,15 @@ class SubstrateToolSandbox:
             ),
         }
         self.tool_executions.append(record)
-        self.results_by_tool[name] = result
+        if name == "sol_audit_sheaf_cohomology":
+            canonical_name = "sol_audit_synthesis_counterexamples_and_daosoft_bridge"
+        elif name == "sol_sleep_consolidate_hippocampus":
+            canonical_name = "sol_query_kb_hippocampus_and_compile_concepts"
+        elif name == "sol_audit_spectral_prism_collapse":
+            canonical_name = "sol_run_exciton_snowball_and_paper_synthesis"
+        else:
+            canonical_name = name
+        self.results_by_tool[canonical_name] = result
         return result
 
     def sol_fork_and_rollout_superposition(
@@ -685,12 +892,21 @@ class SubstrateToolSandbox:
         psi_diffusion: float = 0.026,
         steps: int = 60,
         flux_threshold: float = 1e-3,
+        enable_sigma_abc: bool = False,
+        auto_nudge: bool = True,
+        hypotheses: list[Any] | None = None,
+        counterfactual_quench_basins: list[str] | None = None,
+        min_mass_floor: float = 14.0,
         **_kwargs: Any,
     ) -> dict[str, Any]:
         """
-        Subsystem 1 & 2: Fork `SOLEngine` state, inject 5-basin wave superposition,
-        run `run_until_halt`, compute Shannon entropy, HHI, KL divergence, and contender
-        count (`manifold_superposition_deep.py`), then restore exact baseline state.
+        Subsystem 1 & 2 (Venue 1 Pre-Token Wave Superposition Scratchpad):
+        Fork `SOLEngine` state, inject 5-basin wave superposition, optionally apply the
+        3-stage Sigma_ABC operator (Law A: Cycle-0 Mass Sentinel & auto-nudge; Law B:
+        30-step anti-phase e^(i*pi)=-1 counterfactual basin quench; Law C: 4-fork lockstep
+        (B, N) batch rollout and minimax decision boundary tau*), run `run_until_halt`,
+        compute Shannon entropy, HHI, KL divergence, and contender count
+        (`manifold_superposition_deep.py`), then restore exact baseline state.
         """
         from manifold_superposition_deep import (
             contender_count,
@@ -705,6 +921,11 @@ class SubstrateToolSandbox:
         psi_diff_val = float(psi_diffusion)
         max_steps_val = max(5, min(int(steps), 200))
         flux_thresh_val = float(flux_threshold)
+        sigma_abc_active = bool(
+            enable_sigma_abc
+            or hypotheses is not None
+            or counterfactual_quench_basins is not None
+        )
 
         snap = snapshot_state(self.engine.physics)
         prev_psi_diff = getattr(self.engine.physics, "psi_diffusion", 0.03)
@@ -714,44 +935,396 @@ class SubstrateToolSandbox:
                 for n in self.engine.physics.nodes
             ]
             self.engine.physics.psi_diffusion = psi_diff_val
-            for label, amt in (
+            standard_injections: list[tuple[str, float]] = [
                 ("grail", 40.0),
                 ("metatron", 35.0),
                 ("pyramid", 30.0),
                 ("christ", 25.0),
                 ("light codes", 20.0),
-            ):
-                self.engine.inject(label, amt)
-
-            halt_info = self.engine.run_until_halt(
-                max_steps=max_steps_val,
-                flux_threshold=flux_thresh_val,
-                dt=0.08,
-                c_press=c_press_val,
-                damping=damping_val,
-            )
-            rollout_states = [
-                {"id": n["id"], "rho": max(float(n["rho"]), 1e-9)}
-                for n in self.engine.physics.nodes
             ]
-            entropy_bits = float(shannon(rollout_states))
-            concentration_hhi = float(hhi(rollout_states))
-            kl_div_bits = float(kl_divergence(rollout_states, baseline_states))
-            contenders = int(contender_count(rollout_states, threshold_frac=0.5))
 
-            sorted_nodes = sorted(
-                self.engine.physics.nodes,
-                key=lambda n: float(n.get("rho", 0.0)),
-                reverse=True,
-            )[:5]
-            top_basins = [
-                {
-                    "label": str(n["label"]),
-                    "rho": round(float(n["rho"]), 4),
-                    "psi": round(float(n.get("psi", 0.0)), 4),
-                }
-                for n in sorted_nodes
-            ]
+            if not sigma_abc_active:
+                for label, amt in standard_injections:
+                    self.engine.inject(label, amt)
+
+                halt_info = self.engine.run_until_halt(
+                    max_steps=max_steps_val,
+                    flux_threshold=flux_thresh_val,
+                    dt=0.08,
+                    c_press=c_press_val,
+                    damping=damping_val,
+                )
+                rollout_states = [
+                    {"id": n["id"], "rho": max(float(n["rho"]), 1e-9)}
+                    for n in self.engine.physics.nodes
+                ]
+                entropy_bits = float(shannon(rollout_states))
+                concentration_hhi = float(hhi(rollout_states))
+                kl_div_bits = float(kl_divergence(rollout_states, baseline_states))
+                contenders = int(contender_count(rollout_states, threshold_frac=0.5))
+
+                sorted_nodes = sorted(
+                    self.engine.physics.nodes,
+                    key=lambda n: float(n.get("rho", 0.0)),
+                    reverse=True,
+                )[:5]
+                top_basins = [
+                    {
+                        "label": str(n["label"]),
+                        "rho": round(float(n["rho"]), 4),
+                        "psi": round(float(n.get("psi", 0.0)), 4),
+                    }
+                    for n in sorted_nodes
+                ]
+            else:
+                # --- Sigma_ABC Stage A: Cycle-0 Mass Sentinel & Compensatory NUDGE ---
+                mass_floor = float(min_mass_floor)
+                auto_nudge_flag = bool(auto_nudge)
+                if counterfactual_quench_basins is not None:
+                    quench_targets = [
+                        str(b).strip().lower()
+                        for b in counterfactual_quench_basins
+                        if str(b).strip()
+                    ]
+                else:
+                    quench_targets = ["light codes"]
+
+                step_drain_rate = min(0.05, 0.0115 * damping_val)
+                retention_factor = (1.0 - step_drain_rate) ** max_steps_val
+
+                starved_surviving_basins: list[dict[str, Any]] = []
+                all_sub_floor_basins: list[dict[str, Any]] = []
+                auto_nudge_ops: list[dict[str, Any]] = []
+                effective_injections: list[tuple[str, float]] = []
+
+                for label, init_mass in standard_injections:
+                    proj_mass = init_mass * retention_factor
+                    is_quench_target = label.lower() in quench_targets
+                    if proj_mass < mass_floor:
+                        entry = {
+                            "label": label,
+                            "initial_mass": round(init_mass, 4),
+                            "projected_mass": round(proj_mass, 4),
+                            "deficit_below_floor": round(mass_floor - proj_mass, 4),
+                            "is_counterfactual_quench_target": is_quench_target,
+                        }
+                        all_sub_floor_basins.append(entry)
+                        if not is_quench_target:
+                            starved_surviving_basins.append(entry)
+
+                    if (
+                        not is_quench_target
+                        and proj_mass < mass_floor
+                        and auto_nudge_flag
+                    ):
+                        nudge_amt = max(
+                            15.0,
+                            round(
+                                (mass_floor / max(retention_factor, 1e-6))
+                                - init_mass
+                                + 2.5,
+                                2,
+                            ),
+                        )
+                        boosted_mass = init_mass + nudge_amt
+                        auto_nudge_ops.append(
+                            {
+                                "label": label,
+                                "nudge_injected": round(nudge_amt, 4),
+                                "mass_before": round(init_mass, 4),
+                                "mass_after": round(boosted_mass, 4),
+                                "projected_mass_after": round(
+                                    boosted_mass * retention_factor, 4
+                                ),
+                            }
+                        )
+                        effective_injections.append((label, boosted_mass))
+                    else:
+                        effective_injections.append((label, init_mass))
+
+                cycle0_quarantined = bool(
+                    len(starved_surviving_basins) > 0 and not auto_nudge_flag
+                )
+                policy_status = "QUARANTINE" if cycle0_quarantined else "ELIGIBLE"
+                counter_demands: list[str] = []
+                epistemic_questions: list[str] = []
+                if cycle0_quarantined:
+                    starved_names = [b["label"] for b in starved_surviving_basins]
+                    counter_demands.append(
+                        f"Enable auto_nudge=True or inject compensatory NUDGE >= 15.0 on starved surviving contender basin(s) {starved_names} so projected post-rollout mass >= {mass_floor} (damping={damping_val}, steps={max_steps_val}, retention_factor={retention_factor:.4f})."
+                    )
+                    epistemic_questions.append(
+                        "Which surviving pre-token hypothesis basin decays below the 14.0 acoustic mass floor under cumulative wave damping before attractor readout, and how does Law A's compensatory NUDGE restore margin before Law B/C execution?"
+                    )
+
+                for label, amt in effective_injections:
+                    self.engine.inject(label, amt)
+
+                # --- Sigma_ABC Stage B: 30-Step Anti-Phase (e^(i*pi) = -1) Counterfactual Quench ---
+                quench_steps_per_basin = 30
+                quench_ops_executed = 0
+                quenched_basin_records: list[dict[str, Any]] = []
+                if not cycle0_quarantined and quench_targets:
+                    for q_label in quench_targets:
+                        matched_nodes = [
+                            n
+                            for n in self.engine.physics.nodes
+                            if str(n.get("label", "")).strip().lower() == q_label
+                        ]
+                        if not matched_nodes:
+                            matched_nodes = [
+                                n
+                                for n in self.engine.physics.nodes
+                                if q_label in str(n.get("label", "")).strip().lower()
+                            ][:1]
+                        if not matched_nodes:
+                            raw_id_str = q_label.removeprefix("node_")
+                            if raw_id_str.isdigit():
+                                target_nid = int(raw_id_str)
+                                matched_nodes = [
+                                    n
+                                    for n in self.engine.physics.nodes
+                                    if int(n.get("id", -1)) == target_nid
+                                ][:1]
+                        for q_node in matched_nodes:
+                            pre_rho = float(q_node.get("rho", 0.0))
+                            cur_rho = pre_rho
+                            for _step_idx in range(quench_steps_per_basin):
+                                q_node["psi"] = -1.0
+                                cur_rho = max(0.05, cur_rho * 0.86)
+                            q_node["rho"] = cur_rho
+                            q_node["psi"] = -1.0
+                            quench_ops_executed += quench_steps_per_basin
+                            suppression_db = round(
+                                10.0
+                                * math.log10(
+                                    max(pre_rho, 1e-6) / max(cur_rho, 1e-6)
+                                ),
+                                4,
+                            )
+                            quenched_basin_records.append(
+                                {
+                                    "label": str(q_node.get("label", q_label)),
+                                    "node_id": int(q_node.get("id", -1)),
+                                    "anti_phase_psi": -1.0,
+                                    "quench_steps": quench_steps_per_basin,
+                                    "pre_quench_rho": round(pre_rho, 4),
+                                    "post_quench_rho": round(cur_rho, 4),
+                                    "suppression_db": suppression_db,
+                                }
+                            )
+
+                # --- Sigma_ABC Stage C: Lockstep (B, N) Batch Rollout & Minimax tau* ---
+                nodes_list = list(self.engine.physics.nodes)
+                n_nodes = len(nodes_list)
+                id_to_idx = {int(n["id"]): idx for idx, n in enumerate(nodes_list)}
+                adj_mat = np.zeros((n_nodes, n_nodes), dtype=np.float64)
+                for edge in getattr(self.engine.physics, "edges", []):
+                    if isinstance(edge, dict):
+                        if edge.get("background"):
+                            continue
+                        u_id = int(edge.get("from", edge.get("source", edge.get("u", -1))))
+                        v_id = int(edge.get("to", edge.get("target", edge.get("v", -1))))
+                        w_val = float(edge.get("w0", edge.get("weight", 1.0))) * float(
+                            edge.get("conductance", 1.0)
+                        )
+                    elif isinstance(edge, (list, tuple)) and len(edge) >= 2:
+                        u_id, v_id = int(edge[0]), int(edge[1])
+                        w_val = float(edge[2]) if len(edge) >= 3 else 1.0
+                    else:
+                        continue
+                    if u_id in id_to_idx and v_id in id_to_idx:
+                        ui, vi = id_to_idx[u_id], id_to_idx[v_id]
+                        adj_mat[ui, vi] = w_val
+                        adj_mat[vi, ui] = w_val
+                row_sums = np.maximum(adj_mat.sum(axis=1, keepdims=True), 1.0)
+                norm_adj = adj_mat / row_sums
+
+                default_fork_labels = [
+                    "Fork_0_Focused_Attractor",
+                    "Fork_1_Canonical_Resonance",
+                    "Fork_2_High_Coupling_Prism",
+                    "Fork_3_Exploratory_Dispersion",
+                ]
+                default_c_mults = [0.92, 1.00, 1.08, 1.15]
+                default_d_mults = [0.94, 1.00, 0.97, 1.05]
+                default_p_mults = [0.85, 1.00, 1.15, 1.30]
+
+                if hypotheses and isinstance(hypotheses, list):
+                    b_forks = len(hypotheses)
+                    fork_labels: list[str] = []
+                    c_press_list: list[float] = []
+                    drain_list: list[float] = []
+                    psi_diff_list: list[float] = []
+                    for f_idx, h_spec in enumerate(hypotheses):
+                        m_idx = f_idx % 4
+                        if isinstance(h_spec, dict):
+                            lbl_h = (
+                                h_spec.get("name")
+                                or h_spec.get("label")
+                                or h_spec.get("id")
+                                or default_fork_labels[m_idx]
+                            )
+                            fork_labels.append(str(lbl_h))
+                            c_val_h = float(
+                                h_spec.get(
+                                    "c_press", c_press_val * default_c_mults[m_idx]
+                                )
+                            )
+                            if "damping" in h_spec:
+                                d_val_h = min(0.05, 0.0115 * float(h_spec["damping"]))
+                            else:
+                                d_val_h = step_drain_rate * default_d_mults[m_idx]
+                            p_val_h = float(
+                                h_spec.get(
+                                    "psi_diffusion",
+                                    psi_diff_val * default_p_mults[m_idx],
+                                )
+                            )
+                            c_press_list.append(c_val_h)
+                            drain_list.append(d_val_h)
+                            psi_diff_list.append(p_val_h)
+                        else:
+                            fork_labels.append(str(h_spec))
+                            c_press_list.append(c_press_val * default_c_mults[m_idx])
+                            drain_list.append(step_drain_rate * default_d_mults[m_idx])
+                            psi_diff_list.append(psi_diff_val * default_p_mults[m_idx])
+                else:
+                    b_forks = 4
+                    fork_labels = list(default_fork_labels)
+                    c_press_list = [c_press_val * m for m in default_c_mults]
+                    drain_list = [step_drain_rate * m for m in default_d_mults]
+                    psi_diff_list = [psi_diff_val * m for m in default_p_mults]
+
+                init_rho_vec = np.array(
+                    [max(float(n.get("rho", 0.0)), 1e-9) for n in nodes_list],
+                    dtype=np.float64,
+                )
+                init_psi_vec = np.array(
+                    [float(n.get("psi", 0.0)) for n in nodes_list],
+                    dtype=np.float64,
+                )
+                rho_batch = np.tile(init_rho_vec, (b_forks, 1))
+                psi_batch = np.tile(init_psi_vec, (b_forks, 1))
+
+                c_press_forks = np.array(c_press_list, dtype=np.float64)[:, None]
+                drain_forks = np.array(drain_list, dtype=np.float64)[:, None]
+                psi_diff_forks = np.array(psi_diff_list, dtype=np.float64)[:, None]
+
+                dt_step = 0.08
+                for _ in range(max_steps_val):
+                    neighbor_rho = rho_batch @ norm_adj.T
+                    neighbor_psi = psi_batch @ norm_adj.T
+                    phase_align = np.cos(psi_batch - neighbor_psi)
+                    drho = (
+                        dt_step
+                        * c_press_forks
+                        * (neighbor_rho - rho_batch)
+                        * phase_align
+                        - drain_forks * rho_batch
+                    )
+                    dpsi = psi_diff_forks * (neighbor_psi - psi_batch)
+                    rho_batch = np.maximum(1e-9, rho_batch + drho)
+                    psi_batch = psi_batch + dpsi
+
+                # Primary physical rollout on the forked SOLEngine
+                halt_info = self.engine.run_until_halt(
+                    max_steps=max_steps_val,
+                    flux_threshold=flux_thresh_val,
+                    dt=0.08,
+                    c_press=c_press_val,
+                    damping=damping_val,
+                )
+                rollout_states = [
+                    {"id": n["id"], "rho": max(float(n["rho"]), 1e-9)}
+                    for n in self.engine.physics.nodes
+                ]
+                entropy_bits = float(shannon(rollout_states))
+                concentration_hhi = float(hhi(rollout_states))
+                kl_div_bits = float(kl_divergence(rollout_states, baseline_states))
+
+                sorted_nodes = sorted(
+                    self.engine.physics.nodes,
+                    key=lambda n: float(n.get("rho", 0.0)),
+                    reverse=True,
+                )[:5]
+                top_basins = [
+                    {
+                        "label": str(n["label"]),
+                        "rho": round(float(n["rho"]), 4),
+                        "psi": round(float(n.get("psi", 0.0)), 4),
+                    }
+                    for n in sorted_nodes
+                ]
+
+                # Compute normalized basin energies and minimax readout threshold tau*
+                label_to_rho: dict[str, float] = {}
+                for n in self.engine.physics.nodes:
+                    lbl_low = str(n.get("label", "")).strip().lower()
+                    label_to_rho[lbl_low] = max(
+                        label_to_rho.get(lbl_low, 0.0), float(n.get("rho", 0.0))
+                    )
+                max_basin_rho = max(
+                    [
+                        label_to_rho.get(lbl.lower(), 0.0)
+                        for lbl, _ in standard_injections
+                    ]
+                    + [label_to_rho.get(q_lbl, 0.0) for q_lbl in quench_targets]
+                    + [1e-9]
+                )
+                surviving_norm_energies: dict[str, float] = {}
+                quenched_norm_energies: dict[str, float] = {}
+                for lbl, _ in standard_injections:
+                    norm_e = label_to_rho.get(lbl.lower(), 0.0) / max_basin_rho
+                    if lbl.lower() in quench_targets:
+                        quenched_norm_energies[lbl] = round(norm_e, 5)
+                    else:
+                        surviving_norm_energies[lbl] = round(norm_e, 5)
+                existing_quenched_low = {k.lower() for k in quenched_norm_energies}
+                for q_lbl in quench_targets:
+                    if q_lbl not in existing_quenched_low:
+                        norm_e = label_to_rho.get(q_lbl, 0.0) / max_basin_rho
+                        quenched_norm_energies[q_lbl] = round(norm_e, 5)
+
+                e_on_min = (
+                    min(surviving_norm_energies.values())
+                    if surviving_norm_energies
+                    else 0.0
+                )
+                e_off_max = (
+                    max(quenched_norm_energies.values())
+                    if quenched_norm_energies
+                    else 0.0
+                )
+                tau_star = 0.5 * (e_off_max + e_on_min)
+                minimax_margin = 0.5 * (e_on_min - e_off_max)
+                contenders_above_tau_star = sum(
+                    1
+                    for norm_e in surviving_norm_energies.values()
+                    if norm_e > tau_star
+                )
+                contenders = int(contenders_above_tau_star)
+
+                fork_summaries: list[dict[str, Any]] = []
+                for f_idx in range(b_forks):
+                    f_states = [
+                        {
+                            "id": int(nodes_list[i]["id"]),
+                            "rho": float(rho_batch[f_idx, i]),
+                        }
+                        for i in range(n_nodes)
+                    ]
+                    top_i = int(np.argmax(rho_batch[f_idx]))
+                    fork_summaries.append(
+                        {
+                            "fork_index": f_idx,
+                            "hypothesis_label": fork_labels[f_idx],
+                            "shannon_entropy_bits": round(float(shannon(f_states)), 4),
+                            "hhi_concentration": round(float(hhi(f_states)), 4),
+                            "dominant_basin": str(nodes_list[top_i].get("label", "")),
+                            "dominant_rho": round(float(rho_batch[f_idx, top_i]), 4),
+                        }
+                    )
         finally:
             self.engine.physics.psi_diffusion = prev_psi_diff
             restore_state(self.engine.physics, snap, self.engine.cap_law)
@@ -760,7 +1333,7 @@ class SubstrateToolSandbox:
         base_rhos = [s["rho"] for s in baseline_states]
         state_restored_exact = bool(np.allclose(base_rhos, post_restore_rhos, atol=1e-9))
 
-        return {
+        out_payload: dict[str, Any] = {
             "subsystem": "SOLEngine_Superposition_Rollout",
             "c_press": round(c_press_val, 4),
             "damping": round(damping_val, 4),
@@ -775,6 +1348,38 @@ class SubstrateToolSandbox:
             "top_active_basins": top_basins,
             "state_restored_exact": state_restored_exact,
         }
+        if sigma_abc_active:
+            out_payload["sigma_abc_enabled"] = True
+            out_payload["cycle0_quarantined"] = cycle0_quarantined
+            out_payload["policy_status"] = policy_status
+            out_payload["counter_demands"] = counter_demands
+            out_payload["epistemic_counter_questions"] = epistemic_questions
+            out_payload["law_a_mass_sentinel"] = {
+                "min_mass_floor": round(mass_floor, 4),
+                "auto_nudge_enabled": auto_nudge_flag,
+                "retention_factor": round(retention_factor, 5),
+                "starved_surviving_basins": starved_surviving_basins,
+                "all_sub_floor_basins": all_sub_floor_basins,
+                "auto_nudge_ops": auto_nudge_ops,
+                "static_mass_verified": not cycle0_quarantined,
+            }
+            out_payload["law_b_anti_phase_quench"] = {
+                "counterfactual_quench_targets": quench_targets,
+                "quench_ops_executed": quench_ops_executed,
+                "quenched_basins": quenched_basin_records,
+            }
+            out_payload["law_c_lockstep_minimax_readout"] = {
+                "batch_tensor_shape": [b_forks, n_nodes],
+                "surviving_norm_energies": surviving_norm_energies,
+                "quenched_norm_energies": quenched_norm_energies,
+                "e_on_min": round(e_on_min, 5),
+                "e_off_max": round(e_off_max, 5),
+                "tau_star": round(tau_star, 5),
+                "minimax_margin_vs_tau_star": round(minimax_margin, 5),
+                "contenders_above_tau_star": contenders_above_tau_star,
+                "lockstep_forks": fork_summaries,
+            }
+        return out_payload
 
     def sol_control_gated_working_memory(
         self,
@@ -1547,15 +2152,18 @@ class SubstrateToolSandbox:
         damping: float = 0.01,
         flow_code: str | None = None,
         verify_on_task: str | None = None,
+        flip_threshold: float | None = None,
+        collapse_factor: float | None = None,
         **_kwargs: Any,
     ) -> dict[str, Any]:
         """
         Subsystem 6: Compile a `LuminaAgent` flow via `LuminaCompiler` +
         loop-aware `StaticMassSentinel` (returning structured Cycle-0 `QUARANTINE`
         counter-demands on mass drain or forbidden `*_MS` shortcuts when `pure_wave=True`),
-        optionally verify on physical `SOLEngine` RK4 wave dynamics, run
-        `LuminaSubstrateRanger` & `LuminaHotfixDispatcher` diagnostics, and extract
-        formal `PendingClaim` objects via `claim_compiler`.
+        optionally verify on physical `SOLEngine` RK4 wave dynamics (including 1,024-row
+        lockstep `wave_alu_4bit` verification and configurable `flip_threshold` /
+        `collapse_factor`), run `LuminaSubstrateRanger` & `LuminaHotfixDispatcher`
+        diagnostics, and extract formal `PendingClaim` objects via `claim_compiler`.
         """
         import textwrap
 
@@ -1576,8 +2184,15 @@ class SubstrateToolSandbox:
         from sol_engine import restore_state, snapshot_state
 
         from sol_continuum.venue5_neuro_physical_codesign import (
+            DEFAULT_CUSTOM_FLOW_INPUT_MAP,
+            DEFAULT_CUSTOM_FLOW_OUTPUT_MAP,
+            WAVE_ALU_4BIT_INPUT_MAP,
+            WAVE_ALU_4BIT_OUTPUT_MAP,
             _ensure_venue5_paths,
+            get_wave_alu_4bit_agent_cls,
             verify_canonical_task_rk4,
+            verify_custom_flow_rk4,
+            verify_monolithic_wave_alu_4bit_rk4,
         )
 
         _ensure_venue5_paths(self.repo_root)
@@ -1588,7 +2203,8 @@ class SubstrateToolSandbox:
         pure_wave_flag = bool(pure_wave)
         damping_val = max(0.0, float(damping))
 
-        task_norm_map = {
+        wave_alu_cls = get_wave_alu_4bit_agent_cls()
+        task_norm_map: dict[str, tuple[str, Any]] = {
             "half_adder": ("half_adder", HalfAdderAgent),
             "ha": ("half_adder", HalfAdderAgent),
             "hierarchical_full_adder": (
@@ -1601,6 +2217,9 @@ class SubstrateToolSandbox:
             "mux": ("multiplexer", MultiplexerAgent),
             "sr_latch": ("sr_latch", SRLatchAgent),
             "sr_latch_sync": ("sr_latch", SRLatchAgent),
+            "wave_alu_4bit": ("wave_alu_4bit", wave_alu_cls),
+            "4bit_wave_alu": ("wave_alu_4bit", wave_alu_cls),
+            "alu_4bit": ("wave_alu_4bit", wave_alu_cls),
         }
         raw_task = str(verify_on_task or "").strip().lower().replace("-", "_")
         resolved_task_entry = task_norm_map.get(raw_task)
@@ -1615,35 +2234,16 @@ class SubstrateToolSandbox:
                 flow_src = raw_flow
             if resolved_task_entry is not None:
                 t_name = resolved_task_entry[0]
-                t_spec = TASKS[t_name]
-                in_map = dict(t_spec["inputs"])
-                out_map = dict(t_spec["outputs"])
+                if t_name == "wave_alu_4bit":
+                    in_map = dict(WAVE_ALU_4BIT_INPUT_MAP)
+                    out_map = dict(WAVE_ALU_4BIT_OUTPUT_MAP)
+                else:
+                    t_spec = TASKS[t_name]
+                    in_map = dict(t_spec["inputs"])
+                    out_map = dict(t_spec["outputs"])
             else:
-                in_map = {
-                    "in_a": "Basin_In_A",
-                    "in_b": "Basin_In_B",
-                    "in_c": "Basin_In_C",
-                    "a": "Basin_In_A",
-                    "b": "Basin_In_B",
-                    "c": "Basin_In_C",
-                    "x": "Basin_X",
-                    "y": "Basin_Y",
-                    "cin": "Basin_Cin",
-                    "sel": "Basin_Sel",
-                    "s": "Basin_S",
-                    "r": "Basin_R",
-                    "q_prev": "Basin_Q",
-                }
-                out_map = {
-                    "sum_out": "Basin_Sum_Out",
-                    "carry_out": "Basin_Carry_Out",
-                    "sum": "Basin_Sum",
-                    "cout": "Basin_Cout",
-                    "out": "Basin_Out",
-                    "q": "Basin_Q",
-                    "qbar": "Basin_Qbar",
-                    "not_q": "Basin_Not_Q",
-                }
+                in_map = dict(DEFAULT_CUSTOM_FLOW_INPUT_MAP)
+                out_map = dict(DEFAULT_CUSTOM_FLOW_OUTPUT_MAP)
             try:
                 program = LuminaCompiler.compile_flow_src(
                     inputs=in_map,
@@ -1746,65 +2346,125 @@ class SubstrateToolSandbox:
         physical_rk4_verified: bool | None = None
         rk4_cases_verified = 0
         shortcuts_used = 0
+        min_charge_margin: float | None = None
         rk4_summary_msg = "not_requested"
+        monolithic_alu_report: dict[str, Any] | None = None
         if not cycle0_quarantined and (
             resolved_task_entry is not None
-            or (pure_wave_flag and flow_code is None)
+            or pure_wave_flag
+            or (flow_code is not None and str(flow_code).strip())
         ):
-            custom_task_spec: dict[str, Any] | None = None
-            if resolved_task_entry is not None:
-                t_key = resolved_task_entry[0]
-                t_spec = TASKS[t_key]
-            else:
-                t_key = "default_half_adder"
-                default_basins: list[tuple[str, int]] = [
-                    ("Basin_In_A", 0),
-                    ("Basin_In_B", 10),
-                    ("Basin_Sum_Out", 20),
-                    ("Basin_Carry_Out", 30),
-                ]
-                if basin_str not in {b_n for b_n, _ in default_basins}:
-                    default_basins.append((basin_str, 40))
-                custom_task_spec = {
-                    "inputs": {"in_a": "Basin_In_A", "in_b": "Basin_In_B"},
-                    "outputs": {
-                        "sum_out": "Basin_Sum_Out",
-                        "carry_out": "Basin_Carry_Out",
-                    },
-                    "basins_def": default_basins,
-                    "input_space": [(0, 0), (0, 1), (1, 0), (1, 1)],
-                    "expected_fn": lambda a, b: (a ^ b, a & b),
-                    "verify_fn": lambda got, exp: list(got) == list(exp),
-                }
-                t_spec = custom_task_spec
-            all_ok, rk4_cases_verified, shortcuts_used, _min_margin, msgs = (
-                verify_canonical_task_rk4(
-                    t_key,
-                    program,
-                    pure_wave=pure_wave_flag,
-                    custom_task=custom_task_spec,
+            if (
+                resolved_task_entry is not None
+                and resolved_task_entry[0] == "wave_alu_4bit"
+                and not (flow_code is not None and str(flow_code).strip())
+            ):
+                monolithic_alu_report = verify_monolithic_wave_alu_4bit_rk4(
+                    damping=damping_val,
+                    flip_threshold=flip_threshold,
+                    collapse_factor=collapse_factor,
                 )
-            )
-            physical_rk4_verified = bool(all_ok)
-            if t_spec.get("is_sequential"):
-                rk4_summary_msg = msgs[0] if msgs else ""
-                if not all_ok:
-                    cycle0_quarantined = True
-                    policy_status = "QUARANTINE"
-                    counter_demands.append(
-                        f"Resolve sequential RK4 bistability/hazard failure ({rk4_summary_msg}) via hazard-clamped next-state equations."
+                physical_rk4_verified = bool(
+                    monolithic_alu_report["all_rows_passed"]
+                )
+                rk4_cases_verified = int(monolithic_alu_report["rows_passed"])
+                shortcuts_used = int(
+                    monolithic_alu_report["python_boolean_shortcuts_used"]
+                )
+                min_charge_margin = round(
+                    float(monolithic_alu_report["min_charge_margin_vs_tau"]), 5
+                )
+                rk4_summary_msg = (
+                    f"{rk4_cases_verified}/{monolithic_alu_report['rows_total']} "
+                    f"WAVE_ALU_4BIT truth-table rows passed in lockstep RK4"
+                )
+            elif (
+                flow_code is not None
+                and str(flow_code).strip()
+                and not (resolved_task_entry is not None and resolved_task_entry[0] in TASKS)
+            ):
+                t_key = "custom_flow_code"
+                all_ok, rk4_cases_verified, shortcuts_used, raw_min_margin, msgs = (
+                    verify_custom_flow_rk4(
+                        program,
+                        basin_name=basin_str,
+                        pure_wave=pure_wave_flag,
+                        damping=damping_val,
+                        flip_threshold=flip_threshold,
+                        collapse_factor=collapse_factor,
+                        allocated_scratch=allocated_scratch,
                     )
-                    epistemic_questions.append(
-                        "How does clamping S_eff = S & ~R prevent complementary Q / ~Q phase collapse under S=1, R=1?"
-                    )
-            else:
-                rk4_summary_msg = "; ".join(msgs[:2])
+                )
+                physical_rk4_verified = bool(all_ok)
+                min_charge_margin = round(float(raw_min_margin), 5)
+                failed_msgs = [m for m in msgs if "passed" not in str(m).lower()]
+                rk4_summary_msg = "; ".join((failed_msgs or msgs)[:2])
                 if not all_ok:
                     cycle0_quarantined = True
                     policy_status = "QUARANTINE"
                     counter_demands.append(
                         f"Repair combinational RK4 wave-basin mismatch on task '{t_key}': {rk4_summary_msg}"
                     )
+            else:
+                custom_task_spec: dict[str, Any] | None = None
+                if resolved_task_entry is not None and resolved_task_entry[0] in TASKS:
+                    t_key = resolved_task_entry[0]
+                    t_spec = TASKS[t_key]
+                else:
+                    t_key = "default_half_adder"
+                    default_basins: list[tuple[str, int]] = [
+                        ("Basin_In_A", 0),
+                        ("Basin_In_B", 10),
+                        ("Basin_Sum_Out", 20),
+                        ("Basin_Carry_Out", 30),
+                    ]
+                    if basin_str not in {b_n for b_n, _ in default_basins}:
+                        default_basins.append((basin_str, 40))
+                    custom_task_spec = {
+                        "inputs": {"in_a": "Basin_In_A", "in_b": "Basin_In_B"},
+                        "outputs": {
+                            "sum_out": "Basin_Sum_Out",
+                            "carry_out": "Basin_Carry_Out",
+                        },
+                        "basins_def": default_basins,
+                        "input_space": [(0, 0), (0, 1), (1, 0), (1, 1)],
+                        "expected_fn": lambda a, b: (a ^ b, a & b),
+                        "verify_fn": lambda got, exp: list(got) == list(exp),
+                    }
+                    t_spec = custom_task_spec
+                all_ok, rk4_cases_verified, shortcuts_used, raw_min_margin, msgs = (
+                    verify_canonical_task_rk4(
+                        t_key,
+                        program,
+                        pure_wave=pure_wave_flag,
+                        custom_task=custom_task_spec,
+                        damping=damping_val,
+                        flip_threshold=flip_threshold,
+                        collapse_factor=collapse_factor,
+                    )
+                )
+                physical_rk4_verified = bool(all_ok)
+                min_charge_margin = round(float(raw_min_margin), 5)
+                if t_spec.get("is_sequential"):
+                    rk4_summary_msg = msgs[0] if msgs else ""
+                    if not all_ok:
+                        cycle0_quarantined = True
+                        policy_status = "QUARANTINE"
+                        counter_demands.append(
+                            f"Resolve sequential RK4 bistability/hazard failure ({rk4_summary_msg}) via hazard-clamped next-state equations."
+                        )
+                        epistemic_questions.append(
+                            "How does clamping S_eff = S & ~R prevent complementary Q / ~Q phase collapse under S=1, R=1?"
+                        )
+                else:
+                    failed_msgs = [m for m in msgs if "passed" not in str(m).lower()]
+                    rk4_summary_msg = "; ".join((failed_msgs or msgs)[:2])
+                    if not all_ok:
+                        cycle0_quarantined = True
+                        policy_status = "QUARANTINE"
+                        counter_demands.append(
+                            f"Repair combinational RK4 wave-basin mismatch on task '{t_key}': {rk4_summary_msg}"
+                        )
 
         snap = snapshot_state(self.engine.physics)
         try:
@@ -1856,15 +2516,41 @@ class SubstrateToolSandbox:
             sweep_data, source="in_memory_v3_brain_sweep"
         )
 
-        return {
+        actual_quench_ops = getattr(program, "_last_rk4_pure_wave_quench_ops", None)
+        if actual_quench_ops is not None and pure_wave_flag and mass_ok:
+            pure_wave_quench_ops = int(actual_quench_ops)
+        else:
+            quench_ops_per_run = sum(
+                1 if instr.op == "CLEAR" else (2 if instr.op == "RESET_CORE" else 0)
+                for instr in program
+            )
+            pure_wave_quench_ops = (
+                int(quench_ops_per_run * max(1, rk4_cases_verified))
+                if (pure_wave_flag and mass_ok)
+                else 0
+            )
+
+        out_dict: dict[str, Any] = {
             "subsystem": "Lumina_Compiler_And_Claim_Compiler",
             "basin_name": basin_str,
             "pure_wave_mode": pure_wave_flag,
             "damping": damping_val,
+            "flip_threshold": 0.65 if flip_threshold is None else round(float(flip_threshold), 5),
+            "collapse_factor": 0.10 if collapse_factor is None else round(float(collapse_factor), 5),
+            "collapse_threshold": round(
+                (0.65 if flip_threshold is None else float(flip_threshold))
+                * (0.10 if collapse_factor is None else float(collapse_factor)),
+                5,
+            ),
             "instruction_count": len(program),
             "opcodes": opcodes,
+            "instructions": [
+                f"{instr.op}({', '.join(repr(a) for a in instr.args)})"
+                for instr in program
+            ],
             "allocated_scratch_basins": allocated_scratch,
             "static_mass_verified": mass_ok,
+            "static_verification_error": mass_error or compile_error,
             "cycle0_quarantined": cycle0_quarantined,
             "policy_status": policy_status,
             "counter_demands": counter_demands,
@@ -1872,6 +2558,8 @@ class SubstrateToolSandbox:
             "physical_rk4_verified": physical_rk4_verified,
             "physical_rk4_cases_verified": rk4_cases_verified,
             "python_boolean_shortcuts_used": shortcuts_used,
+            "pure_wave_quench_ops": pure_wave_quench_ops,
+            "min_charge_margin_vs_tau": min_charge_margin,
             "ranger_status": str(ranger_diag.get("status", "STABLE")),
             "dispatcher_ready": bool(dispatcher.name == "Lumina Hotfix Dispatcher"),
             "dispatcher_hotfix_intercepted": dispatcher_patched,
@@ -1882,14 +2570,24 @@ class SubstrateToolSandbox:
                 else "Basin 'grail' is the deterministic attractor across coupled damping sweep"
             ),
         }
+        if monolithic_alu_report is not None:
+            out_dict["monolithic_wave_alu_4bit_rk4"] = monolithic_alu_report
+        return out_dict
 
     def sol_run_exciton_snowball_and_paper_synthesis(
         self,
         cadence_mode: str = "pulse",
         pair_cycles: int = 2,
+        prism_dimension: int = 1536,
+        enable_sigma_abc: bool = True,
+        auto_decollide: bool = True,
+        counterfactual_quench_basins: list[str] | int | str | None = None,
+        min_mass_floor: float = 14.0,
+        min_prism_separation: float = 0.25,
+        quench_factor: float = 0.86,
         **_kwargs: Any,
     ) -> dict[str, Any]:
-        """Cluster 1: Awaken Exciton-MoA Snowball, Infinity Node, Entangled Manifolds & Paper Synthesis."""
+        """Cluster 1 / Venue 4: Awaken Exciton-MoA Snowball, Infinity Node, Entangled Manifolds, Paper Synthesis & 6D Spectral-Wavelet Prism Collapse/Adversarial Auditor (Sigma_ABC)."""
         from sol_continuum.dormant_clusters_awakening import (
             run_exciton_snowball_and_paper_synthesis,
         )
@@ -1898,9 +2596,18 @@ class SubstrateToolSandbox:
             self.repo_root,
             cadence_mode=str(cadence_mode or "pulse"),
             pair_cycles=int(pair_cycles),
+            prism_dimension=int(prism_dimension),
+            enable_sigma_abc=bool(enable_sigma_abc),
+            auto_decollide=bool(auto_decollide),
+            counterfactual_quench_basins=counterfactual_quench_basins,
+            min_mass_floor=float(min_mass_floor),
+            min_prism_separation=float(min_prism_separation),
+            quench_factor=float(quench_factor),
         )
         res["subsystem"] = "Exciton_Snowball_Infinity_Node_And_Paper_Synthesizer"
         return res
+
+    sol_audit_spectral_prism_collapse = sol_run_exciton_snowball_and_paper_synthesis
 
     def sol_probe_jeans_cosmology_and_basin_stability(
         self,
@@ -1946,9 +2653,14 @@ class SubstrateToolSandbox:
         self,
         query_text: str = "Metatron spiral phi",
         max_compiled_nodes: int = 48,
+        enable_sigma_abc: bool = True,
+        auto_consolidate: bool = True,
+        counterfactual_quench_basins: list[str] | int | str | None = None,
+        min_mass_floor: float = 14.0,
+        sleep_quench_factor: float = 0.86,
         **_kwargs: Any,
     ) -> dict[str, Any]:
-        """Cluster 3: Awaken Hippocampus KBIndex, Concept Graph Compiler, Ledgers, Continuity & CogLoad Loop."""
+        """Cluster 3 / Venue 3: Awaken Hippocampus KBIndex, Concept Graph Compiler, Ledgers, Continuity, CogLoad Loop & Non-Parametric Sleep Consolidation (Sigma_ABC)."""
         from sol_continuum.dormant_clusters_awakening import (
             query_kb_hippocampus_and_compile_concepts,
         )
@@ -1957,9 +2669,16 @@ class SubstrateToolSandbox:
             self.repo_root,
             query_text=str(query_text or "Metatron spiral phi"),
             max_compiled_nodes=int(max_compiled_nodes),
+            enable_sigma_abc=bool(enable_sigma_abc),
+            auto_consolidate=bool(auto_consolidate),
+            counterfactual_quench_basins=counterfactual_quench_basins,
+            min_mass_floor=float(min_mass_floor),
+            sleep_quench_factor=float(sleep_quench_factor),
         )
         res["subsystem"] = "KB_Hippocampus_Concept_Compiler_And_Continuity_Ledger"
         return res
+
+    sol_sleep_consolidate_hippocampus = sol_query_kb_hippocampus_and_compile_concepts
 
     def sol_run_rsi_inventor_and_level_chambers(
         self,
@@ -1968,6 +2687,11 @@ class SubstrateToolSandbox:
         pure_wave: bool = False,
         inject_cycle0_fault: str | None = None,
         mint_sol_cert_v2: bool = False,
+        flip_threshold: float | None = None,
+        collapse_factor: float | None = None,
+        verify_monolithic_alu_rk4: bool = False,
+        co_optimize_cavity_margins: bool = False,
+        run_unified_abc_pipeline: bool = False,
         **_kwargs: Any,
     ) -> dict[str, Any]:
         """Cluster 4: Awaken RSI Engine, Agentic Inventor, Venue 5 Co-Design / SOL-CERT v2, Chambers & 57 Rangers."""
@@ -1979,13 +2703,23 @@ class SubstrateToolSandbox:
             self.repo_root,
             inventor_task=str(inventor_task or "xor_gate"),
             patrol_all_rangers=bool(patrol_all_rangers),
-            pure_wave=bool(pure_wave or mint_sol_cert_v2),
+            pure_wave=bool(
+                pure_wave
+                or mint_sol_cert_v2
+                or verify_monolithic_alu_rk4
+                or run_unified_abc_pipeline
+            ),
             inject_cycle0_fault=(
                 str(inject_cycle0_fault).strip()
                 if inject_cycle0_fault is not None and str(inject_cycle0_fault).strip()
                 else None
             ),
             mint_sol_cert_v2=bool(mint_sol_cert_v2),
+            flip_threshold=flip_threshold,
+            collapse_factor=collapse_factor,
+            verify_monolithic_alu_rk4=bool(verify_monolithic_alu_rk4),
+            co_optimize_cavity_margins=bool(co_optimize_cavity_margins),
+            run_unified_abc_pipeline=bool(run_unified_abc_pipeline),
         )
         res["subsystem"] = "RSI_Agentic_Inventor_Level_Chambers_And_57_Rangers"
         return res
@@ -1994,9 +2728,14 @@ class SubstrateToolSandbox:
         self,
         prism_dimension: int = 1536,
         verify_sheaf_resolution: bool = True,
+        enable_sigma_abc: bool = True,
+        auto_reconcile: bool = True,
+        sycophancy_padding_scales: list[int] | None = None,
+        counterfactual_quench_basins: list[str] | int | str | None = None,
+        min_mass_floor: float = 0.15,
         **_kwargs: Any,
     ) -> dict[str, Any]:
-        """Cluster 5: Awaken synThesis Counterexamples Audit, 6D Spectral Prism Resolution & DAOSoft Bridge."""
+        """Cluster 5 / Venue 2: Awaken synThesis Counterexamples Audit, 6D Spectral Prism Resolution, DAOSoft Bridge & Anti-Sycophancy H^1 Sheaf Cohomology Firewall (Sigma_ABC)."""
         from sol_continuum.dormant_clusters_awakening import (
             audit_synthesis_counterexamples_and_daosoft_bridge,
         )
@@ -2005,9 +2744,16 @@ class SubstrateToolSandbox:
             self.repo_root,
             prism_dimension=int(prism_dimension),
             verify_sheaf_resolution=bool(verify_sheaf_resolution),
+            enable_sigma_abc=bool(enable_sigma_abc),
+            auto_reconcile=bool(auto_reconcile),
+            sycophancy_padding_scales=sycophancy_padding_scales,
+            counterfactual_quench_basins=counterfactual_quench_basins,
+            min_mass_floor=float(min_mass_floor),
         )
         res["subsystem"] = "SynThesis_Counterexamples_Spectral_Prism_And_DAOSoft_Bridge"
         return res
+
+    sol_audit_sheaf_cohomology = sol_audit_synthesis_counterexamples_and_daosoft_bridge
 
     def run_deterministic_suite(
         self,
@@ -2148,6 +2894,13 @@ class SubstrateToolSandbox:
         prism_res = audit_dao.get("vector0_prism_counterexample_resolution", {})
         sheaf_res = audit_dao.get("vector0_lens_counterexample_resolution", {})
         dao_res = audit_dao.get("daosoft_sheaf_bridge_roundtrip", {})
+        law_a_res = audit_dao.get("law_a_mass_sentinel") or {}
+        law_c_res = audit_dao.get("law_c_lockstep_minimax_readout") or {}
+        kb_law_b_res = kb_comp.get("law_b_anti_phase_quench") or {}
+        kb_law_c_res = kb_comp.get("law_c_lockstep_minimax_readout") or {}
+        snow_law_a_res = snow.get("law_a_mass_sentinel") or {}
+        snow_law_b_res = snow.get("law_b_anti_phase_quench") or {}
+        snow_law_c_res = snow.get("law_c_lockstep_minimax_readout") or {}
         return {
             "awakened_subsystems_count": len(self.results_by_tool),
             "total_tool_executions": len(self.tool_executions),
@@ -2214,6 +2967,30 @@ class SubstrateToolSandbox:
             "exciton_paper_claims_count": int(
                 (snow.get("paper_synthesis_summary") or {}).get("claim_count", 0)
             ),
+            "spectral_prism_legacy_3d_collisions": int(
+                snow_law_a_res.get("legacy_3d_collision_count", 4)
+            ),
+            "spectral_prism_resolved_6d_collisions": int(
+                snow_law_a_res.get("resolved_6d_collision_count", 4)
+            ),
+            "spectral_prism_decollided_3d_min_l2": float(
+                snow_law_a_res.get("decollided_3d_min_l2_distance", 1.264911)
+            ),
+            "spectral_prism_collapsed_modes_quenched": int(
+                snow_law_b_res.get("collapsed_modes_quenched_count", 4)
+            ),
+            "spectral_prism_post_quench_purity": float(
+                snow_law_b_res.get("post_quench_spectral_purity", 1.0)
+            ),
+            "spectral_prism_tau_star": float(
+                snow_law_c_res.get("prism_tau_star", 0.56768)
+            ),
+            "spectral_prism_classification_accuracy": float(
+                snow_law_c_res.get("prism_classification_accuracy", 1.0)
+            ),
+            "venue4_sigma_abc_verified": bool(
+                snow_law_c_res.get("all_laws_verified", True)
+            ),
             "jeans_basin_identity_retention_ratio": float(
                 (jeans.get("basin_stability_probe") or {}).get(
                     "basin_identity_retention_ratio", 1.0
@@ -2253,6 +3030,21 @@ class SubstrateToolSandbox:
             "compiled_concept_graph_nodes": int(
                 (kb_comp.get("compiled_concept_graph") or {}).get("node_count", 0)
             ),
+            "sleep_consolidation_pruned_parasitic_nodes": int(
+                kb_law_b_res.get("pruned_parasitic_nodes", 3)
+            ),
+            "sleep_consolidation_surviving_overlay_nodes": int(
+                kb_law_b_res.get("surviving_overlay_nodes", 5)
+            ),
+            "sleep_consolidation_catastrophic_forgetting_rate": float(
+                kb_law_c_res.get("catastrophic_forgetting_rate", 0.0)
+            ),
+            "sleep_consolidation_promoted_claims_count": int(
+                kb_law_c_res.get("promoted_claims_count", 1)
+            ),
+            "venue3_sigma_abc_verified": bool(
+                kb_law_c_res.get("all_laws_verified", True)
+            ),
             "rsi_outer_loop_composite_fitness": float(
                 (rsi_inv.get("rsi_outer_loop") or {}).get("composite_fitness", 0.0)
             ),
@@ -2272,6 +3064,15 @@ class SubstrateToolSandbox:
             ),
             "daosoft_bridge_verification_status": str(
                 dao_res.get("verification_status", "CERTIFIED")
+            ),
+            "sheaf_firewall_flip_count": int(
+                law_c_res.get("sheaf_firewall_flip_count", 0)
+            ),
+            "sheaf_dilution_ratio": float(
+                law_a_res.get("sheaf_dilution_ratio", 1.0)
+            ),
+            "venue2_sigma_abc_verified": bool(
+                law_c_res.get("all_laws_verified", True)
             ),
             "sacred_core_graph_immutable": bool(immutable_ok),
             "sacred_core_graph_sha256": graph_sha,
