@@ -999,6 +999,9 @@ def test_venue5_and_companion_docs_have_zero_broken_markdown_links() -> None:
         _REPO_ROOT / "docs" / "companion_sessions" / "2026-11-03_session_07_venue5_track_c_vector_rk4_and_margin_coopt.md",
         _REPO_ROOT / "docs" / "companion_sessions" / "2026-11-03_session_08_venue1_sigma_abc_superposition_rollout.md",
         _REPO_ROOT / "docs" / "companion_sessions" / "2026-11-03_session_09_venue2_sigma_abc_sheaf_firewall.md",
+        _REPO_ROOT / "docs" / "companion_sessions" / "2026-11-03_session_10_venue3_sigma_abc_sleep_consolidation.md",
+        _REPO_ROOT / "docs" / "companion_sessions" / "2026-11-03_session_11_venue4_sigma_abc_spectral_prism_collapse_auditor.md",
+        _REPO_ROOT / "docs" / "companion_sessions" / "2026-11-03_session_12_whole_engine_sigma_abc_stress_test.md",
     ]
     link_re = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
     broken: list[tuple[str, str]] = []
@@ -1008,14 +1011,13 @@ def test_venue5_and_companion_docs_have_zero_broken_markdown_links() -> None:
             raw = m.group(1).strip()
             if raw.startswith(("http://", "https://", "#", "mailto:", "sidecar://")):
                 continue
+            if raw.startswith("file:///"):
+                broken.append((str(doc), raw))
+                continue
             target_part = unquote(raw.split("#")[0])
             if not target_part:
                 continue
-            target_path = (
-                Path(target_part[len("file:///") :])
-                if target_part.startswith("file:///")
-                else (doc.parent / target_part).resolve()
-            )
+            target_path = (doc.parent / target_part).resolve()
             if not target_path.exists():
                 broken.append((str(doc), raw))
     assert broken == [], f"Broken markdown file links detected: {broken}"
