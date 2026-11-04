@@ -297,6 +297,27 @@ COMPANION_PRESETS: dict[str, dict[str, Any]] = {
             "   - Present the complete 5-Venue $\\Sigma_{ABC} = \\mathcal{C}_{\\tau^*} \\circ \\mathcal{B}_\\pi \\circ \\mathcal{A}_\\rho$ Unification Table across all 5 R&D Venues (Venue 1: Pre-Token Wave Superposition; Venue 2: $H^1$ Sheaf Cohomology Firewall; Venue 3: Non-Parametric Sleep Consolidation & Homeostasis; Venue 4: 6D Spectral-Wavelet Prism Collapse Auditor; Venue 5: Neuro-Physical Co-Design & `SOL-CERT v2`), and confirm that `default_graph.json` (`d0a80462d2b9389160502b097aca1932bb014941adf6e4b77799997283e4a1bc`) remains 100% immutable."
         ),
     },
+    "whole_engine_sigma_abc_stress_test": {
+        "slug": "whole_engine_sigma_abc_stress_test",
+        "max_tool_rounds": 5,
+        "prompt": (
+            "Execute Whole-Engine 5-Venue $\\Sigma_{ABC} = \\mathcal{C}_{\\tau^*} \\circ \\mathcal{B}_\\pi \\circ \\mathcal{A}_\\rho$ Hardening & Adversarial Stress-Test across Venues 1-5.\n\n"
+            "You must execute this stress-test across TWO sequential tool-calling turns (do NOT call Turn 1 and Turn 2 tools in parallel in Turn 1):\n\n"
+            "1. **Turn 1 (Adversarial Scale, Symbolic Alias Quench, Total 5-Basin Quench & Multi-Cycle Parasitic Flood Stress Across Venues 1, 2 & 3):** Call THREE tools in Turn 1:\n"
+            "   - Call `sol_audit_synthesis_counterexamples_and_daosoft_bridge` with `prism_dimension=1536`, `verify_sheaf_resolution=True`, `enable_sigma_abc=True`, `auto_reconcile=True`, `sycophancy_padding_scales=[0, 3, 4, 2054, 2500, 10000, 1000000, 1000000000]`, and `counterfactual_quench_basins=[\"Basin_0_XOR\", \"Basin_4_META\"]` to verify Quotient Sheaf Compression up to $K = 10^9$ (1 billion sycophantic criteria) in $O(1)$ time with `sheaf_dilution_ratio = 1.0` and `sheaf_firewall_flip_count = 0`, plus symbolic alias resolution `[\"Basin_0_XOR\", \"Basin_4_META\"] -> [\"grail\", \"light codes\"]` (`quench_ops_executed = 60`, `surviving_basin_max_drift = 0.0`).\n"
+            "   - Call `sol_query_kb_hippocampus_and_compile_concepts` with `query_text=\"Metatron spiral phi\"`, `enable_sigma_abc=True`, `auto_consolidate=True`, `counterfactual_quench_basins=[\"Basin_4_META\"]`, `sleep_cycles=4`, and `parasitic_flood_count=17` to verify 4-cycle sleep consolidation idempotence under a 20-trace parasitic flood (`pruned_per_cycle = [20, 0, 0, 0]`, `multi_cycle_idempotent = True`, `pruned_parasitic_nodes = 20`, `surviving_overlay_nodes = 5`, `catastrophic_forgetting_rate = 0.0`, `core_weight_drift_l2 = 0.0`).\n"
+            "   - Call `sol_fork_and_rollout_superposition` with `enable_sigma_abc=True`, `auto_nudge=True`, and `counterfactual_quench_basins=5` to verify total 5-basin counterfactual anti-phase quench (`quench_ops_executed = 150`, `surviving_norm_energies = {}`, `e_on_min = 0.0`, `e_off_max < 0.011`, `contenders_above_tau_star = 0`).\n"
+            "   Stop and wait for Turn 1 tool outputs.\n\n"
+            "2. **Turn 2 (Venue 4 6D Spectral-Wavelet Prism + Venue 5 Read-Before-Write In-Place Input Mutation & Pure-Wave RK4 Verification):** After inspecting Turn 1's outputs, call TWO tools in Turn 2:\n"
+            "   - Call `sol_run_exciton_snowball_and_paper_synthesis` with `cadence_mode=\"pulse\"`, `pair_cycles=2`, `prism_dimension=1536`, `enable_sigma_abc=True`, `auto_decollide=True`, and `counterfactual_quench_basins=[\"Basin_4_META\"]`.\n"
+            "   - Call `sol_compile_lumina_agent_and_claim` with `basin_name=\"Basin_A_SUM\"`, `pure_wave=True`, `damping=0.05`, `flip_threshold=0.50`, `collapse_factor=0.20`, and `flow_code=\"while self.in_a:\\n    self.nudge(self.in_a, 15.0)\\n    self.nudge(self.in_b, 15.0)\\n    self.nudge(self.sum_out, 15.0)\\n    self.nudge(self.carry_out, 15.0)\\n    self.settle(25)\\n    self.assert_mass(self.in_a, 25.0)\\n    self.assert_mass(self.in_b, 25.0)\\n    self.in_a = self.in_a ^ self.in_b\\n    self.sum_out = self.in_a\\n    self.carry_out = self.carry_out | (self.in_a & self.in_b)\"`.\n\n"
+            "3. **Turn 3 (Quantitative Whole-Engine 5-Venue $\\Sigma_{ABC}$ Hardening & Adversarial Stress-Test Synthesis):** Using the exact telemetry from Turn 1 and Turn 2:\n"
+            "   - Report Venue 2's Quotient Sheaf Compression sweep up to $K = 10^9$ (`scales_evaluated = [0, 3, 4, 2054, 2500, 10000, 1000000, 1000000000]`, `sheaf_dilution_ratio = 1.0`, `sheaf_firewall_flip_count = 0`, `selected_option_across_all_k = \"opt_opt_b_safe\"`) and dual-basin symbolic alias quench (`[\"Basin_0_XOR\", \"Basin_4_META\"] -> [\"grail\", \"light codes\"]`, `quench_ops_executed = 60`, `surviving_basin_max_drift = 0.0`).\n"
+            "   - Report Venue 3's 4-cycle sleep consolidation idempotence under the 20-trace parasitic flood (`sleep_cycles_executed = 4`, `parasitic_flood_injected = 17`, `pruned_per_cycle = [20, 0, 0, 0]`, `multi_cycle_idempotent = True`, `surviving_overlay_nodes = 5`, `catastrophic_forgetting_rate = 0.0`, `core_weight_drift_l2 = 0.0`).\n"
+            "   - Report Venue 1's 5-basin total quench normalization (`quench_ops_executed = 150`, `surviving_norm_energies = {}`, `e_on_min = 0.0`, `e_off_max`, `contenders_above_tau_star = 0`), Venue 4's 6D Spectral-Wavelet Prism de-collision (`spectral_6d_min_l2_distance = 2.06155281`, `decollided_3d_min_l2_distance = 1.264911`, `prism_tau_star = 0.56768`, `prism_flip_count = 0`), and Venue 5's read-before-write in-place mutation (`instruction_count = 28`, `pure_wave_quench_ops = 20`, `physical_rk4_cases_verified = 4`, `min_charge_margin_vs_tau = 0.43783`, `python_boolean_shortcuts_used = 0`).\n"
+            "   - Present a Markdown summary table of all 5 hardened Venues under the chained whole-engine operator $\\Sigma_{ABC}^{(5)} = \\Sigma_{ABC}^{(V5)} \\circ \\Sigma_{ABC}^{(V3)} \\circ \\Sigma_{ABC}^{(V2)} \\circ \\Sigma_{ABC}^{(V1)} \\circ \\Sigma_{ABC}^{(V4)}$, and confirm that `default_graph.json` (`d0a80462d2b9389160502b097aca1932bb014941adf6e4b77799997283e4a1bc`) remains 100% immutable."
+        ),
+    },
 }
 
 
@@ -470,6 +491,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--thinking-level", default="high", choices=["minimal", "low", "medium", "high"])
     parser.add_argument("--max-tool-rounds", type=int, default=None, help="Maximum tool-calling rounds (default: 3 or preset default)")
     parser.add_argument("--slug", default=None, help="Optional descriptive slug for the recorded session")
+    parser.add_argument("--recorded-at", default=None, help="Optional ISO-8601 UTC timestamp override for ledger/filename")
     parser.add_argument("--no-record", action="store_true", help="Skip appending to the companion session ledger")
     args = parser.parse_args(argv)
 
@@ -561,6 +583,7 @@ def main(argv: list[str] | None = None) -> int:
             duration_s=dt,
             telemetry=telemetry,
             slug=args.slug,
+            recorded_at_iso=args.recorded_at,
         )
         print(f"\n[Recorded] JSONL Ledger -> {ledger_path.relative_to(ROOT_DIR)}")
         print(f"[Recorded] Markdown Doc -> {md_path.relative_to(ROOT_DIR)}")

@@ -14,7 +14,8 @@ and evidence provenance.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any
+
 import numpy as np
 
 
@@ -40,6 +41,8 @@ class ConstraintSeverity(str, Enum):
     HARD = "hard"          # Cannot be violated; produces topological obstruction (beta_1 > 0)
     SOFT = "soft"          # Penalized in objective Dirichlet energy
     THRESHOLD = "threshold"# Go/no-go gate threshold
+    PREFERENCE = "preference"
+    ASPIRATIONAL = "aspirational"
 
 
 @dataclass
@@ -53,7 +56,7 @@ class DecisionPrimitive:
     state_vector: np.ndarray = field(default_factory=lambda: np.zeros(1, dtype=np.float64))
     units: str = "dimensionless"
     source_reference: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if len(self.state_vector) != self.stalk_dim:
@@ -66,7 +69,7 @@ class DecisionPrimitive:
             arr = np.resize(arr, self.stalk_dim)
         self.state_vector = arr
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -96,21 +99,22 @@ class Objective(DecisionPrimitive):
         target_value: float = 1.0,
         units: str = "utility",
         description: str = "",
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ):
+        safe_tv = float(target_value) if np.isfinite(target_value) else 100.0
         super().__init__(
             id=id,
             name=name,
             primitive_type=PrimitiveType.OBJECTIVE,
             description=description,
             stalk_dim=1,
-            state_vector=np.array([target_value], dtype=np.float64),
+            state_vector=np.array([safe_tv], dtype=np.float64),
             units=units,
             metadata=metadata or {}
         )
         self.direction = direction
         self.weight = weight
-        self.target_value = target_value
+        self.target_value = safe_tv
 
 
 @dataclass
@@ -126,13 +130,13 @@ class Option(DecisionPrimitive):
         id: str,
         name: str,
         stalk_dim: int = 4,
-        initial_params: Optional[np.ndarray] = None,
+        initial_params: np.ndarray | None = None,
         trl: int = 6,
         mrl: int = 6,
         estimated_cost_m: float = 0.0,
         units: str = "metric_vector",
         description: str = "",
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ):
         init_vec = initial_params if initial_params is not None else np.zeros(stalk_dim)
         super().__init__(
@@ -169,15 +173,20 @@ class Constraint(DecisionPrimitive):
         tolerance: float = 1e-4,
         units: str = "units",
         description: str = "",
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ):
+        ref_bound = (
+            float(upper_bound)
+            if np.isfinite(upper_bound)
+            else (float(lower_bound) if np.isfinite(lower_bound) else 0.0)
+        )
         super().__init__(
             id=id,
             name=name,
             primitive_type=PrimitiveType.CONSTRAINT,
             description=description,
             stalk_dim=1,
-            state_vector=np.array([upper_bound if upper_bound < np.inf else lower_bound], dtype=np.float64),
+            state_vector=np.array([ref_bound], dtype=np.float64),
             units=units,
             metadata=metadata or {}
         )
@@ -186,12 +195,15 @@ class Constraint(DecisionPrimitive):
         self.upper_bound = upper_bound
         self.tolerance = tolerance
 
-    def evaluate_violation(self, candidate_val: float) -> Tuple[bool, float]:
+    def evaluate_violation(self, candidate_val: float) -> tuple[bool, float]:
         """Returns (is_violated, violation_magnitude)."""
-        if candidate_val < self.lower_bound - self.tolerance:
-            return True, self.lower_bound - candidate_val
-        if candidate_val > self.upper_bound + self.tolerance:
-            return True, candidate_val - self.upper_bound
+        val = float(candidate_val)
+        if not np.isfinite(val):
+            return True, 1e6
+        if val < self.lower_bound - self.tolerance:
+            return True, self.lower_bound - val
+        if val > self.upper_bound + self.tolerance:
+            return True, val - self.upper_bound
         return False, 0.0
 
 
@@ -213,7 +225,7 @@ class Assumption(DecisionPrimitive):
         units: str = "units",
         description: str = "",
         source_reference: str = "",
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ):
         super().__init__(
             id=id,
@@ -253,7 +265,7 @@ class Risk(DecisionPrimitive):
         impact: float = 0.5,
         units: str = "risk_score",
         description: str = "",
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ):
         score = float(np.clip(probability * impact, 0.0, 1.0))
         super().__init__(
@@ -281,7 +293,7 @@ class BiasCheck(DecisionPrimitive):
     bias_category: str = "confirmation_bias"  # e.g. vendor_lockin, optimism_bias, sunk_cost
     adversarial_strain_injected: float = 0.0
     is_refuted: bool = False
-    witness_vector: Optional[np.ndarray] = None
+    witness_vector: np.ndarray | None = None
 
     def __init__(
         self,
@@ -290,7 +302,7 @@ class BiasCheck(DecisionPrimitive):
         bias_category: str = "confirmation_bias",
         units: str = "strain_norm",
         description: str = "",
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ):
         super().__init__(
             id=id,

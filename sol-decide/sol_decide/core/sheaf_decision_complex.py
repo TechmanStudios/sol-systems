@@ -573,7 +573,7 @@ class SheafDecisionComplex:
                         rank_delta += int(np.sum(s_blk > self.zero_tolerance))
                 else:
                     if block.shape[1] > 0 and block.shape[0] > 0:
-                        U0_blk, s_blk, _ = la.svd(block, full_matrices=True)
+                        U0_blk, s_blk, _ = la.svd(block, full_matrices=False)
                         r0_blk = int(np.sum(s_blk > self.zero_tolerance))
                         U_exact_blk = U0_blk[:, :r0_blk]
                     else:
@@ -612,7 +612,7 @@ class SheafDecisionComplex:
         delta = self.build_coboundary()
 
         # Singular value decomposition for robust numerical rank
-        U0, s0, _ = la.svd(delta, full_matrices=True)
+        U0, s0, _ = la.svd(delta, full_matrices=False)
         rank_delta = int(np.sum(s0 > self.zero_tolerance))
 
         rank_delta_1 = 0
@@ -725,7 +725,7 @@ class SheafDecisionComplex:
             )
 
         # 1. Exact subspace im(delta^0) via orthonormal SVD basis
-        U0, s0, _ = la.svd(delta_0, full_matrices=True)
+        U0, s0, _ = la.svd(delta_0, full_matrices=False)
         r0 = int(np.sum(s0 > self.zero_tolerance))
         U_exact = U0[:, :r0]
         omega_exact = U_exact @ (U_exact.T @ omega) if r0 > 0 else np.zeros_like(omega)
@@ -876,8 +876,9 @@ class SheafDecisionComplex:
                 offset = self.edge_offsets[eid]
                 dim = edge.dim_edge
                 e_slice = dx[offset : offset + dim]
-                norm = float(la.norm(e_slice))
-                if norm > tolerance:
+                norm = float(np.linalg.norm(e_slice))
+                if (not np.isfinite(norm)) or norm > tolerance:
+                    clean_norm = norm if np.isfinite(norm) else 1e6
                     obstructed.append({
                         "edge_id": eid,
                         "source_id": edge.source_id,
@@ -885,9 +886,9 @@ class SheafDecisionComplex:
                         "target_id": edge.target_id,
                         "target_name": tgt.name,
                         "edge_type": edge.edge_type,
-                        "discrepancy_norm": norm,
+                        "discrepancy_norm": clean_norm,
                         "discrepancy_vector": e_slice.tolist(),
-                        "violation_details": f"Linear discrepancy norm {norm:.4e} > {tolerance}"
+                        "violation_details": f"Linear discrepancy norm {clean_norm:.4e} > {tolerance}"
                     })
 
         return obstructed
@@ -960,15 +961,20 @@ class SheafDecisionComplex:
 
             # Penalize constraint violations
             for con in constraints:
+                q_mult = float(getattr(con, "metadata", {}).get("quotient_multiplicity", 1.0))
                 # Find edges connecting opt -> con
                 for edge in edges_by_pair.get((opt.id, con.id), ()):
                     projected = edge.source_map @ opt_state
                     is_viol, mag = con.evaluate_violation(float(projected[0]))
                     if is_viol:
                         if con.severity == ConstraintSeverity.HARD:
-                            opt_score -= 1000.0 * (1.0 + mag)
+                            opt_score -= q_mult * 1000.0 * (1.0 + mag)
+                        elif con.severity == ConstraintSeverity.PREFERENCE:
+                            opt_score -= q_mult * 10.0 * mag
+                        elif con.severity == ConstraintSeverity.ASPIRATIONAL:
+                            opt_score -= q_mult * 5.0 * mag
                         else:
-                            opt_score -= 50.0 * mag
+                            opt_score -= q_mult * 50.0 * mag
 
             # Bonus/penalty for TRL/MRL
             opt_score += (opt.trl + opt.mrl) * 2.0
@@ -986,7 +992,7 @@ class SheafDecisionComplex:
         x = self.assemble_cochain()
         dx = self.evaluate_coboundary(x)
         energy = 0.5 * float(np.sum(dx ** 2))
-        dx_norm = float(la.norm(dx))
+        dx_norm = float(np.linalg.norm(dx))
         
         scores = self.evaluate_options()
         
@@ -1038,18 +1044,36 @@ class SheafDecisionComplex:
                 if not has_hard_violation:
                     hard_feasible_ids.append(opt_id)
 
-            if hard_feasible_ids:
-                best_id = max(hard_feasible_ids, key=lambda k: scores[k])
-                if scores[best_id] > -500.0:  # Did not violate hard constraints
-                    selected_id = best_id
+            finite_feasible_ids = [
+                oid
+                for oid in hard_feasible_ids
+                if np.isfinite(scores.get(oid, float("nan")))
+            ]
+            if finite_feasible_ids:
+                selected_id = max(finite_feasible_ids, key=lambda k: scores[k])
 
         # Audit obstructions specifically for selected option
         obstructed = self.audit_obstructions(
             x, target_option_id=selected_id, _precomputed_dx=dx
         )
+        hard_obstructed = [
+            ob
+            for ob in obstructed
+            if not (
+                (tgt_p := self.primitives.get(ob.get("target_id", ""))) is not None
+                and tgt_p.primitive_type == PrimitiveType.CONSTRAINT
+                and ob.get("edge_type") != "subsystem_interface"
+                and getattr(tgt_p, "severity", ConstraintSeverity.HARD)
+                in (
+                    ConstraintSeverity.SOFT,
+                    ConstraintSeverity.PREFERENCE,
+                    ConstraintSeverity.ASPIRATIONAL,
+                )
+            )
+        ]
 
-        # Feasible only if no hard obstructions exist and beta_1 == 0
-        is_feasible = (beta_1 == 0) and (len(obstructed) == 0) and (selected_id is not None)
+        # Feasible only if no hard/structural obstructions exist and beta_1 == 0
+        is_feasible = (beta_1 == 0) and (len(hard_obstructed) == 0) and (selected_id is not None)
 
         cochain_dict = {
             vid: self.primitives[vid].state_vector.tolist()

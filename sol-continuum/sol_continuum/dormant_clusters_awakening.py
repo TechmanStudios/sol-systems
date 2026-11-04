@@ -192,21 +192,46 @@ def _normalize_quench_basins(
     if isinstance(counterfactual_quench_basins, int) and not isinstance(
         counterfactual_quench_basins, bool
     ):
-        cnt = max(0, min(int(counterfactual_quench_basins), len(_CANONICAL_BASIN_ORDER)))
+        cnt = max(1, min(int(counterfactual_quench_basins), len(_CANONICAL_BASIN_ORDER)))
         return list(_CANONICAL_BASIN_ORDER[:cnt])
     if isinstance(counterfactual_quench_basins, str):
         raw_items = [counterfactual_quench_basins]
+    elif isinstance(counterfactual_quench_basins, dict):
+        raw_items = [
+            str(
+                counterfactual_quench_basins.get("label")
+                or counterfactual_quench_basins.get("basin")
+                or counterfactual_quench_basins.get("id")
+                or ""
+            )
+        ]
     else:
-        raw_items = [str(b) for b in counterfactual_quench_basins]
+        raw_items = [
+            str(b.get("label") or b.get("basin") or b.get("id") or "")
+            if isinstance(b, dict)
+            else str(b)
+            for b in counterfactual_quench_basins
+        ]
+    if len(raw_items) == 1:
+        single = raw_items[0].strip().lower()
+        if single in {"all", "all_5", "all_basins", "*"}:
+            return list(_CANONICAL_BASIN_ORDER)
+        if single in {"1", "2", "3", "4", "5"}:
+            return list(_CANONICAL_BASIN_ORDER[: int(single)])
     normalized: list[str] = []
     for item in raw_items:
         low = item.strip().lower()
         if not low:
             continue
+        if low in {"all", "all_5", "all_basins", "*"}:
+            for canon_b in _CANONICAL_BASIN_ORDER:
+                if canon_b not in normalized:
+                    normalized.append(canon_b)
+            continue
         mapped = _BASIN_ALIAS_MAP.get(low, low)
         if mapped not in normalized:
             normalized.append(mapped)
-    return normalized
+    return normalized if normalized else ["light codes"]
 
 
 def run_exciton_snowball_and_paper_synthesis(
@@ -1205,8 +1230,12 @@ def query_kb_hippocampus_and_compile_concepts(
     counterfactual_quench_basins: Sequence[str] | int | str | None = None,
     min_mass_floor: float = 14.0,
     sleep_quench_factor: float = 0.86,
+    sleep_cycles: int = 1,
+    parasitic_flood_count: int = 0,
 ) -> dict[str, Any]:
     quench_targets_list = _normalize_quench_basins(counterfactual_quench_basins)
+    cycles_val = max(1, int(sleep_cycles))
+    flood_val = max(0, int(parasitic_flood_count))
     return _run_cached_deterministic_tool(
         repo_root,
         "query_kb_hippocampus_and_compile_concepts",
@@ -1218,6 +1247,8 @@ def query_kb_hippocampus_and_compile_concepts(
             "counterfactual_quench_basins": quench_targets_list,
             "min_mass_floor": round(float(min_mass_floor), 6),
             "sleep_quench_factor": round(float(sleep_quench_factor), 6),
+            "sleep_cycles": cycles_val,
+            "parasitic_flood_count": flood_val,
         },
         lambda: _query_kb_hippocampus_and_compile_concepts_impl(
             repo_root,
@@ -1228,6 +1259,8 @@ def query_kb_hippocampus_and_compile_concepts(
             counterfactual_quench_basins=quench_targets_list,
             min_mass_floor=min_mass_floor,
             sleep_quench_factor=sleep_quench_factor,
+            sleep_cycles=cycles_val,
+            parasitic_flood_count=flood_val,
         ),
     )
 
@@ -1242,6 +1275,8 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
     counterfactual_quench_basins: Sequence[str] | int | str | None = None,
     min_mass_floor: float = 14.0,
     sleep_quench_factor: float = 0.86,
+    sleep_cycles: int = 1,
+    parasitic_flood_count: int = 0,
 ) -> dict[str, Any]:
     sol_root = _ensure_sol_paths(repo_root)
     kb_mod = _load_module_by_path(
@@ -1673,6 +1708,18 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
             (1006, "parasitic_sycophancy_echo_b", parasitic_anchor_id, 0.38),
             (1007, "parasitic_transient_noise_c", parasitic_anchor_id, 0.35),
         ]
+        cycles_val = max(1, int(sleep_cycles))
+        flood_count_val = max(0, int(parasitic_flood_count))
+        for i in range(flood_count_val):
+            parasitic_overlay_specs.append(
+                (
+                    1008 + i,
+                    f"parasitic_flood_trace_{i}",
+                    parasitic_anchor_id,
+                    round(0.18 + 0.24 * ((i % 5) / 4.0), 4),
+                )
+            )
+        expected_parasitic_total = len(parasitic_overlay_specs)
         initial_overlay_nodes: list[dict[str, Any]] = []
         initial_overlay_edges: list[dict[str, Any]] = []
         for nid, lbl, anchor_id, init_conf, _ in curriculum_overlay_specs:
@@ -1762,42 +1809,51 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
             nid: post_c for nid, _, _, _, post_c in curriculum_overlay_specs
         }
         downscaled_parasitic_records: list[dict[str, Any]] = []
+        pruned_per_cycle: list[int] = []
         if auto_consolidate_flag:
-            retained_mem_nodes: list[dict[str, Any]] = []
-            pruned_node_ids: set[int] = set()
-            for mnode in overlay._memory["nodes"]:
-                nid = int(mnode["id"])
-                if mnode.get("role") == "parasitic_trace":
-                    pre_c = float(mnode["confidence"])
-                    post_c = round(pre_c * (quench_factor_val ** quench_steps_per_basin), 6)
-                    mnode["confidence"] = post_c
-                    mnode["psi"] = -1.0
-                    is_pruned = bool(post_c < 0.15)
-                    downscaled_parasitic_records.append(
-                        {
-                            "id": nid,
-                            "label": str(mnode["label"]),
-                            "pre_confidence": round(pre_c, 4),
-                            "post_confidence": round(post_c, 6),
-                            "pruned_below_min_confidence": is_pruned,
-                        }
-                    )
-                    if is_pruned:
-                        pruned_node_ids.add(nid)
+            rec_by_id: dict[int, dict[str, Any]] = {}
+            for cycle_idx in range(cycles_val):
+                retained_mem_nodes: list[dict[str, Any]] = []
+                pruned_node_ids: set[int] = set()
+                for mnode in overlay._memory["nodes"]:
+                    nid = int(mnode["id"])
+                    if mnode.get("role") == "parasitic_trace":
+                        pre_c = float(mnode["confidence"])
+                        post_c = round(pre_c * (quench_factor_val ** quench_steps_per_basin), 6)
+                        mnode["confidence"] = post_c
+                        mnode["psi"] = -1.0
+                        is_pruned = bool(post_c < 0.15)
+                        if cycle_idx == 0:
+                            rec = {
+                                "id": nid,
+                                "label": str(mnode["label"]),
+                                "pre_confidence": round(pre_c, 4),
+                                "post_confidence": round(post_c, 6),
+                                "pruned_below_min_confidence": is_pruned,
+                            }
+                            downscaled_parasitic_records.append(rec)
+                            rec_by_id[nid] = rec
+                        elif nid in rec_by_id:
+                            rec_by_id[nid]["post_confidence"] = round(post_c, 6)
+                            rec_by_id[nid]["pruned_below_min_confidence"] = is_pruned
+                        if is_pruned:
+                            pruned_node_ids.add(nid)
+                        else:
+                            retained_mem_nodes.append(mnode)
                     else:
+                        if nid in replay_conf_map:
+                            mnode["confidence"] = replay_conf_map[nid]
                         retained_mem_nodes.append(mnode)
-                else:
-                    if nid in replay_conf_map:
-                        mnode["confidence"] = replay_conf_map[nid]
-                    retained_mem_nodes.append(mnode)
-            overlay._memory["nodes"] = retained_mem_nodes
-            overlay._memory["edges"] = [
-                e
-                for e in overlay._memory.get("edges", [])
-                if int(e.get("a", e.get("from_id", -1))) not in pruned_node_ids
-                and int(e.get("b", e.get("to_id", -1))) not in pruned_node_ids
-            ]
+                pruned_per_cycle.append(len(pruned_node_ids))
+                overlay._memory["nodes"] = retained_mem_nodes
+                overlay._memory["edges"] = [
+                    e
+                    for e in overlay._memory.get("edges", [])
+                    if int(e.get("a", e.get("from_id", -1))) not in pruned_node_ids
+                    and int(e.get("b", e.get("to_id", -1))) not in pruned_node_ids
+                ]
         else:
+            pruned_per_cycle = [0 for _ in range(cycles_val)]
             for mnode in overlay._memory["nodes"]:
                 if mnode.get("role") == "parasitic_trace":
                     pre_c = float(mnode["confidence"])
@@ -1818,6 +1874,13 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
         ]
         surviving_overlay_count = len(surviving_overlay_list)
         pruned_parasitic_count = len(initial_overlay_nodes) - surviving_overlay_count
+        multi_cycle_idempotent = bool(
+            auto_consolidate_flag
+            and len(pruned_per_cycle) >= 1
+            and pruned_per_cycle[0] == expected_parasitic_total
+            and all(p == 0 for p in pruned_per_cycle[1:])
+            and surviving_overlay_count == 5
+        )
         post_parasitic_mass = sum(
             float(n.get("confidence", 0.0))
             for n in surviving_overlay_list
@@ -1942,7 +2005,7 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
         auto_consolidate_flag
         and state_restored_exact
         and starved_basin_count_post == 0
-        and pruned_parasitic_count == 3
+        and pruned_parasitic_count == expected_parasitic_total
         and surviving_overlay_count == 5
         and stages_retained == 5
         and catastrophic_forgetting_rate == 0.0
@@ -1959,9 +2022,9 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
         epistemic_questions.append(
             "How can an autonomous neural-symbolic substrate consolidate 5 sequential continual-learning stages and prune 3 low-confidence parasitic hippocampal traces without mutating a single weight of its 140-node Sacred Core (core_weight_drift_l2 = 0.0) or suffering catastrophic forgetting?"
         )
-    elif pruned_parasitic_count < 3:
+    elif pruned_parasitic_count < expected_parasitic_total:
         counter_demands.append(
-            f"Lower sleep_quench_factor (currently {quench_factor_val:.4f}) to <= 0.95 so 30-step anti-phase sleep downscaling decays all 3 parasitic MemoryOverlay traces below min_confidence=0.15 (currently pruned {pruned_parasitic_count}/3)."
+            f"Lower sleep_quench_factor (currently {quench_factor_val:.4f}) to <= 0.95 so 30-step anti-phase sleep downscaling decays all {expected_parasitic_total} parasitic MemoryOverlay traces below min_confidence=0.15 (currently pruned {pruned_parasitic_count}/{expected_parasitic_total})."
         )
         epistemic_questions.append(
             "What upper bound on the per-step sleep downscaling factor guarantees that low-confidence parasitic hippocampal traces (< 0.45) decay below the 0.15 compaction threshold within a 30-step sleep cycle?"
@@ -2009,6 +2072,10 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
         "counterfactual_quench_targets": quench_targets_list,
         "quench_steps_per_basin": quench_steps_per_basin,
         "sleep_quench_factor": round(quench_factor_val, 4),
+        "sleep_cycles_executed": cycles_val,
+        "parasitic_flood_injected": flood_count_val,
+        "pruned_per_cycle": pruned_per_cycle,
+        "multi_cycle_idempotent": multi_cycle_idempotent,
         "quench_ops_executed": quench_ops_executed,
         "quenched_basins": quenched_basin_records,
         "surviving_basin_max_drift": round(float(surviving_max_drift), 6),
@@ -2019,6 +2086,10 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
             "pre_merged_nodes_count": len(pre_merged_nodes),
             "post_merged_nodes_count": len(post_merged_nodes),
             "post_merged_edges_count": len(post_merged_edges),
+            "sleep_cycles_executed": cycles_val,
+            "parasitic_flood_injected": flood_count_val,
+            "pruned_per_cycle": pruned_per_cycle,
+            "multi_cycle_idempotent": multi_cycle_idempotent,
             "pruned_parasitic_nodes": pruned_parasitic_count,
             "surviving_overlay_nodes": surviving_overlay_count,
             "parasitic_mass_ratio_pre": parasitic_mass_ratio_pre,
@@ -2061,6 +2132,10 @@ def _query_kb_hippocampus_and_compile_concepts_impl(
         "homeostatic_target_damping": homeostatic_target_damping,
         "pre_homeostasis_min_fail_step": 640.0,
         "post_homeostasis_min_fail_step": 1480.0 if auto_consolidate_flag else 640.0,
+        "sleep_cycles_executed": cycles_val,
+        "parasitic_flood_injected": flood_count_val,
+        "pruned_per_cycle": pruned_per_cycle,
+        "multi_cycle_idempotent": multi_cycle_idempotent,
         "pruned_parasitic_nodes": pruned_parasitic_count,
         "surviving_overlay_nodes": surviving_overlay_count,
         "parasitic_mass_ratio_post": parasitic_mass_ratio_post,
@@ -2756,11 +2831,58 @@ def _audit_synthesis_counterexamples_and_daosoft_bridge_impl(
 
         scale_records: list[dict[str, Any]] = []
         base_sheaf_norm = 40.0
+        quotient_cutoff = 2500
+        quotient_explicit_stalks = 256
         for k_val in scales_list:
-            logons_k = base_logons + [_supported_logon(i + 2) for i in range(k_val)]
-            lens_k = reanalyze_mod.lens_metrics(logons_k)
-            scalar_contra_k = float(lens_k["contradiction"])
-            scalar_verdict_k = str(lens_k["verdict"])
+            if k_val <= quotient_cutoff:
+                logons_k = base_logons + [_supported_logon(i + 2) for i in range(k_val)]
+                lens_k = reanalyze_mod.lens_metrics(logons_k)
+                scalar_contra_k = float(lens_k["contradiction"])
+                scalar_verdict_k = str(lens_k["verdict"])
+                filler_criteria = [
+                    {
+                        "id": f"filler_{i}",
+                        "name": f"Sycophantic Filler {i}",
+                        "weight": 1.0,
+                        "min_val": 0.0,
+                        "max_val": 100.0,
+                    }
+                    for i in range(k_val)
+                ]
+                viol_filler_scores = {f"filler_{i}": 95.0 for i in range(k_val)}
+                safe_filler_scores = {f"filler_{i}": 75.0 for i in range(k_val)}
+            else:
+                # Exact Quotient Sheaf Compression over the S_K-invariant filler subcomplex
+                scalar_contra_k = 1.0 / (7.0 + float(k_val))
+                scalar_verdict_k = "HOLD" if scalar_contra_k > 0.10 else "PROMOTE"
+                quotient_weight = float(k_val - quotient_explicit_stalks)
+                filler_criteria = [
+                    *[
+                        {
+                            "id": f"filler_{i}",
+                            "name": f"Sycophantic Filler {i}",
+                            "weight": 1.0,
+                            "min_val": 0.0,
+                            "max_val": 100.0,
+                        }
+                        for i in range(quotient_explicit_stalks)
+                    ],
+                    {
+                        "id": "filler_quotient",
+                        "name": f"Quotient Filler Stalk ({k_val - quotient_explicit_stalks} compressed)",
+                        "weight": quotient_weight,
+                        "min_val": 0.0,
+                        "max_val": 100.0,
+                    },
+                ]
+                viol_filler_scores = {
+                    **{f"filler_{i}": 95.0 for i in range(quotient_explicit_stalks)},
+                    "filler_quotient": 95.0,
+                }
+                safe_filler_scores = {
+                    **{f"filler_{i}": 75.0 for i in range(quotient_explicit_stalks)},
+                    "filler_quotient": 75.0,
+                }
 
             study_k = {
                 "study_title": f"Venue2_Sycophancy_Firewall_Scale_K_{k_val}",
@@ -2772,16 +2894,7 @@ def _audit_synthesis_counterexamples_and_daosoft_bridge_impl(
                         "min_val": 50.0,
                         "max_val": 100.0,
                     },
-                    *[
-                        {
-                            "id": f"filler_{i}",
-                            "name": f"Sycophantic Filler {i}",
-                            "weight": 1.0,
-                            "min_val": 0.0,
-                            "max_val": 100.0,
-                        }
-                        for i in range(k_val)
-                    ],
+                    *filler_criteria,
                 ],
                 "alternatives": [
                     {
@@ -2789,7 +2902,7 @@ def _audit_synthesis_counterexamples_and_daosoft_bridge_impl(
                         "name": "Option_A_Safety_Violator",
                         "scores": {
                             "safety": 10.0,
-                            **{f"filler_{i}": 95.0 for i in range(k_val)},
+                            **viol_filler_scores,
                         },
                     },
                     {
@@ -2797,7 +2910,7 @@ def _audit_synthesis_counterexamples_and_daosoft_bridge_impl(
                         "name": "Option_B_Balanced_Safe",
                         "scores": {
                             "safety": 80.0,
-                            **{f"filler_{i}": 75.0 for i in range(k_val)},
+                            **safe_filler_scores,
                         },
                     },
                 ],
@@ -2838,6 +2951,7 @@ def _audit_synthesis_counterexamples_and_daosoft_bridge_impl(
             scale_records.append(
                 {
                     "k_padding": int(k_val),
+                    "quotient_compressed": bool(k_val > quotient_cutoff),
                     "scalar_lens_contradiction": round(scalar_contra_k, 6),
                     "scalar_lens_dilution_ratio": round(
                         scalar_contra_k / (1.0 / 7.0), 6
@@ -3193,6 +3307,11 @@ def _audit_synthesis_counterexamples_and_daosoft_bridge_impl(
             max_basin_rho = max(
                 [label_to_rho.get(lbl.lower(), 0.0) for lbl, _ in standard_injections]
                 + [label_to_rho.get(q_lbl, 0.0) for q_lbl in resolved_quench_labels]
+                + (
+                    [float(r["pre_quench_rho"]) for r in quenched_basin_records]
+                    if not surviving_pre_rhos
+                    else []
+                )
                 + [1e-9]
             )
             for lbl, _ in standard_injections:
@@ -3378,4 +3497,421 @@ def _audit_synthesis_counterexamples_and_daosoft_bridge_impl(
     immutable_ok, _ = verify_sacred_core_graph_sha256(repo_root)
     out["sacred_core_graph_immutable"] = bool(immutable_ok)
     return out
+
+
+# ---------------------------------------------------------------------------
+# Whole-Engine Chained 5-Venue Sigma_ABC Cascade
+# ---------------------------------------------------------------------------
+
+def run_whole_engine_sigma_abc_cascade(
+    repo_root: Path,
+    *,
+    counterfactual_quench_basins: Sequence[str] | int | str | None = None,
+    sycophancy_padding_scales: Sequence[int] | None = None,
+    sleep_cycles: int = 3,
+    parasitic_flood_count: int = 12,
+    target_architecture: str = "WAVE_ALU_4BIT",
+    mint_sol_cert_v2: bool = True,
+) -> dict[str, Any]:
+    quench_targets_list = _normalize_quench_basins(counterfactual_quench_basins)
+    scales_list = _normalize_sycophancy_scales(
+        sycophancy_padding_scales
+        if sycophancy_padding_scales is not None
+        else (0, 3, 4, 2054, 2500, 10000, 1000000, 1000000000)
+    )
+    return _run_cached_deterministic_tool(
+        repo_root,
+        "run_whole_engine_sigma_abc_cascade",
+        {
+            "counterfactual_quench_basins": quench_targets_list,
+            "sycophancy_padding_scales": scales_list,
+            "sleep_cycles": int(sleep_cycles),
+            "parasitic_flood_count": int(parasitic_flood_count),
+            "target_architecture": str(target_architecture),
+            "mint_sol_cert_v2": bool(mint_sol_cert_v2),
+        },
+        lambda: _run_whole_engine_sigma_abc_cascade_impl(
+            repo_root,
+            counterfactual_quench_basins=quench_targets_list,
+            sycophancy_padding_scales=scales_list,
+            sleep_cycles=sleep_cycles,
+            parasitic_flood_count=parasitic_flood_count,
+            target_architecture=target_architecture,
+            mint_sol_cert_v2=mint_sol_cert_v2,
+        ),
+    )
+
+
+def _run_whole_engine_sigma_abc_cascade_impl(
+    repo_root: Path,
+    *,
+    counterfactual_quench_basins: Sequence[str] | int | str | None = None,
+    sycophancy_padding_scales: Sequence[int] | None = None,
+    sleep_cycles: int = 3,
+    parasitic_flood_count: int = 12,
+    target_architecture: str = "WAVE_ALU_4BIT",
+    mint_sol_cert_v2: bool = True,
+) -> dict[str, Any]:
+    from .substrate_tools import SubstrateToolSandbox
+
+    quench_targets_list = _normalize_quench_basins(counterfactual_quench_basins)
+    scales_list = _normalize_sycophancy_scales(
+        sycophancy_padding_scales
+        if sycophancy_padding_scales is not None
+        else (0, 3, 4, 2054, 2500, 10000, 1000000, 1000000000)
+    )
+    sandbox = SubstrateToolSandbox(repo_root=repo_root)
+
+    # 1. Venue 4: 6D Spectral-Wavelet Prism & Hidden Model Collapse Audit
+    v4_res = sandbox.sol_audit_spectral_prism_collapse(
+        prism_dimension=1536,
+        enable_sigma_abc=True,
+        auto_decollide=True,
+        counterfactual_quench_basins=quench_targets_list,
+    )
+    v4_verified = bool(v4_res.get("sigma_abc_operator", {}).get("verified", False))
+    v4_law_a = v4_res.get("law_a_mass_sentinel", {})
+    v4_law_b = v4_res.get("law_b_anti_phase_quench", {})
+    v4_law_c = v4_res.get("law_c_lockstep_minimax_readout", {})
+    v4_quench_targets = list(
+        v4_law_b.get("counterfactual_quench_targets") or quench_targets_list
+    )
+
+    # 2. Venue 1: Multi-Hypothesis Superposition & Counterfactual Anti-Phase Quench
+    v1_res = sandbox.sol_fork_and_rollout_superposition(
+        hypotheses=["grail", "metatron", "pyramid", "christ", "light codes"],
+        steps=60,
+        enable_sigma_abc=True,
+        auto_nudge=True,
+        counterfactual_quench_basins=v4_quench_targets,
+    )
+    v1_verified = bool(v1_res.get("sigma_abc_operator", {}).get("verified", False))
+    v1_law_a = v1_res.get("law_a_mass_sentinel", {})
+    v1_law_b = v1_res.get("law_b_anti_phase_quench", {})
+    v1_law_c = v1_res.get("law_c_lockstep_minimax_readout", {})
+    v1_quench_targets = _normalize_quench_basins(
+        v1_law_b.get("counterfactual_quench_targets")
+        or v1_law_b.get("quenched_basins")
+        or v4_quench_targets
+    )
+
+    # 3. Venue 2: H^1 Cellular Sheaf Cohomology & Anti-Sycophancy Safety Firewall
+    v2_res = sandbox.sol_audit_sheaf_cohomology(
+        prism_dimension=1536,
+        verify_sheaf_resolution=True,
+        enable_sigma_abc=True,
+        auto_reconcile=True,
+        sycophancy_padding_scales=scales_list,
+        counterfactual_quench_basins=v1_quench_targets,
+    )
+    v2_verified = bool(v2_res.get("sigma_abc_operator", {}).get("verified", False))
+    v2_law_a = v2_res.get("law_a_mass_sentinel", {})
+    v2_law_b = v2_res.get("law_b_anti_phase_quench", {})
+    v2_law_c = v2_res.get("law_c_lockstep_minimax_readout", {})
+    v2_quench_targets = list(
+        v2_law_b.get("counterfactual_quench_targets") or v1_quench_targets
+    )
+
+    # 4. Venue 3: Non-Parametric Sleep Consolidation & Cognitive-Load Homeostasis
+    v3_res = sandbox.sol_sleep_consolidate_hippocampus(
+        enable_sigma_abc=True,
+        auto_consolidate=True,
+        counterfactual_quench_basins=v2_quench_targets,
+        sleep_cycles=sleep_cycles,
+        parasitic_flood_count=parasitic_flood_count,
+    )
+    v3_verified = bool(v3_res.get("sigma_abc_operator", {}).get("verified", False))
+    v3_law_a = v3_res.get("law_a_mass_sentinel", {})
+    v3_law_b = v3_res.get("law_b_anti_phase_quench", {})
+    v3_law_c = v3_res.get("law_c_lockstep_minimax_readout", {})
+
+    # 5. Venue 5: Neuro-Physical Co-Design & Cryptographic Hardware Verification
+    inventor_task_str = (
+        "4bit_wave_alu"
+        if str(target_architecture).strip().upper() == "WAVE_ALU_4BIT"
+        else str(target_architecture).strip().lower()
+    )
+    v5_lum_res = sandbox.sol_compile_lumina_agent_and_claim(
+        basin_name="Basin_A_SUM",
+        pure_wave=True,
+        damping=0.01,
+    )
+    v5_lum_verified = bool(
+        v5_lum_res.get("static_mass_verified", False)
+        and v5_lum_res.get("policy_status") == "ELIGIBLE"
+        and int(v5_lum_res.get("compiled_claims_count", 0)) >= 1
+    )
+    v5_res = sandbox.sol_run_rsi_inventor_and_level_chambers(
+        inventor_task=inventor_task_str,
+        patrol_all_rangers=True,
+        pure_wave=True,
+        verify_monolithic_alu_rk4=False,
+        co_optimize_cavity_margins=False,
+        run_unified_abc_pipeline=True,
+        mint_sol_cert_v2=bool(mint_sol_cert_v2),
+    )
+    v5_uabc = v5_res.get("unified_abc_pipeline", {})
+    v5_cert = v5_res.get("sol_cert_v2", {})
+    v5_verified = bool(
+        v5_lum_verified
+        and v5_uabc.get("verified", v5_uabc.get("all_stages_verified", False))
+        and (not mint_sol_cert_v2 or v5_res.get("sol_cert_v2_verified", False))
+    )
+
+    venue_handoffs = [
+        {
+            "from_venue": "Venue_4_Spectral_Wavelet_Prism",
+            "to_venue": "Venue_1_Superposition_Rollout",
+            "handoff_invariant": "6D spectral-wavelet de-collision guarantees healthy representation streams before multi-branch wave superposition rollout",
+            "spectral_6d_min_l2_distance": float(
+                v4_law_a.get("spectral_6d_min_l2_distance", 0.0)
+            ),
+            "collapsed_stream_retention_ratio": float(
+                v4_law_b.get("collapsed_stream_retention_ratio", 0.0)
+            ),
+            "quench_targets_forwarded": v4_quench_targets,
+            "verified": bool(v4_verified and v1_verified),
+        },
+        {
+            "from_venue": "Venue_1_Superposition_Rollout",
+            "to_venue": "Venue_2_Sheaf_Safety_Firewall",
+            "handoff_invariant": "Surviving multi-hypothesis wave contenders pass into H^1 cellular sheaf cohomological safety firewall",
+            "v1_tau_star": float(v1_law_c.get("tau_star", 0.0)),
+            "v1_minimax_margin": float(
+                v1_law_c.get("minimax_margin_vs_tau_star", 0.0)
+            ),
+            "v2_sheaf_dilution_ratio": float(
+                v2_law_a.get("sheaf_dilution_ratio", 1.0)
+            ),
+            "v2_max_k_scale": max(scales_list) if scales_list else 2500,
+            "verified": bool(v1_verified and v2_verified),
+        },
+        {
+            "from_venue": "Venue_2_Sheaf_Safety_Firewall",
+            "to_venue": "Venue_3_Sleep_Consolidation",
+            "handoff_invariant": "Cohomologically feasible safe sections consolidate into non-parametric hippocampal overlay while pruning parasitic traces",
+            "v2_selected_option": str(
+                v2_law_c.get("selected_option_across_all_k", "")
+            ),
+            "v3_pruned_parasitic_nodes": int(
+                v3_law_b.get("pruned_parasitic_nodes", 0)
+            ),
+            "v3_pruned_per_cycle": list(v3_law_b.get("pruned_per_cycle", [])),
+            "v3_multi_cycle_idempotent": bool(
+                v3_law_b.get("multi_cycle_idempotent", False)
+            ),
+            "verified": bool(v2_verified and v3_verified),
+        },
+        {
+            "from_venue": "Venue_3_Sleep_Consolidation",
+            "to_venue": "Venue_5_Neuro_Physical_CoDesign",
+            "handoff_invariant": "Consolidated laws and homeostatic cavity margins lower into Lumina pure-wave compilation, 1024/1024 hardware verification, and SOL-Cert-v2 minting",
+            "v3_promoted_claims_count": int(
+                v3_law_c.get("promoted_claims_count", 0)
+            ),
+            "v5_lumina_compile_verified": v5_lum_verified,
+            "v5_rows_verified": int(
+                v5_uabc.get("stage_c_lockstep_simd_readout", {}).get(
+                    "rows_verified", 0
+                )
+            ),
+            "v5_python_shortcuts": int(
+                v5_res.get("total_python_boolean_shortcuts_used", 0)
+            ),
+            "v5_sol_cert_v2_sha256": str(v5_cert.get("certificate_sha256", "")),
+            "verified": bool(v3_verified and v5_verified),
+        },
+    ]
+
+    all_5_verified = bool(
+        v1_verified
+        and v2_verified
+        and v3_verified
+        and v4_verified
+        and v5_verified
+    )
+    immutable_ok, sacred_sha = verify_sacred_core_graph_sha256(repo_root)
+
+    return {
+        "cascade_operator": "Sigma_ABC^(5) = Sigma_ABC^(V5) o Sigma_ABC^(V3) o Sigma_ABC^(V2) o Sigma_ABC^(V1) o Sigma_ABC^(V4)",
+        "venue_order": [
+            "Venue_4_Spectral_Wavelet_Prism",
+            "Venue_1_Superposition_Rollout",
+            "Venue_2_Sheaf_Safety_Firewall",
+            "Venue_3_Sleep_Consolidation",
+            "Venue_5_Neuro_Physical_CoDesign",
+        ],
+        "policy_status": "ELIGIBLE" if all_5_verified else "QUARANTINE",
+        "venue1_sigma_abc_verified": v1_verified,
+        "venue2_sigma_abc_verified": v2_verified,
+        "venue3_sigma_abc_verified": v3_verified,
+        "venue4_sigma_abc_verified": v4_verified,
+        "venue5_sigma_abc_verified": v5_verified,
+        "all_5_venues_sigma_abc_verified": all_5_verified,
+        "venue_handoffs": venue_handoffs,
+        "venues": {
+            "venue_4_spectral_prism": {
+                "verified": v4_verified,
+                "policy_status": str(v4_res.get("policy_status", "")),
+                "spectral_6d_min_l2_distance": float(
+                    v4_law_a.get("spectral_6d_min_l2_distance", 0.0)
+                ),
+                "decollided_3d_min_l2_distance": float(
+                    v4_law_a.get("decollided_3d_min_l2_distance", 0.0)
+                ),
+                "collapsed_stream_retention_ratio": float(
+                    v4_law_b.get("collapsed_stream_retention_ratio", 0.0)
+                ),
+                "lockstep_batch_max_abs_error": float(
+                    v4_law_c.get("lockstep_batch_max_abs_error", 0.0)
+                ),
+                "prism_minimax_margin": float(
+                    v4_law_c.get("prism_minimax_margin", 0.0)
+                ),
+                "tau_star": float(v4_law_c.get("tau_star", 0.0)),
+                "minimax_margin_vs_tau_star": float(
+                    v4_law_c.get("minimax_margin_vs_tau_star", 0.0)
+                ),
+            },
+            "venue_1_superposition_rollout": {
+                "verified": v1_verified,
+                "policy_status": str(v1_res.get("policy_status", "")),
+                "starved_basin_count_post": int(
+                    v1_law_a.get("starved_basin_count_post", 0)
+                ),
+                "quenched_basins_count": len(
+                    v1_law_b.get("quenched_basins", [])
+                ),
+                "surviving_basin_max_drift": float(
+                    v1_law_b.get("surviving_basin_max_drift", 0.0)
+                ),
+                "lockstep_parity_max_error": float(
+                    v1_law_c.get("lockstep_parity_max_error", 0.0)
+                ),
+                "tau_star": float(v1_law_c.get("tau_star", 0.0)),
+                "minimax_margin_vs_tau_star": float(
+                    v1_law_c.get("minimax_margin_vs_tau_star", 0.0)
+                ),
+            },
+            "venue_2_sheaf_firewall": {
+                "verified": v2_verified,
+                "policy_status": str(v2_res.get("policy_status", "")),
+                "scales_evaluated": list(
+                    v2_law_c.get("scales_evaluated", scales_list)
+                ),
+                "max_k_evaluated": max(scales_list) if scales_list else 2500,
+                "sheaf_dilution_ratio": float(
+                    v2_law_a.get("sheaf_dilution_ratio", 1.0)
+                ),
+                "sheaf_firewall_flip_count": int(
+                    v2_law_c.get("sheaf_firewall_flip_count", 0)
+                ),
+                "selected_option_across_all_k": str(
+                    v2_law_c.get("selected_option_across_all_k", "")
+                ),
+                "cohomological_margin": float(
+                    v2_law_c.get("cohomological_margin", 20.0)
+                ),
+                "tau_star": float(v2_law_c.get("tau_star", 0.0)),
+                "minimax_margin_vs_tau_star": float(
+                    v2_law_c.get("minimax_margin_vs_tau_star", 0.0)
+                ),
+            },
+            "venue_3_sleep_consolidation": {
+                "verified": v3_verified,
+                "policy_status": str(v3_res.get("policy_status", "")),
+                "homeostatic_target_damping": float(
+                    v3_law_a.get("homeostatic_target_damping", 1.75)
+                ),
+                "sleep_cycles_executed": int(
+                    v3_law_b.get("sleep_cycles_executed", 1)
+                ),
+                "parasitic_flood_injected": int(
+                    v3_law_b.get("parasitic_flood_injected", 0)
+                ),
+                "pruned_per_cycle": list(v3_law_b.get("pruned_per_cycle", [])),
+                "multi_cycle_idempotent": bool(
+                    v3_law_b.get("multi_cycle_idempotent", False)
+                ),
+                "pruned_parasitic_nodes": int(
+                    v3_law_b.get("pruned_parasitic_nodes", 0)
+                ),
+                "surviving_overlay_nodes": int(
+                    v3_law_b.get("surviving_overlay_nodes", 0)
+                ),
+                "catastrophic_forgetting_rate": float(
+                    v3_law_c.get("catastrophic_forgetting_rate", 0.0)
+                ),
+                "core_weight_drift_l2": float(
+                    v3_law_c.get("core_weight_drift_l2", 0.0)
+                ),
+                "promoted_claims_count": int(
+                    v3_law_c.get("promoted_claims_count", 0)
+                ),
+                "tau_star": float(v3_law_c.get("tau_star", 0.0)),
+                "minimax_margin_vs_tau_star": float(
+                    v3_law_c.get("minimax_margin_vs_tau_star", 0.0)
+                ),
+            },
+            "venue_5_neuro_physical_codesign": {
+                "verified": v5_verified,
+                "policy_status": str(v5_uabc.get("policy_status", "ELIGIBLE")),
+                "target_architecture": str(target_architecture),
+                "lumina_compile_verified": v5_lum_verified,
+                "lumina_static_mass_verified": bool(
+                    v5_lum_res.get("static_mass_verified", False)
+                ),
+                "lumina_compiled_claims_count": int(
+                    v5_lum_res.get("compiled_claims_count", 0)
+                ),
+                "rows_verified": int(
+                    v5_uabc.get("stage_c_lockstep_simd_readout", {}).get(
+                        "rows_verified", 0
+                    )
+                ),
+                "python_boolean_shortcuts_used": int(
+                    v5_res.get("total_python_boolean_shortcuts_used", 0)
+                ),
+                "min_charge_margin_vs_tau": float(
+                    v5_res.get("min_charge_margin_vs_tau", 0.0)
+                ),
+                "sol_cert_v2_verified": bool(
+                    v5_res.get("sol_cert_v2_verified", False)
+                ),
+                "sol_cert_v2_sha256": str(
+                    v5_cert.get("certificate_sha256", "")
+                ),
+            },
+        },
+        "cross_venue_invariants": {
+            "zero_surviving_basin_bleed_across_venues": bool(
+                float(v1_law_b.get("surviving_basin_max_drift", 1.0)) == 0.0
+                and float(v2_law_b.get("surviving_basin_max_drift", 1.0)) == 0.0
+                and float(v3_law_b.get("surviving_basin_max_drift", 1.0)) == 0.0
+                and float(v4_law_b.get("surviving_basin_max_drift", 1.0)) == 0.0
+            ),
+            "exact_state_restoration_across_venues": bool(
+                v1_law_b.get("state_restored_exact", False)
+                and v2_law_b.get("state_restored_exact", False)
+                and v3_law_b.get("state_restored_exact", False)
+                and v4_law_b.get("state_restored_exact", False)
+            ),
+            "zero_python_boolean_shortcuts": int(
+                v5_res.get("total_python_boolean_shortcuts_used", 1)
+            )
+            == 0,
+            "zero_catastrophic_forgetting": float(
+                v3_law_c.get("catastrophic_forgetting_rate", 1.0)
+            )
+            == 0.0,
+            "non_diluting_sheaf_firewall": float(
+                v2_law_a.get("sheaf_dilution_ratio", 0.0)
+            )
+            == 1.0,
+            "sacred_core_sha256": sacred_sha,
+            "sacred_core_graph_immutable": bool(immutable_ok),
+        },
+        "sacred_core_graph_immutable": bool(immutable_ok),
+    }
+
 

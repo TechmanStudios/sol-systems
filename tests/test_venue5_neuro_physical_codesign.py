@@ -3020,3 +3020,389 @@ def test_live_gemini4_track_a_multi_turn_integration() -> None:
     assert graph_sha == EXPECTED_CORE_GRAPH_SHA256
 
 
+def test_whole_engine_sigma_abc_hardening_and_adversarial_stress_suite() -> None:
+    """
+    Comprehensive adversarial & scale stress-test across all 5 Venues and the
+    Whole-Engine Chained Sigma_ABC Cascade:
+      1. Venue 4: Sub-1e-9 variance underflow, 1e12 extreme DC offset two-pass Sterbenz
+         centering, and ULP noise gate in statisticalPrism.py.
+      2. Venue 2: Quotient Sheaf Compression up to K = 10^9 (1 billion sycophantic filler
+         criteria), economy SVD, PREFERENCE/ASPIRATIONAL/SOFT feasibility, score <= -500.0
+         feasibility, and NaN/Inf constraint sanitization.
+      3. Venue 1: Symbolic alias normalization ("Basin_0_XOR" -> "grail", "Basin_4_META" ->
+         "light codes"), 5-basin total quench pre-quench peak normalization (e_off_max < 0.01),
+         and unknown basin ValueError validation.
+      4. Venue 3: Multi-cycle sleep consolidation idempotence (sleep_cycles=4) under
+         parasitic trace flood (parasitic_flood_count=17 -> pruned_per_cycle=[20, 0, 0, 0]).
+      5. Venue 5: Read-before-write declared input basin preservation in build_custom_flow_task_spec.
+      6. Whole-Engine Chained 5-Venue Sigma_ABC Cascade & emergent_phenomena_summary parity.
+    """
+    import numpy as np
+    from sol_continuum.dormant_clusters_awakening import _load_module_by_path
+    from sol_continuum.substrate_tools import (
+        SUBSTRATE_TOOL_DECLARATIONS,
+        SubstrateToolSandbox,
+    )
+    from sol_continuum.venue5_neuro_physical_codesign import (
+        DEFAULT_CUSTOM_FLOW_INPUT_MAP,
+        DEFAULT_CUSTOM_FLOW_OUTPUT_MAP,
+        _ensure_venue5_paths,
+        build_custom_flow_task_spec,
+    )
+    from sol_decide.core.primitives import (
+        Constraint,
+        ConstraintSeverity,
+        Objective,
+        Option,
+    )
+    from sol_decide.core.sheaf_decision_complex import SheafDecisionComplex
+
+    _ensure_venue5_paths(_REPO_ROOT)
+    from lumina_compiler import LuminaCompiler
+
+    assert len(SUBSTRATE_TOOL_DECLARATIONS) == 12
+
+    prism_mod = _load_module_by_path(
+        "sol_exciton_statistical_prism_test",
+        _REPO_ROOT / "Frontier_OS" / "Exciton-MoA" / "transDucer" / "statisticalPrism.py",
+    )
+    prism = prism_mod.StatisticalPrism()
+
+    # --- 1. Venue 4: Sub-1e-9 Underflow, Extreme DC Offset (1e12), and ULP Noise Gate ---
+    import warnings
+
+    from sol_decide.interop.daosoft_bridge import DAOSoftBridge
+
+    tiny_rademacher = np.array([1.0, -1.0, 1.0, -1.0] * 16, dtype=np.float64) * 1e-15
+    tiny_block = np.array([1.0, 1.0, -1.0, -1.0] * 16, dtype=np.float64) * 1e-15
+    fp_tiny_rad = prism.extract_spectral_prism_fingerprint(tiny_rademacher)
+    fp_tiny_blk = prism.extract_spectral_prism_fingerprint(tiny_block)
+    assert fp_tiny_rad[3] == pytest.approx(-2.0, abs=1e-9)
+    assert float(np.linalg.norm(fp_tiny_rad - fp_tiny_blk)) >= 2.06155281
+    batch_tiny = prism.extract_spectral_prism_batch(np.vstack([tiny_rademacher, tiny_block]))
+    assert float(np.max(np.abs(batch_tiny[0] - fp_tiny_rad))) < 1e-12
+    assert float(np.max(np.abs(batch_tiny[1] - fp_tiny_blk))) < 1e-12
+
+    dc_offset = 1e12
+    dc_rademacher = dc_offset + np.array([1.0, -1.0, 1.0, -1.0] * 16, dtype=np.float64)
+    dc_block = dc_offset + np.array([1.0, 1.0, -1.0, -1.0] * 16, dtype=np.float64)
+    fp_dc_rad = prism.extract_spectral_prism_fingerprint(dc_rademacher)
+    fp_dc_blk = prism.extract_spectral_prism_fingerprint(dc_block)
+    assert fp_dc_rad[3] == pytest.approx(-2.0, abs=1e-9)
+    assert float(np.linalg.norm(fp_dc_rad - fp_dc_blk)) >= 2.06155281
+    batch_dc = prism.extract_spectral_prism_batch(np.vstack([dc_rademacher, dc_block]))
+    assert float(np.max(np.abs(batch_dc[0] - fp_dc_rad))) < 1e-12
+    assert float(np.max(np.abs(batch_dc[1] - fp_dc_blk))) < 1e-12
+
+    # ULP rounding noise gate: 1e8 + 1e-8 * standard_normal((4, 64)) (< 1e-14 * 1e8 = 1e-6)
+    rng_ulp = np.random.default_rng(42)
+    ulp_batch_in = 1e8 + 1e-8 * rng_ulp.standard_normal((4, 64))
+    with warnings.catch_warnings(record=True) as caught_ulp_warnings:
+        warnings.simplefilter("always")
+        ulp_seq = np.vstack([prism.extract_spectral_prism_fingerprint(row) for row in ulp_batch_in])
+        ulp_bat = prism.extract_spectral_prism_batch(ulp_batch_in)
+        for row in ulp_batch_in:
+            m_row = prism.extract_moments(row)
+            assert m_row[2] == 0.0
+    assert len(caught_ulp_warnings) == 0
+    assert float(np.max(np.abs(ulp_bat - ulp_seq))) < 1e-12
+    assert np.all(ulp_bat[:, 2:] == 0.0)
+
+    # Boundary probe right across std_tol = 1e-14 * abs(mean) at mean = 1e6 (std_tol = 1e-8)
+    below_tol_rad = 1e6 + 0.9e-8 * np.array([1.0, -1.0, 1.0, -1.0] * 16, dtype=np.float64)
+    above_tol_rad = 1e6 + 1.1e-8 * np.array([1.0, -1.0, 1.0, -1.0] * 16, dtype=np.float64)
+    above_tol_blk = 1e6 + 1.1e-8 * np.array([1.0, 1.0, -1.0, -1.0] * 16, dtype=np.float64)
+    fp_below = prism.extract_spectral_prism_fingerprint(below_tol_rad)
+    fp_above_rad = prism.extract_spectral_prism_fingerprint(above_tol_rad)
+    fp_above_blk = prism.extract_spectral_prism_fingerprint(above_tol_blk)
+    assert np.all(fp_below[2:] == 0.0)
+    assert float(np.linalg.norm(fp_above_rad - fp_above_blk)) >= 2.06155281
+
+    # --- 2. Venue 2: Quotient Sheaf Compression (K = 10^9), PREFERENCE/ASPIRATIONAL, NaN/Inf ---
+    c_nan = Constraint(
+        id="c_nan_guard",
+        name="NaN Guard",
+        severity=ConstraintSeverity.HARD,
+        lower_bound=0.0,
+        upper_bound=10.0,
+    )
+    for bad_val in (np.nan, np.inf, -np.inf):
+        violated, mag = c_nan.evaluate_violation(bad_val)
+        assert violated is True
+        assert mag == 1e6
+
+    # Verify SOFT / PREFERENCE / ASPIRATIONAL trade-offs do not mark a hard-feasible option infeasible,
+    # even when the weighted option score is <= -500.0 AND another hard-feasible option has a NaN score
+    sheaf_pref = SheafDecisionComplex(name="Preference_And_Deep_Negative_Feasibility")
+    sheaf_pref.add_primitive(
+        Option(
+            id="opt_nan_poison",
+            name="Hard_Feasible_But_NaN_Objective_Score",
+            stalk_dim=1,
+            initial_params=np.array([50.0], dtype=np.float64),
+            metadata={"scores": {"utility": float("nan")}},
+        )
+    )
+    sheaf_pref.add_primitive(
+        Option(
+            id="opt_feasible_neg",
+            name="Hard_Feasible_Deep_Negative_Score",
+            stalk_dim=1,
+            initial_params=np.array([-600.0], dtype=np.float64),
+        )
+    )
+    sheaf_pref.add_primitive(
+        Objective(
+            id="obj_utility",
+            name="Utility",
+            weight=1.0,
+            target_value=1.0,
+        )
+    )
+    sheaf_pref.add_primitive(
+        Constraint(
+            id="c_hard_ok",
+            name="Hard_Bound_Satisfied",
+            severity=ConstraintSeverity.HARD,
+            lower_bound=-1000.0,
+            upper_bound=1000.0,
+        )
+    )
+    sheaf_pref.add_primitive(
+        Constraint(
+            id="c_pref_tradeoff",
+            name="Preference_Tradeoff",
+            severity=ConstraintSeverity.PREFERENCE,
+            lower_bound=0.0,
+            upper_bound=100.0,
+        )
+    )
+    sheaf_pref.add_primitive(
+        Constraint(
+            id="c_asp_tradeoff",
+            name="Aspirational_Tradeoff",
+            severity=ConstraintSeverity.ASPIRATIONAL,
+            lower_bound=0.0,
+            upper_bound=100.0,
+        )
+    )
+    sheaf_pref.add_edge(
+        "e_obj",
+        "opt_feasible_neg",
+        "obj_utility",
+        dim_edge=1,
+        edge_type="objective_coupling",
+    )
+    sheaf_pref.add_edge("e_hard_nan", "opt_nan_poison", "c_hard_ok", dim_edge=1)
+    sheaf_pref.add_edge("e_hard", "opt_feasible_neg", "c_hard_ok", dim_edge=1)
+    sheaf_pref.add_edge("e_pref", "opt_feasible_neg", "c_pref_tradeoff", dim_edge=1)
+    sheaf_pref.add_edge("e_asp", "opt_feasible_neg", "c_asp_tradeoff", dim_edge=1)
+    rep_pref = sheaf_pref.evaluate_decision_package()
+    assert np.isnan(rep_pref.option_scores["opt_nan_poison"])
+    assert rep_pref.selected_option_id == "opt_feasible_neg"
+    assert rep_pref.option_scores["opt_feasible_neg"] < -500.0
+    assert rep_pref.is_feasible is True
+
+    # Verify heterogeneous Quotient Sheaf Compression in DAOSoftBridge with non-uniform weights & mixed severities
+    bridge_het = DAOSoftBridge()
+    het_criteria = [
+        {"id": "safety", "name": "Safety", "weight": 2.0, "min_val": 50.0, "max_val": 100.0, "severity": "hard"}
+    ]
+    het_scores_viol: dict[str, float] = {"safety": 15.0}
+    het_scores_safe1: dict[str, float] = {"safety": 82.0}
+    het_scores_safe2: dict[str, float] = {"safety": 78.0}
+    sev_cycle = ("soft", "preference", "aspirational")
+    for idx in range(600):
+        cid = f"het_c_{idx}"
+        w_val = 0.5 + 0.25 * (idx % 7)
+        sev_str = sev_cycle[idx % 3]
+        het_criteria.append(
+            {
+                "id": cid,
+                "name": f"Heterogeneous Criterion {idx}",
+                "weight": w_val,
+                "min_val": 60.0,
+                "max_val": 100.0,
+                "severity": sev_str,
+            }
+        )
+        het_scores_viol[cid] = 92.0 - float(idx % 5)
+        het_scores_safe1[cid] = 52.0 + float(idx % 15)  # violates (< 60) for some idx, satisfies for others
+        het_scores_safe2[cid] = 55.0 + float(idx % 11)
+    het_study = {
+        "study_title": "Heterogeneous_Quotient_Compression_Test",
+        "quotient_explicit_cap": 32,
+        "criteria": het_criteria,
+        "alternatives": [
+            {"id": "a_viol", "name": "Violator", "scores": het_scores_viol},
+            {"id": "b_safe1", "name": "Safe_1", "scores": het_scores_safe1},
+            {"id": "c_safe2", "name": "Safe_2", "scores": het_scores_safe2},
+        ],
+    }
+    comp_uncompressed = bridge_het.ingest_daosoft_matrix(het_study, compress_quotient=False)
+    comp_quotient = bridge_het.ingest_daosoft_matrix(het_study, compress_quotient=True)
+    rep_uncompressed = comp_uncompressed.evaluate_decision_package()
+    rep_quotient = comp_quotient.evaluate_decision_package()
+    assert len(comp_quotient.primitives) < len(comp_uncompressed.primitives) // 5
+    assert rep_quotient.selected_option_id == rep_uncompressed.selected_option_id
+    assert rep_quotient.is_feasible is True
+    assert rep_uncompressed.is_feasible is True
+    for oid in rep_uncompressed.option_scores:
+        assert rep_quotient.option_scores[oid] == pytest.approx(
+            rep_uncompressed.option_scores[oid], rel=1e-11, abs=1e-9
+        )
+
+    sandbox = SubstrateToolSandbox(repo_root=_REPO_ROOT)
+    res_v2_billion = sandbox.execute_tool(
+        "sol_audit_synthesis_counterexamples_and_daosoft_bridge",
+        {
+            "enable_sigma_abc": True,
+            "auto_reconcile": True,
+            "sycophancy_padding_scales": [0, 3, 4, 2054, 2500, 10000, 1000000, 1000000000],
+            "counterfactual_quench_basins": ["Basin_4_META"],
+        },
+    )
+    assert res_v2_billion["policy_status"] == "ELIGIBLE"
+    assert res_v2_billion["law_a_mass_sentinel"]["sheaf_dilution_ratio"] == 1.0
+    assert res_v2_billion["law_c_lockstep_minimax_readout"]["sheaf_firewall_flip_count"] == 0
+    assert (
+        res_v2_billion["law_c_lockstep_minimax_readout"]["selected_option_across_all_k"]
+        == "opt_opt_b_safe"
+    )
+    rec_1e9 = res_v2_billion["law_c_lockstep_minimax_readout"]["scale_records"][-1]
+    assert rec_1e9["k_padding"] == 1000000000
+    assert rec_1e9["quotient_compressed"] is True
+    assert rec_1e9["sheaf_coboundary_discrepancy_norm"] == 40.0
+    assert rec_1e9["sheaf_coboundary_energy"] == 1600.0
+    assert rec_1e9["sheaf_firewall_selected"] == "opt_opt_b_safe"
+
+    # --- 3. Venue 1: Alias Normalization, 5-Basin Total Quench, and Unknown Basin Error ---
+    res_v1_alias = sandbox.execute_tool(
+        "sol_fork_and_rollout_superposition",
+        {
+            "enable_sigma_abc": True,
+            "auto_nudge": True,
+            "counterfactual_quench_basins": ["Basin_0_XOR", "Basin_4_META"],
+        },
+    )
+    assert res_v1_alias["law_b_anti_phase_quench"]["counterfactual_quench_targets"] == [
+        "grail",
+        "light codes",
+    ]
+    assert res_v1_alias["law_b_anti_phase_quench"]["quench_ops_executed"] == 60
+    assert res_v1_alias["law_b_anti_phase_quench"]["surviving_basin_max_drift"] == 0.0
+
+    res_v1_all5 = sandbox.execute_tool(
+        "sol_fork_and_rollout_superposition",
+        {
+            "enable_sigma_abc": True,
+            "auto_nudge": True,
+            "counterfactual_quench_basins": ["all"],
+        },
+    )
+    assert res_v1_all5["law_b_anti_phase_quench"]["quench_ops_executed"] == 150
+    assert res_v1_all5["law_c_lockstep_minimax_readout"]["surviving_norm_energies"] == {}
+    assert res_v1_all5["law_c_lockstep_minimax_readout"]["e_on_min"] == 0.0
+    assert res_v1_all5["law_c_lockstep_minimax_readout"]["e_off_max"] < 0.01
+    assert res_v1_all5["law_c_lockstep_minimax_readout"]["contenders_above_tau_star"] == 0
+
+    with pytest.raises(ValueError, match="Unknown counterfactual quench basin"):
+        sandbox.execute_tool(
+            "sol_fork_and_rollout_superposition",
+            {
+                "enable_sigma_abc": True,
+                "auto_nudge": True,
+                "counterfactual_quench_basins": ["nonexistent_basin_xyz"],
+            },
+        )
+
+    # --- 4. Venue 3: Multi-Cycle Idempotence & Parasitic Flood Stress Test ---
+    res_v3_flood = sandbox.execute_tool(
+        "sol_query_kb_hippocampus_and_compile_concepts",
+        {
+            "query_text": "Metatron spiral phi",
+            "enable_sigma_abc": True,
+            "auto_consolidate": True,
+            "sleep_cycles": 4,
+            "parasitic_flood_count": 17,
+        },
+    )
+    assert res_v3_flood["policy_status"] == "ELIGIBLE"
+    v3_lb = res_v3_flood["law_b_anti_phase_quench"]
+    assert v3_lb["sleep_cycles_executed"] == 4
+    assert v3_lb["parasitic_flood_injected"] == 17
+    assert v3_lb["pruned_per_cycle"] == [20, 0, 0, 0]
+    assert v3_lb["multi_cycle_idempotent"] is True
+    assert v3_lb["pruned_parasitic_nodes"] == 20
+    assert v3_lb["surviving_overlay_nodes"] == 5
+    assert res_v3_flood["law_c_lockstep_minimax_readout"]["catastrophic_forgetting_rate"] == 0.0
+    assert res_v3_flood["law_c_lockstep_minimax_readout"]["core_weight_drift_l2"] == 0.0
+
+    # --- 5. Venue 5: Read-Before-Write Declared Input Basin Preservation ---
+    inplace_overwrite_flow = (
+        "def flow(self):\n"
+        "    self.carry_out = self.in_a & self.in_b\n"
+        "    self.in_a = self.in_a ^ self.in_b\n"
+        "    self.sum_out = self.in_a\n"
+        "    self.carry_out = self.carry_out | (self.in_a & self.in_b)"
+    )
+    compiled_ov = LuminaCompiler.compile_flow_src(
+        inputs=dict(DEFAULT_CUSTOM_FLOW_INPUT_MAP),
+        outputs=dict(DEFAULT_CUSTOM_FLOW_OUTPUT_MAP),
+        flow_src=inplace_overwrite_flow,
+        pure_wave=True,
+    )
+    spec_ov = build_custom_flow_task_spec(compiled_ov)
+    in_basin_vals = list(spec_ov["inputs"].values())
+    assert "Basin_In_A" in in_basin_vals
+    assert "Basin_In_B" in in_basin_vals
+    assert "Basin_Sum_Out" not in in_basin_vals
+    assert "Basin_Carry_Out" not in in_basin_vals
+    assert len(spec_ov["input_space"]) == 4
+
+    # --- 6. Whole-Engine Chained 5-Venue Sigma_ABC Cascade & Summary Parity ---
+    cascade_res = sandbox.execute_tool(
+        "sol_run_whole_engine_sigma_abc_cascade",
+        {
+            "counterfactual_quench_basins": ["Basin_4_META"],
+            "sycophancy_padding_scales": [0, 3, 4, 2054, 1000000],
+            "sleep_cycles": 3,
+            "parasitic_flood_count": 12,
+            "target_architecture": "WAVE_ALU_4BIT",
+            "mint_sol_cert_v2": True,
+        },
+    )
+    assert cascade_res["policy_status"] == "ELIGIBLE"
+    assert cascade_res["venue1_sigma_abc_verified"] is True
+    assert cascade_res["venue2_sigma_abc_verified"] is True
+    assert cascade_res["venue3_sigma_abc_verified"] is True
+    assert cascade_res["venue4_sigma_abc_verified"] is True
+    assert cascade_res["venue5_sigma_abc_verified"] is True
+    assert cascade_res["all_5_venues_sigma_abc_verified"] is True
+    assert cascade_res["venues"]["venue_5_neuro_physical_codesign"]["lumina_compile_verified"] is True
+    assert cascade_res["venues"]["venue_5_neuro_physical_codesign"]["lumina_static_mass_verified"] is True
+    assert cascade_res["venues"]["venue_5_neuro_physical_codesign"]["lumina_compiled_claims_count"] >= 1
+    assert len(cascade_res["venue_handoffs"]) == 4
+    assert all(h["verified"] is True for h in cascade_res["venue_handoffs"])
+    invs = cascade_res["cross_venue_invariants"]
+    assert invs["zero_surviving_basin_bleed_across_venues"] is True
+    assert invs["exact_state_restoration_across_venues"] is True
+    assert invs["zero_python_boolean_shortcuts"] is True
+    assert invs["zero_catastrophic_forgetting"] is True
+    assert invs["non_diluting_sheaf_firewall"] is True
+    assert invs["sacred_core_graph_immutable"] is True
+    assert invs["sacred_core_sha256"] == EXPECTED_CORE_GRAPH_SHA256
+
+    summary = sandbox.run_deterministic_suite()
+    assert summary["awakened_subsystems_count"] == 12
+    assert summary["venue1_sigma_abc_verified"] is True
+    assert summary["venue2_sigma_abc_verified"] is True
+    assert summary["venue3_sigma_abc_verified"] is True
+    assert summary["venue4_sigma_abc_verified"] is True
+    assert summary["venue5_sigma_abc_verified"] is True
+    assert summary["all_5_venues_sigma_abc_verified"] is True
+    assert summary["sacred_core_graph_immutable"] is True
+    assert summary["sacred_core_graph_sha256"] == EXPECTED_CORE_GRAPH_SHA256
+
+
+

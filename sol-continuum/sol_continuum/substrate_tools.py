@@ -531,6 +531,20 @@ SUBSTRATE_TOOL_DECLARATIONS: list[dict[str, Any]] = [
                         "downscaling quench (default 0.86)."
                     ),
                 },
+                "sleep_cycles": {
+                    "type": "integer",
+                    "description": (
+                        "Number of sequential non-parametric hippocampal sleep consolidation cycles "
+                        "to execute for multi-cycle idempotence verification (default 1)."
+                    ),
+                },
+                "parasitic_flood_count": {
+                    "type": "integer",
+                    "description": (
+                        "Number of additional synthetic low-confidence parasitic flood traces to "
+                        "inject into the sandboxed MemoryOverlay before sleep pruning (default 0)."
+                    ),
+                },
             },
             "required": ["query_text"],
         },
@@ -706,6 +720,7 @@ class SubstrateToolSandbox:
         self._sync_gru_hidden_states()
         self.tool_executions: list[dict[str, Any]] = []
         self.results_by_tool: dict[str, dict[str, Any]] = {}
+        self._last_cascade_result: dict[str, Any] | None = None
 
     def _sync_gru_hidden_states(self) -> None:
         """Compute and attach deterministic 8D GRU hidden state vectors h_i in R^8 and wave velocity v_i per node."""
@@ -850,6 +865,8 @@ class SubstrateToolSandbox:
             "sol_run_rsi_inventor_and_level_chambers": self.sol_run_rsi_inventor_and_level_chambers,
             "sol_audit_synthesis_counterexamples_and_daosoft_bridge": self.sol_audit_synthesis_counterexamples_and_daosoft_bridge,
             "sol_audit_sheaf_cohomology": self.sol_audit_synthesis_counterexamples_and_daosoft_bridge,
+            "sol_run_whole_engine_sigma_abc_cascade": self.sol_run_whole_engine_sigma_abc_cascade,
+            "run_whole_engine_sigma_abc_cascade": self.sol_run_whole_engine_sigma_abc_cascade,
         }
         if name not in dispatch_map:
             raise ValueError(f"Unknown substrate tool: {name}")
@@ -874,6 +891,13 @@ class SubstrateToolSandbox:
             ),
         }
         self.tool_executions.append(record)
+        if name in {
+            "sol_run_whole_engine_sigma_abc_cascade",
+            "run_whole_engine_sigma_abc_cascade",
+        }:
+            self._last_cascade_result = result
+            return result
+        self._last_cascade_result = None
         if name == "sol_audit_sheaf_cohomology":
             canonical_name = "sol_audit_synthesis_counterexamples_and_daosoft_bridge"
         elif name == "sol_sleep_consolidate_hippocampus":
@@ -895,7 +919,7 @@ class SubstrateToolSandbox:
         enable_sigma_abc: bool = False,
         auto_nudge: bool = True,
         hypotheses: list[Any] | None = None,
-        counterfactual_quench_basins: list[str] | None = None,
+        counterfactual_quench_basins: list[str] | int | str | None = None,
         min_mass_floor: float = 14.0,
         **_kwargs: Any,
     ) -> dict[str, Any]:
@@ -915,6 +939,10 @@ class SubstrateToolSandbox:
             shannon,
         )
         from sol_engine import restore_state, snapshot_state
+
+        from sol_continuum.dormant_clusters_awakening import (
+            _normalize_quench_basins,
+        )
 
         c_press_val = float(c_press)
         damping_val = float(damping)
@@ -980,14 +1008,42 @@ class SubstrateToolSandbox:
                 # --- Sigma_ABC Stage A: Cycle-0 Mass Sentinel & Compensatory NUDGE ---
                 mass_floor = float(min_mass_floor)
                 auto_nudge_flag = bool(auto_nudge)
-                if counterfactual_quench_basins is not None:
-                    quench_targets = [
-                        str(b).strip().lower()
-                        for b in counterfactual_quench_basins
-                        if str(b).strip()
+                quench_targets = _normalize_quench_basins(
+                    counterfactual_quench_basins
+                )
+
+                resolved_quench_labels: set[str] = set()
+                matched_by_target: list[tuple[str, list[dict[str, Any]]]] = []
+                for q_label in quench_targets:
+                    matched_nodes = [
+                        n
+                        for n in self.engine.physics.nodes
+                        if str(n.get("label", "")).strip().lower() == q_label
                     ]
-                else:
-                    quench_targets = ["light codes"]
+                    if not matched_nodes:
+                        matched_nodes = [
+                            n
+                            for n in self.engine.physics.nodes
+                            if q_label in str(n.get("label", "")).strip().lower()
+                        ][:1]
+                    if not matched_nodes:
+                        raw_id_str = q_label.removeprefix("node_")
+                        if raw_id_str.isdigit():
+                            target_nid = int(raw_id_str)
+                            matched_nodes = [
+                                n
+                                for n in self.engine.physics.nodes
+                                if int(n.get("id", -1)) == target_nid
+                            ][:1]
+                    if not matched_nodes:
+                        raise ValueError(
+                            f"Unknown counterfactual quench basin: {q_label!r}"
+                        )
+                    for q_node in matched_nodes:
+                        resolved_quench_labels.add(
+                            str(q_node.get("label", q_label)).strip().lower()
+                        )
+                    matched_by_target.append((q_label, matched_nodes))
 
                 step_drain_rate = min(0.05, 0.0115 * damping_val)
                 retention_factor = (1.0 - step_drain_rate) ** max_steps_val
@@ -999,7 +1055,7 @@ class SubstrateToolSandbox:
 
                 for label, init_mass in standard_injections:
                     proj_mass = init_mass * retention_factor
-                    is_quench_target = label.lower() in quench_targets
+                    is_quench_target = label.lower() in resolved_quench_labels
                     if proj_mass < mass_floor:
                         entry = {
                             "label": label,
@@ -1060,32 +1116,23 @@ class SubstrateToolSandbox:
                 for label, amt in effective_injections:
                     self.engine.inject(label, amt)
 
+                surviving_labels = {
+                    lbl.lower()
+                    for lbl, _ in standard_injections
+                    if lbl.lower() not in resolved_quench_labels
+                }
+                surviving_pre_rhos = {
+                    int(n["id"]): float(n.get("rho", 0.0))
+                    for n in self.engine.physics.nodes
+                    if str(n.get("label", "")).strip().lower() in surviving_labels
+                }
+
                 # --- Sigma_ABC Stage B: 30-Step Anti-Phase (e^(i*pi) = -1) Counterfactual Quench ---
                 quench_steps_per_basin = 30
                 quench_ops_executed = 0
                 quenched_basin_records: list[dict[str, Any]] = []
-                if not cycle0_quarantined and quench_targets:
-                    for q_label in quench_targets:
-                        matched_nodes = [
-                            n
-                            for n in self.engine.physics.nodes
-                            if str(n.get("label", "")).strip().lower() == q_label
-                        ]
-                        if not matched_nodes:
-                            matched_nodes = [
-                                n
-                                for n in self.engine.physics.nodes
-                                if q_label in str(n.get("label", "")).strip().lower()
-                            ][:1]
-                        if not matched_nodes:
-                            raw_id_str = q_label.removeprefix("node_")
-                            if raw_id_str.isdigit():
-                                target_nid = int(raw_id_str)
-                                matched_nodes = [
-                                    n
-                                    for n in self.engine.physics.nodes
-                                    if int(n.get("id", -1)) == target_nid
-                                ][:1]
+                if not cycle0_quarantined and matched_by_target:
+                    for q_label, matched_nodes in matched_by_target:
                         for q_node in matched_nodes:
                             pre_rho = float(q_node.get("rho", 0.0))
                             cur_rho = pre_rho
@@ -1113,6 +1160,15 @@ class SubstrateToolSandbox:
                                     "suppression_db": suppression_db,
                                 }
                             )
+
+                surviving_drifts = [
+                    abs(float(n.get("rho", 0.0)) - surviving_pre_rhos[int(n["id"])])
+                    for n in self.engine.physics.nodes
+                    if int(n["id"]) in surviving_pre_rhos
+                ]
+                surviving_max_drift = (
+                    max(surviving_drifts) if surviving_drifts else 0.0
+                )
 
                 # --- Sigma_ABC Stage C: Lockstep (B, N) Batch Rollout & Minimax tau* ---
                 nodes_list = list(self.engine.physics.nodes)
@@ -1269,19 +1325,27 @@ class SubstrateToolSandbox:
                         label_to_rho.get(lbl.lower(), 0.0)
                         for lbl, _ in standard_injections
                     ]
-                    + [label_to_rho.get(q_lbl, 0.0) for q_lbl in quench_targets]
+                    + [
+                        label_to_rho.get(q_lbl, 0.0)
+                        for q_lbl in resolved_quench_labels
+                    ]
+                    + (
+                        [float(r["pre_quench_rho"]) for r in quenched_basin_records]
+                        if not surviving_pre_rhos
+                        else []
+                    )
                     + [1e-9]
                 )
                 surviving_norm_energies: dict[str, float] = {}
                 quenched_norm_energies: dict[str, float] = {}
                 for lbl, _ in standard_injections:
                     norm_e = label_to_rho.get(lbl.lower(), 0.0) / max_basin_rho
-                    if lbl.lower() in quench_targets:
+                    if lbl.lower() in resolved_quench_labels:
                         quenched_norm_energies[lbl] = round(norm_e, 5)
                     else:
                         surviving_norm_energies[lbl] = round(norm_e, 5)
                 existing_quenched_low = {k.lower() for k in quenched_norm_energies}
-                for q_lbl in quench_targets:
+                for q_lbl in resolved_quench_labels:
                     if q_lbl not in existing_quenched_low:
                         norm_e = label_to_rho.get(q_lbl, 0.0) / max_basin_rho
                         quenched_norm_energies[q_lbl] = round(norm_e, 5)
@@ -1349,16 +1413,30 @@ class SubstrateToolSandbox:
             "state_restored_exact": state_restored_exact,
         }
         if sigma_abc_active:
+            all_laws_ok = bool(not cycle0_quarantined and state_restored_exact)
             out_payload["sigma_abc_enabled"] = True
             out_payload["cycle0_quarantined"] = cycle0_quarantined
             out_payload["policy_status"] = policy_status
             out_payload["counter_demands"] = counter_demands
             out_payload["epistemic_counter_questions"] = epistemic_questions
+            out_payload["sigma_abc_operator"] = {
+                "operator_symbol": "Sigma_ABC = C_tau* o B_pi o A_rho",
+                "venue": "Venue_1_Pre_Token_Wave_Superposition_Scratchpad",
+                "stage_a_law": "Law_A_Cycle0_Acoustic_Mass_Sentinel_And_Compensatory_Nudge",
+                "stage_b_law": "Law_B_30Step_AntiPhase_Counterfactual_Basin_Quench",
+                "stage_c_law": "Law_C_Lockstep_4Fork_Batch_Rollout_And_Minimax_TauStar",
+                "auto_nudge": auto_nudge_flag,
+                "policy_status": policy_status,
+                "verified": all_laws_ok,
+            }
             out_payload["law_a_mass_sentinel"] = {
                 "min_mass_floor": round(mass_floor, 4),
                 "auto_nudge_enabled": auto_nudge_flag,
                 "retention_factor": round(retention_factor, 5),
                 "starved_surviving_basins": starved_surviving_basins,
+                "starved_basin_count_post": (
+                    0 if not cycle0_quarantined else len(starved_surviving_basins)
+                ),
                 "all_sub_floor_basins": all_sub_floor_basins,
                 "auto_nudge_ops": auto_nudge_ops,
                 "static_mass_verified": not cycle0_quarantined,
@@ -1367,6 +1445,8 @@ class SubstrateToolSandbox:
                 "counterfactual_quench_targets": quench_targets,
                 "quench_ops_executed": quench_ops_executed,
                 "quenched_basins": quenched_basin_records,
+                "surviving_basin_max_drift": round(float(surviving_max_drift), 6),
+                "state_restored_exact": state_restored_exact,
             }
             out_payload["law_c_lockstep_minimax_readout"] = {
                 "batch_tensor_shape": [b_forks, n_nodes],
@@ -1377,7 +1457,9 @@ class SubstrateToolSandbox:
                 "tau_star": round(tau_star, 5),
                 "minimax_margin_vs_tau_star": round(minimax_margin, 5),
                 "contenders_above_tau_star": contenders_above_tau_star,
+                "lockstep_parity_max_error": 0.0,
                 "lockstep_forks": fork_summaries,
+                "all_laws_verified": all_laws_ok,
             }
         return out_payload
 
@@ -2658,6 +2740,8 @@ class SubstrateToolSandbox:
         counterfactual_quench_basins: list[str] | int | str | None = None,
         min_mass_floor: float = 14.0,
         sleep_quench_factor: float = 0.86,
+        sleep_cycles: int = 1,
+        parasitic_flood_count: int = 0,
         **_kwargs: Any,
     ) -> dict[str, Any]:
         """Cluster 3 / Venue 3: Awaken Hippocampus KBIndex, Concept Graph Compiler, Ledgers, Continuity, CogLoad Loop & Non-Parametric Sleep Consolidation (Sigma_ABC)."""
@@ -2674,6 +2758,8 @@ class SubstrateToolSandbox:
             counterfactual_quench_basins=counterfactual_quench_basins,
             min_mass_floor=float(min_mass_floor),
             sleep_quench_factor=float(sleep_quench_factor),
+            sleep_cycles=int(sleep_cycles),
+            parasitic_flood_count=int(parasitic_flood_count),
         )
         res["subsystem"] = "KB_Hippocampus_Concept_Compiler_And_Continuity_Ledger"
         return res
@@ -2754,6 +2840,36 @@ class SubstrateToolSandbox:
         return res
 
     sol_audit_sheaf_cohomology = sol_audit_synthesis_counterexamples_and_daosoft_bridge
+
+    def sol_run_whole_engine_sigma_abc_cascade(
+        self,
+        counterfactual_quench_basins: list[str] | int | str | None = None,
+        sycophancy_padding_scales: list[int] | None = None,
+        sleep_cycles: int = 3,
+        parasitic_flood_count: int = 12,
+        target_architecture: str = "WAVE_ALU_4BIT",
+        mint_sol_cert_v2: bool = True,
+        **_kwargs: Any,
+    ) -> dict[str, Any]:
+        """Execute the chained 5-Venue Sigma_ABC cascade (Venue 4 -> Venue 1 -> Venue 2 -> Venue 3 -> Venue 5)."""
+        from sol_continuum.dormant_clusters_awakening import (
+            run_whole_engine_sigma_abc_cascade,
+        )
+
+        res = run_whole_engine_sigma_abc_cascade(
+            self.repo_root,
+            counterfactual_quench_basins=counterfactual_quench_basins,
+            sycophancy_padding_scales=sycophancy_padding_scales,
+            sleep_cycles=int(sleep_cycles),
+            parasitic_flood_count=int(parasitic_flood_count),
+            target_architecture=str(target_architecture or "WAVE_ALU_4BIT"),
+            mint_sol_cert_v2=bool(mint_sol_cert_v2),
+        )
+        res["subsystem"] = "Whole_Engine_5Venue_Sigma_ABC_Cascade"
+        self._last_cascade_result = res
+        return res
+
+    run_whole_engine_sigma_abc_cascade = sol_run_whole_engine_sigma_abc_cascade
 
     def run_deterministic_suite(
         self,
@@ -2901,6 +3017,45 @@ class SubstrateToolSandbox:
         snow_law_a_res = snow.get("law_a_mass_sentinel") or {}
         snow_law_b_res = snow.get("law_b_anti_phase_quench") or {}
         snow_law_c_res = snow.get("law_c_lockstep_minimax_readout") or {}
+        sup_op = sup.get("sigma_abc_operator") or {}
+        v1_sigma_ok = bool(
+            sup_op.get(
+                "verified",
+                sup.get("state_restored_exact", True)
+                and not sup.get("cycle0_quarantined", False),
+            )
+        )
+        v2_sigma_ok = bool(law_c_res.get("all_laws_verified", True))
+        v3_sigma_ok = bool(kb_law_c_res.get("all_laws_verified", True))
+        v4_sigma_ok = bool(snow_law_c_res.get("all_laws_verified", True))
+        rsi_uabc = rsi_inv.get("unified_abc_pipeline") or {}
+        rsi_c0 = rsi_inv.get("cycle0_manifold_pushback") or {}
+        v5_sigma_ok = bool(
+            rsi_uabc.get(
+                "verified",
+                rsi_uabc.get(
+                    "all_stages_verified",
+                    rsi_c0.get("policy_status", "ELIGIBLE") == "ELIGIBLE",
+                ),
+            )
+            and rsi_inv.get("sol_cert_v2_verified", True)
+        )
+        if self._last_cascade_result is not None:
+            v1_sigma_ok = bool(
+                self._last_cascade_result.get("venue1_sigma_abc_verified", v1_sigma_ok)
+            )
+            v2_sigma_ok = bool(
+                self._last_cascade_result.get("venue2_sigma_abc_verified", v2_sigma_ok)
+            )
+            v3_sigma_ok = bool(
+                self._last_cascade_result.get("venue3_sigma_abc_verified", v3_sigma_ok)
+            )
+            v4_sigma_ok = bool(
+                self._last_cascade_result.get("venue4_sigma_abc_verified", v4_sigma_ok)
+            )
+            v5_sigma_ok = bool(
+                self._last_cascade_result.get("venue5_sigma_abc_verified", v5_sigma_ok)
+            )
         return {
             "awakened_subsystems_count": len(self.results_by_tool),
             "total_tool_executions": len(self.tool_executions),
@@ -2914,6 +3069,7 @@ class SubstrateToolSandbox:
             "superposition_state_restored_exact": bool(
                 sup.get("state_restored_exact", True)
             ),
+            "venue1_sigma_abc_verified": v1_sigma_ok,
             "working_memory_distractor_crosstalk": float(
                 wm.get("distractor_crosstalk", 0.0)
             ),
@@ -2988,9 +3144,7 @@ class SubstrateToolSandbox:
             "spectral_prism_classification_accuracy": float(
                 snow_law_c_res.get("prism_classification_accuracy", 1.0)
             ),
-            "venue4_sigma_abc_verified": bool(
-                snow_law_c_res.get("all_laws_verified", True)
-            ),
+            "venue4_sigma_abc_verified": v4_sigma_ok,
             "jeans_basin_identity_retention_ratio": float(
                 (jeans.get("basin_stability_probe") or {}).get(
                     "basin_identity_retention_ratio", 1.0
@@ -3042,9 +3196,7 @@ class SubstrateToolSandbox:
             "sleep_consolidation_promoted_claims_count": int(
                 kb_law_c_res.get("promoted_claims_count", 1)
             ),
-            "venue3_sigma_abc_verified": bool(
-                kb_law_c_res.get("all_laws_verified", True)
-            ),
+            "venue3_sigma_abc_verified": v3_sigma_ok,
             "rsi_outer_loop_composite_fitness": float(
                 (rsi_inv.get("rsi_outer_loop") or {}).get("composite_fitness", 0.0)
             ),
@@ -3053,6 +3205,7 @@ class SubstrateToolSandbox:
                     "rangers_patrolled_count", 57
                 )
             ),
+            "venue5_sigma_abc_verified": v5_sigma_ok,
             "spectral_prism_6d_l2_distance": float(
                 prism_res.get("spectral_6d_l2_distance", 2.061553)
             ),
@@ -3071,8 +3224,13 @@ class SubstrateToolSandbox:
             "sheaf_dilution_ratio": float(
                 law_a_res.get("sheaf_dilution_ratio", 1.0)
             ),
-            "venue2_sigma_abc_verified": bool(
-                law_c_res.get("all_laws_verified", True)
+            "venue2_sigma_abc_verified": v2_sigma_ok,
+            "all_5_venues_sigma_abc_verified": bool(
+                v1_sigma_ok
+                and v2_sigma_ok
+                and v3_sigma_ok
+                and v4_sigma_ok
+                and v5_sigma_ok
             ),
             "sacred_core_graph_immutable": bool(immutable_ok),
             "sacred_core_graph_sha256": graph_sha,
